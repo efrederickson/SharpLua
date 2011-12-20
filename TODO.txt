@@ -1,0 +1,5 @@
+﻿TODO
+- Call .NET methods from their lua objects
+- Call tables with __call metatable
+- Compiler
+- Fix script.call

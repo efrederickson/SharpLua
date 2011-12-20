@@ -1,0 +1,171 @@
+﻿%Namespace = SharpLua;
+
+Chunk <- SpOpt Statements:(Statement (';' SpOpt)?)*;
+
+Statement <- Assignment / Function / LocalVar / LocalFunc / ReturnStmt / BreakStmt / DoStmt / IfStmt / ForStmt / ForInStmt / WhileStmt / RepeatStmt / ExprStmt;
+
+Assignment <- VarList:VarList SpOpt '=' SpOpt ExprList:ExprList;
+
+Function <- 'function' SpReq Name:FunctionName SpOpt Body:FunctionBody;
+
+LocalVar <- 'local' SpReq NameList:NameList SpOpt ('=' SpOpt ExprList:ExprList)?;
+
+LocalFunc <- 'local' SpReq 'function' SpReq Name:Name SpOpt Body:FunctionBody;
+
+ExprStmt <- Expr:Expr;
+
+ReturnStmt <- 'return' SpReq (ExprList:ExprList)?;
+
+BreakStmt <- 'break' SpReq;
+
+DoStmt <- 'do' SpReq Body:Chunk 'end' SpReq;
+
+IfStmt <- 'if' SpReq Condition:Expr 'then' SpReq ThenBlock:Chunk
+         ElseifBlocks:ElseifBlock* 
+        ('else' SpReq ElseBlock:Chunk)?
+        'end' SpReq;
+
+ElseifBlock <- 'elseif' SpReq Condition:Expr 'then' SpReq ThenBlock:Chunk;
+
+ForStmt
+    <- 'for' SpReq VarName:Name SpOpt '=' SpOpt Start:Expr ',' SpOpt End:Expr (',' SpOpt Step:Expr)? 'do' SpReq
+        Body:Chunk
+       'end' SpReq;
+
+ForInStmt
+    <- 'for' SpReq NameList:NameList SpReq 'in' SpReq ExprList:ExprList 'do' SpReq
+        Body:Chunk
+       'end' SpReq;
+
+WhileStmt
+    <- 'while' SpReq Condition:Expr 'do' SpReq
+        Body:Chunk
+       'end' SpReq;
+
+RepeatStmt
+    <- 'repeat' SpReq
+        Body:Chunk
+       'until' SpReq Condition:Expr;
+
+List<Var> VarList <- Var (SpOpt ',' SpOpt Var)*;
+
+List<Expr> ExprList <- Expr (SpOpt ',' SpOpt Expr)*;
+
+Expr <- OperatorExpr { return expr.Simplify(); } / Term;
+
+Term <- NilLiteral / BoolLiteral / NumberLiteral / StringLiteral / FunctionValue / TableConstructor / VariableArg / PrimaryExpr;
+
+NilLiteral <- 'nil';
+
+BoolLiteral <- Text:$('true' / 'false');
+
+NumberLiteral <- HexicalText:HexicalNumber / Text:FoatNumber;
+
+StringLiteral <- '"' Text:DoubleQuotedText '"' / '\'' Text:SingleQuotedText '\'' / Text:LongString;
+
+VariableArg <- Name:'...';
+
+FunctionValue <- 'function' SpOpt Body:FunctionBody;
+
+FunctionBody <- '(' SpOpt (ParamList:ParamList SpOpt)? ')' Chunk:Chunk 'end' SpReq;
+
+Access <- NameAccess/KeyAccess/MethodCall/FunctionCall;
+
+BaseExpr <- GroupExpr / VarName;
+
+KeyAccess <- '[' SpOpt Key:Expr ']';
+
+NameAccess <- '.' SpOpt Name:Name;
+
+MethodCall <- ':' SpOpt Method:Name SpOpt Args:Args;
+
+FunctionCall <-  Args:Args;
+
+Var <- Base:BaseExpr Accesses:(SpOpt NameAccess/SpOpt KeyAccess)*;
+
+PrimaryExpr <- Base:BaseExpr Accesses:(SpOpt Access)*;
+
+VarName <- Name:Name;
+
+FunctionName <- FullName:FullName (SpOpt ':' SpOpt MethodName:Name)?;
+
+GroupExpr <- '(' SpOpt Expr:Expr ')';
+
+TableConstructor <- '{' SpOpt (FieldList:FieldList)? '}';
+
+List<Field> FieldList <- Field (FieldSep SpOpt Field)* (FieldSep SpOpt)?;
+
+Field <- KeyValue / NameValue / ItemValue;
+
+KeyValue <- '[' SpOpt Key:Expr ']' SpOpt '=' SpOpt Value:Expr;
+NameValue <- Name:Name SpOpt '=' SpOpt Value:Expr;
+ItemValue <- Value:Expr;
+
+OperatorExpr
+    <- (unaryOper:UnaryOperator { operatorExpr.Add(unaryOper); } SpOpt)?
+       firstTerm:Term { operatorExpr.Add(firstTerm); } SpOpt
+       (binaryOper:BinaryOperator SpOpt nextTerm:Term SpOpt)*;
+
+Args <- ArgList:ArgList / String:StringLiteral / Table:TableConstructor;
+
+List<Expr> ArgList <- '(' SpOpt (ExprList SpOpt)? ')';
+
+ParamList <- NameList:NameList HasVarArg:(',' SpOpt '...')? / IsVarArg:'...';
+
+List<string> FullName <- Name (SpOpt '.' SpOpt Name)*;
+
+List<string> NameList <- Name (SpOpt ',' SpOpt Name)*;
+
+string Name <- !(Keyword SpReq) $Letter $(Letter/Digit)*;
+
+string FoatNumber <- $Digit+ ($'.' $Digit+)? ($('e'/'E') $Digit+)?;
+string HexicalNumber <- '0x' $HexDigit+;
+
+string SingleQuotedText <- $(-"\'\\" / EscapeChar)*;
+string DoubleQuotedText <- $(-"\"\\" / EscapeChar)*;
+
+string LongString <- opening:$('[' '='* '[') Eol? @{string closing = new string(opening.ToArray()).Replace('[', ']');} ({ MatchTerminalString(closing, out success);
+                if (success) break; } $-"")*;
+
+void Keyword <- 'and' / 'break' / 'do' / 'elseif' / 'else' /
+     'end' / 'false' / 'for' / 'function' / 'if' /
+     'in' / 'local' / 'nil' / 'not' / 'or' / 'repeat' /
+     'return' / 'then' / 'true' / 'until' / 'while';
+
+char Digit <- $'0'...'9';
+char HexDigit <- $"0123456789ABCDEFabcdef";
+
+char Letter <- $'A'...'Z' / $'a'...'z' / $'_';
+
+string UnaryOperator <- $('#' / '-' / 'not');
+     
+string BinaryOperator
+    <- $('+' / '-' / '*' / '/' / '%' / '^' / '..'
+     / '==' / '~=' / '<=' / '>=' / '<' / '>' 
+     / 'and' / 'or');
+
+void FieldSep <- ',' / ';';
+
+void SpReq <- (" \t\r\n" / Comment)+ / SpOpt Eof;
+
+void SpOpt <- (" \t\r\n" / Comment)*;
+
+void Comment <- '--'(LongString / -"\r\n"* (Eol/Eof));
+
+void Eol <- '\r\n' / '\n' / '\r';
+
+void Eof <- <end>;
+
+char EscapeChar 
+    <- '\\\\' { return '\\'; }
+     / '\\\'' { return '\''; }
+     / '\\"'  { return '\"'; }
+     / '\\r'  { return '\r'; }
+     / '\\n'  { return '\n'; }
+     / '\\t'  { return '\t'; }
+     / '\\v'  { return '\v'; }
+     / '\\a'  { return '\a'; }
+     / '\\b'  { return '\b'; }
+     / '\\f'  { return '\f'; }
+     / '\\0'  { return '\0'; }
+     ;

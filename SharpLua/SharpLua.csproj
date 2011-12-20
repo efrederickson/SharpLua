@@ -191,13 +191,13 @@
     <None Include="Test\icon\save.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Test\Ledger.wlua">
+    <None Include="Test\Ledger.slua">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Test\test.lua">
+    <None Include="Test\test.slua">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Test\WinFormExample.wlua">
+    <None Include="Test\WinFormExample.slua">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="..\TODO.txt" />

@@ -3,3 +3,4 @@
 - Call tables with __call metatable
 - Compiler
 - Fix script.call
+- add ':' function notation with 'self' variable

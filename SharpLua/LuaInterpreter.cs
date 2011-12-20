@@ -63,6 +63,10 @@ namespace SharpLua
             WinFormLib.RegisterModule(global);
             
             global.SetNameValue("_G", global);
+            global.SetNameValue("LUA_PATH", new LuaString( ".\\;" + 
+                               "require\\"
+                              ));// format: <dir>;<dir2>
+                                            // it automatically takes care of extensions
             
             return global;
         }

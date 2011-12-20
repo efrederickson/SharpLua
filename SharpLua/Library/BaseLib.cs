@@ -30,6 +30,7 @@ namespace SharpLua.Library
             module.Register("unpack", unpack);
             module.Register("pcall", pcall);
             module.Register("openfile", OpenFile);
+            module.Register("require", Require);
         }
 
         public static LuaValue print(LuaValue[] values)
@@ -275,6 +276,29 @@ namespace SharpLua.Library
             }
             else
                 return LuaNil.Nil;
+        }
+        
+        public static LuaValue Require(LuaValue[] args)
+        {
+            // get LUA_PATH variable
+            string path = Lua.GlobalEnvironment.GetValue("LUA_PATH").Value.ToString();
+            // split into paths
+            string[] paths = path.Split(';');
+            // check file names
+            foreach (string p in paths)
+            {
+                foreach (LuaValue arg in args)
+                {
+                    string sfn = arg.Value.ToString();
+                    string fn = LuaInterpreter.FindFullPath(p + sfn);
+                    if (File.Exists(fn))
+                    {
+                        Console.WriteLine("Loading file '" + fn + "'...");
+                        LuaInterpreter.RunFile(fn);
+                    }
+                }
+            }
+            return LuaNil.Nil;
         }
     }
 }

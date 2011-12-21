@@ -103,7 +103,8 @@
     <Compile Include="Expr\Term.cs" />
     <Compile Include="Expr\VariableArg.cs" />
     <Compile Include="Expr\VarName.cs" />
-    <Compile Include="GuiProgram.cs" />
+    <Compile Include="Library\ConsoleLib.cs" />
+    <Compile Include="Lua.cs" />
     <Compile Include="Library\BaseLib.cs" />
     <Compile Include="Library\ScriptLib.cs" />
     <Compile Include="Library\WinFormLib.cs" />
@@ -113,7 +114,7 @@
     <Compile Include="Library\MathLib.cs" />
     <Compile Include="Library\FileLib.cs" />
     <Compile Include="Library\IOLib.cs" />
-    <Compile Include="LuaInterpreter.cs" />
+    <Compile Include="LuaRuntime.cs" />
     <Compile Include="LuaValue\LuaError.cs" />
     <Compile Include="LuaValue\LuaUserdata.cs" />
     <Compile Include="LuaValue\LuaBoolean.cs" />

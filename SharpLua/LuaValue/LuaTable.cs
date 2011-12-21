@@ -18,6 +18,10 @@ namespace SharpLua
             this.MetaTable = new LuaTable();
             this.MetaTable.SetNameValue("__index", parent);
             this.MetaTable.SetNameValue("__newindex", parent);
+            this.MetaTable.Register("__call", new LuaFunc(delegate(LuaValue[] args)
+                                                          {//TODO
+                                                              return null;
+                                                          }));
         }
 
         public LuaTable MetaTable { get; set; }
@@ -73,7 +77,7 @@ namespace SharpLua
                 }
             }
 
-            return "Table " + this.GetHashCode();
+            return "LuaTable: " + this.GetHashCode();
         }
 
         public IEnumerable<LuaValue> ListValues
@@ -206,6 +210,20 @@ namespace SharpLua
                 return this.list[index - 1];
             }
 
+            return LuaNil.Nil;
+        }
+        
+        public LuaValue GetKey(int index)
+        {
+            if (this.dict == null) return LuaNil.Nil;
+            
+            if (index > 0 && index <= this.Length)
+            {
+                LuaValue[] t = new LuaValue[this.dict.Count];
+                this.dict.Keys.CopyTo(t, 0);
+                return t[index - 1];
+            }
+            
             return LuaNil.Nil;
         }
 

@@ -6,7 +6,7 @@ using SharpLua.Library;
 
 namespace SharpLua
 {
-    public class LuaInterpreter
+    public class LuaRuntime
     {
         public static LuaValue RunFile(string luaFile)
         {
@@ -36,6 +36,9 @@ namespace SharpLua
 
         public static Chunk Parse(string luaCode)
         {
+            // remove previous errors
+            
+            parser.Errors.Clear();
             bool success;
             Chunk chunk = parser.ParseChunk(new TextInput(luaCode), out success);
             if (success)
@@ -61,10 +64,11 @@ namespace SharpLua
             OSLib.RegisterModule(global);
             ScriptLib.RegisterModule(global);
             WinFormLib.RegisterModule(global);
+            ConsoleLib.RegisterModule(global);
             
             global.SetNameValue("_G", global);
             global.SetNameValue("LUA_PATH", new LuaString( ".\\;" + 
-                               "require\\"
+                               "require\\" // TODO: fill with lua libraries
                               ));// format: <dir>;<dir2>
                                             // it automatically takes care of extensions
             
@@ -81,9 +85,9 @@ namespace SharpLua
                 return spath + ".wlua"; // wLua
             if (File.Exists(spath + ".slua")) // sLua (SharpLua)
                 return spath + ".slua";
-            if (File.Exists(spath + ".mlua")) // meta Lua
+            if (File.Exists(spath + ".mlua")) // MetaLua
                 return spath + ".mlua";
-            // TODO: .so, .c, .cs, .dll, .exe
+            // TODO: .so, .c, .cs, .dll, .exe, .luac
             
             return spath; // let the caller handle the invalid filename
         }

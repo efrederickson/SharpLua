@@ -22,6 +22,8 @@ namespace SharpLua.Library
             module.Register("removeitem", removeitem);
             module.Register("maxn", maxn);
             module.Register("sort", sort);
+            module.Register("copy", Copy);
+            module.Register("printcontents", PrintContents);
         }
 
         public static LuaValue concat(LuaValue[] values)
@@ -126,6 +128,65 @@ namespace SharpLua.Library
                 table.Sort();
             }
             return null;
+        }
+        
+        public static LuaValue Copy(LuaValue[] args)
+        {
+            LuaTable _new = args[0] as LuaTable;
+            LuaTable old = args[1] as LuaTable;
+            Dictionary<LuaValue, LuaValue> oldFields = (Dictionary<LuaValue, LuaValue>)old.KeyValuePairs;
+            List<LuaValue> keys = new List<LuaValue>();
+            List<LuaValue> values = new List<LuaValue>();
+            
+            foreach (LuaValue key in oldFields.Keys)
+                keys.Add(key);
+            foreach (LuaValue val in oldFields.Values)
+                values.Add(val);
+            
+            // add to new table
+            for (int i = 0; i < keys.Count; i++)
+            {
+                _new.SetKeyValue(keys[i], values[i]);
+            }
+            return _new;
+        }
+        
+        public static LuaValue PrintContents(LuaValue[] args)
+        {
+            PrintTable(args[0] as LuaTable, "");
+            return LuaNil.Nil;
+        }
+        
+        private static void PrintTable(LuaTable tbl, string indent)
+        {
+            /* sample output:
+                    table: 002CCBA8
+                    {
+                        field = value
+                        X = 10
+                        y = function: 002CCBA8
+                    }
+             */
+            string i = indent;
+            Console.WriteLine(i + tbl.ToString() + "\n" + i + "{");
+            
+            foreach (LuaValue key in tbl.Keys)
+            {
+                LuaValue v = tbl.GetValue(key);
+                if (v.GetTypeCode() == "table")
+                {
+                    // print("subtable: " + k.ToString() + " = " + v.ToString());
+                    // print(i + "{");
+                    PrintTable(v as LuaTable, i + " ");
+                    // print(i + "}");
+                }
+                else
+                {
+                    Console.WriteLine(i + " " + key.ToString() + " = " + v.ToString());
+                }
+            }
+            Console.WriteLine(i + "}");
+            
         }
     }
 }

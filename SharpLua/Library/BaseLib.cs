@@ -31,6 +31,7 @@ namespace SharpLua.Library
             module.Register("pcall", pcall);
             module.Register("openfile", OpenFile);
             module.Register("require", Require);
+            module.Register("set", Set);
         }
 
         public static LuaValue print(LuaValue[] values)
@@ -171,14 +172,14 @@ namespace SharpLua.Library
 
         public static LuaValue error(LuaValue[] values)
         {
-            LuaString message = values[0] as LuaString;
-            if (message != null)
+            if (values.Length > 0)
             {
+                LuaString message = values[0] as LuaString;
                 throw new LuaError(message.Text);
             }
             else
             {
-                throw new LuaError("error raised!");
+                throw new LuaError("Error!");
             }
         }
 
@@ -209,14 +210,14 @@ namespace SharpLua.Library
         {
             LuaString file = values[0] as LuaString;
             LuaTable enviroment = values[1] as LuaTable;
-            return LuaInterpreter.RunFile(file.Text, enviroment);
+            return LuaRuntime.RunFile(file.Text, enviroment);
         }
 
         public static LuaValue loadstring(LuaValue[] values)
         {
             LuaString code = values[0] as LuaString;
             LuaTable enviroment = values[1] as LuaTable;
-            Chunk chunk = LuaInterpreter.Parse(code.Text);
+            Chunk chunk = LuaRuntime.Parse(code.Text);
 
             LuaFunction func = new LuaFunction(
             (LuaValue[] args) =>
@@ -272,7 +273,7 @@ namespace SharpLua.Library
             if (ofd.ShowDialog() == DialogResult.OK)
             {
                 Console.WriteLine("Loading file '" + Path.GetFileName(ofd.FileName) + "'...");
-                return LuaInterpreter.RunFile(ofd.FileName, Lua.GlobalEnvironment);
+                return LuaRuntime.RunFile(ofd.FileName, Lua.GlobalEnvironment);
             }
             else
                 return LuaNil.Nil;
@@ -290,15 +291,22 @@ namespace SharpLua.Library
                 foreach (LuaValue arg in args)
                 {
                     string sfn = arg.Value.ToString();
-                    string fn = LuaInterpreter.FindFullPath(p + sfn);
+                    string fn = LuaRuntime.FindFullPath(p + sfn);
                     if (File.Exists(fn))
                     {
                         Console.WriteLine("Loading file '" + fn + "'...");
-                        LuaInterpreter.RunFile(fn);
+                        LuaRuntime.RunFile(fn);
                     }
                 }
             }
             return LuaNil.Nil;
+        }
+        
+        public static LuaValue Set(LuaValue[] args)
+        {
+            LuaTable t = args[0] as LuaTable;
+            t.SetKeyValue(args[1], args[2]);
+            return t;
         }
     }
 }

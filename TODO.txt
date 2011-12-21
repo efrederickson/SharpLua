@@ -4,3 +4,7 @@
 - Compiler
 - Fix script.call
 - add ':' function notation with 'self' variable
+- error: error level also
+- load .dll and .exe files, and check for Library pieces
+- set "..." to command line args in _G
+- enable metatables for all lua objects

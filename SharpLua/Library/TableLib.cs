@@ -24,6 +24,7 @@ namespace SharpLua.Library
             module.Register("sort", sort);
             module.Register("copy", Copy);
             module.Register("printcontents", PrintContents);
+            module.Register("find", Find);
         }
 
         public static LuaValue concat(LuaValue[] values)
@@ -186,7 +187,17 @@ namespace SharpLua.Library
                 }
             }
             Console.WriteLine(i + "}");
+        }
+        
+        public static LuaValue Find(LuaValue[] args)
+        {
+            LuaValue v = args[0] as LuaValue;
+            LuaTable t = args[1] as LuaTable;
+            foreach (LuaValue key in t.Keys)
+                if (key.Value == v.Value)
+                    return key;
             
+            return LuaNil.Nil;
         }
     }
 }

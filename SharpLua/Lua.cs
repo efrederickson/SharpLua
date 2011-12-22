@@ -34,7 +34,8 @@ namespace SharpLua
                     {
                         LuaRuntime.RunFile(file);
                         // it loaded successfully
-                        Console.WriteLine("Loaded file '" + Path.GetFileName(file) + "'");
+                        if (args.Length > 1) // possibly interactive mode after
+                            Console.WriteLine("Loaded file '" + Path.GetFileName(file) + "'");
                     }
                     catch (Exception error)
                     {

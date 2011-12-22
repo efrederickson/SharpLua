@@ -9,7 +9,7 @@ namespace SharpLua
     {
         public static readonly LuaNil Nil = new LuaNil();
 
-        private LuaNil() { }
+        private LuaNil() { MetaTable = new LuaTable(); }
 
         public override object Value
         {
@@ -28,6 +28,15 @@ namespace SharpLua
 
         public override string ToString()
         {
+            if (this.MetaTable != null)
+            {
+                LuaFunction function = this.MetaTable.GetValue("__tostring") as LuaFunction;
+                if (function != null)
+                {
+                    return function.Invoke(new LuaValue[] { this }).ToString();
+                }
+            }
+            
             return "nil";
         }
     }

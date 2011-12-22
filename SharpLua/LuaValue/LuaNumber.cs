@@ -9,6 +9,7 @@ namespace SharpLua
     {
         public LuaNumber(double number)
         {
+            MetaTable = new LuaTable();
             this.Number = number;
         }
 
@@ -26,6 +27,15 @@ namespace SharpLua
 
         public override string ToString()
         {
+            if (this.MetaTable != null)
+            {
+                LuaFunction function = this.MetaTable.GetValue("__tostring") as LuaFunction;
+                if (function != null)
+                {
+                    return function.Invoke(new LuaValue[] { this }).ToString();
+                }
+            }
+            
             return this.Number.ToString();
         }
     }

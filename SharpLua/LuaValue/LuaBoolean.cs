@@ -30,10 +30,19 @@ namespace SharpLua
 
         public override string ToString()
         {
+            if (this.MetaTable != null)
+            {
+                LuaFunction function = this.MetaTable.GetValue("__tostring") as LuaFunction;
+                if (function != null)
+                {
+                    return function.Invoke(new LuaValue[] { this }).ToString();
+                }
+            }
+            
             return this.BoolValue.ToString().ToLower();
         }
 
-        private LuaBoolean() { }
+        private LuaBoolean() { MetaTable = new LuaTable(); }
 
         public static LuaBoolean From(bool value)
         {

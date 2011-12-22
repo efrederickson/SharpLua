@@ -22,6 +22,7 @@
     <DebugSymbols>false</DebugSymbols>
     <SignAssembly>False</SignAssembly>
     <DelaySign>False</DelaySign>
+    <ApplicationIcon>#Lua.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>
@@ -58,8 +59,6 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
@@ -103,7 +102,9 @@
     <Compile Include="Expr\Term.cs" />
     <Compile Include="Expr\VariableArg.cs" />
     <Compile Include="Expr\VarName.cs" />
+    <Compile Include="ExternalLibraryLoader.cs" />
     <Compile Include="Library\ConsoleLib.cs" />
+    <Compile Include="Library\ILuaLibrary.cs" />
     <Compile Include="Lua.cs" />
     <Compile Include="Library\BaseLib.cs" />
     <Compile Include="Library\ScriptLib.cs" />
@@ -182,6 +183,7 @@
     <Folder Include="Test\icon" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="#Lua.ico" />
     <None Include="..\README.txt" />
     <None Include="Test\icon\add.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -193,6 +195,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Test\Ledger.slua">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test\tablefunctions.slua">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Test\test.slua">

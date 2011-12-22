@@ -1,0 +1,12 @@
+-- cannot use table:function, as that doesn't work.
+
+function a()
+    t = { }
+    t.b = function()
+        print("hi")
+    end
+    return t
+end
+
+tbl = a()
+tbl.b()

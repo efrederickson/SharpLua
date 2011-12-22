@@ -11,6 +11,7 @@ namespace SharpLua
 
         public LuaUserdata(object obj)
         {
+            MetaTable = new LuaTable();
             this.Object = obj;
         }
 
@@ -24,9 +25,7 @@ namespace SharpLua
         {
             get { return this.Object; }
         }
-
-        public LuaTable MetaTable { get; set; }
-
+        
         public override string GetTypeCode()
         {
             return "userdata";
@@ -34,6 +33,15 @@ namespace SharpLua
 
         public override string ToString()
         {
+            if (this.MetaTable != null)
+            {
+                LuaFunction function = this.MetaTable.GetValue("__tostring") as LuaFunction;
+                if (function != null)
+                {
+                    return function.Invoke(new LuaValue[] { this }).ToString();
+                }
+            }
+            
             return "userdata";
         }
     }

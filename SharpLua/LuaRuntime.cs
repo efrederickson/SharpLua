@@ -37,8 +37,8 @@ namespace SharpLua
         public static Chunk Parse(string luaCode)
         {
             // remove previous errors
-            
             parser.Errors.Clear();
+            
             bool success;
             Chunk chunk = parser.ParseChunk(new TextInput(luaCode), out success);
             if (success)

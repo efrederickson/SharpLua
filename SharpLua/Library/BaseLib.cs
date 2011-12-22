@@ -76,16 +76,15 @@ namespace SharpLua.Library
 
         public static LuaValue setmetatable(LuaValue[] values)
         {
-            LuaTable table = values[0] as LuaTable;
+            LuaValue val = values[0] as LuaValue;
             LuaTable metatable = values[1] as LuaTable;
-            table.MetaTable = metatable;
+            TableLib.Copy(new LuaValue[] { val.MetaTable, metatable });
             return null;
         }
 
         public static LuaValue getmetatable(LuaValue[] values)
         {
-            LuaTable table = values[0] as LuaTable;
-            return table.MetaTable;
+            return (values[0] as LuaValue).MetaTable;
         }
 
         public static LuaValue rawget(LuaValue[] values)
@@ -123,7 +122,7 @@ namespace SharpLua.Library
                         return LuaNil.Nil;
                     }
                 }
-           );
+               );
 
             return new LuaMultiValue(new LuaValue[] { func, table, new LuaNumber(0) });
         }
@@ -220,12 +219,12 @@ namespace SharpLua.Library
             Chunk chunk = LuaRuntime.Parse(code.Text);
 
             LuaFunction func = new LuaFunction(
-            (LuaValue[] args) =>
-            {
-                chunk.Enviroment = enviroment;
-                return chunk.Execute();
-            }
-            );
+                (LuaValue[] args) =>
+                {
+                    chunk.Enviroment = enviroment;
+                    return chunk.Execute();
+                }
+               );
 
             return func;
         }
@@ -294,8 +293,13 @@ namespace SharpLua.Library
                     string fn = LuaRuntime.FindFullPath(p + sfn);
                     if (File.Exists(fn))
                     {
-                        Console.WriteLine("Loading file '" + fn + "'...");
-                        LuaRuntime.RunFile(fn);
+                        if (fn.ToLower().EndsWith(".dll") || fn.ToLower().EndsWith(".exe"))
+                            ExternalLibraryLoader.Load(fn);
+                        else
+                        {
+                            Console.WriteLine("Loading file '" + fn + "'...");
+                            LuaRuntime.RunFile(fn);
+                        }
                     }
                 }
             }

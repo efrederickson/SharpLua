@@ -6,4 +6,15 @@ Created by mlnlover11 Productions
 Based off of the LuaInterpreter article on CodeProject.
 
 To use in your projects, just add a reference to this exe and use the 
-SharpLua.Interpreter.Run(code[, environment]) or RunFile function.
+SharpLua.LuaRuntime.Run(code[, environment]) or RunFile function.
+
+Features Lua doesn't have:
+- built-in table copying and printing
+- metatable access for all Lua objects
+  - able to set in Lua also
+- console library
+- script library (.NET access)
+- WinForms library
+- many more functions, such as
+  - openfile         - open a lua file with an OpenFileDialog and run it
+  - set              - set (table, key, value)

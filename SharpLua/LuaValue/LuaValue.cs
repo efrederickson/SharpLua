@@ -7,15 +7,16 @@ namespace SharpLua
 {
     public abstract class LuaValue : IEquatable<LuaValue>
     {
+        
         public abstract object Value { get; }
-
+        
         public abstract string GetTypeCode();
-
+        
         public virtual bool GetBooleanValue()
         {
             return true;
         }
-
+        
         public bool Equals(LuaValue other)
         {
             if (other == null)
@@ -35,7 +36,7 @@ namespace SharpLua
 
             return this.Value.Equals(other.Value);
         }
-
+        
         public override int GetHashCode()
         {
             if (this is LuaNumber || this is LuaString)
@@ -45,7 +46,7 @@ namespace SharpLua
 
             return base.GetHashCode();
         }
-
+        
         public static LuaValue GetKeyValue(LuaValue baseValue, LuaValue key)
         {
             LuaTable table = baseValue as LuaTable;
@@ -77,8 +78,10 @@ namespace SharpLua
                     }
                 }
                 
-                throw new Exception(string.Format("Access field '{0}' from not a table.", key.Value));
+                throw new Exception(string.Format("Access field '{0}' not from a table.", key.Value));
             }
         }
+        
+        public LuaTable MetaTable { get; set; }
     }
 }

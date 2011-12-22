@@ -24,8 +24,6 @@ namespace SharpLua
                                                           }));
         }
 
-        public LuaTable MetaTable { get; set; }
-
         public override object Value
         {
             get { return this; }

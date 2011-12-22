@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace SharpLua
+namespace SharpLua.LuaTypes
 {
     public delegate LuaValue LuaFunc(LuaValue[] args);
 

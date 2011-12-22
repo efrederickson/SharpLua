@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace SharpLua
+namespace SharpLua.LuaTypes
 {
     public class LuaTable : LuaValue
     {
@@ -100,6 +100,20 @@ namespace SharpLua
                     foreach (LuaValue key in this.dict.Keys)
                     {
                         yield return key;
+                    }
+                }
+            }
+        }
+        
+        public IEnumerable<LuaValue> Values
+        {
+            get
+            {
+                if (this.Count > 0)
+                {
+                    foreach (LuaValue val in this.dict.Values)
+                    {
+                        yield return val;
                     }
                 }
             }
@@ -273,7 +287,7 @@ namespace SharpLua
             }
         }
 
-        private void RemoveKey(string name)
+        public void RemoveKey(string name)
         {
             LuaValue key = this.GetKey(name);
 
@@ -318,7 +332,7 @@ namespace SharpLua
             this.dict[key] = value;
         }
 
-        private void RemoveKey(LuaValue key)
+        public void RemoveKey(LuaValue key)
         {
             if (key != LuaNil.Nil && this.dict != null && this.dict.ContainsKey(key))
             {

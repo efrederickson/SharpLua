@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace SharpLua
+namespace SharpLua.Parser
 {
     public interface ParserInput<T>
     {

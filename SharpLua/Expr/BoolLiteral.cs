@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 
+using SharpLua.LuaTypes;
+
 namespace SharpLua
 {
     public partial class BoolLiteral : Term

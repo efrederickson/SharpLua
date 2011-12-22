@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using SharpLua;
+using SharpLua.LuaTypes;
 
 namespace lClass
 {
@@ -20,9 +21,10 @@ namespace lClass
         /*
          *************** SEE LCLASS DOCUMENTATION FOR USAGE AND MORE INFO
          *** https://github.com/mlnlover11/LuaLibs/tree/master/lClass/ **
-         *************** THIS USES THE MODULE CLASS INSTEAD OF LCLASS  */
+         *************** THIS USES THE MODULE CLASS INSTEAD OF LCLASS ***
+        */
         
-        public void RegisterModule(SharpLua.LuaTable environment)
+        public void RegisterModule(LuaTable environment)
         {
             LuaTable module = new LuaTable();
             RegisterFunctions(module);
@@ -163,7 +165,7 @@ namespace lClass
         #endregion
 
         private static int _nameCount = 0;
-
+/*
         public static LuaValue CreateClass(LuaValue[] args)
         {
             LuaTable table1 = new LuaTable();
@@ -239,153 +241,157 @@ namespace lClass
                                                                                    table.RawSetValue(key, value);
                                                                                    return LuaNil.Nil;
                                                                                }
-                                                                               h = getmetatable(table).__newindex;
-                                                                               if h == LuaNil.Nil then rawset(table, key, value); return end
+                                                                               h = table.MetaTable.GetValue("__newindex");
+                                                                               if (h == LuaNil.Nil)
+                                                                               {
+                                                                                   table.RawSetValue(key, value);
+                                                                                   return;
+                                                                               }
                                                                            }
                                                                            else
-                                                                               h = getmetatable(table).__newindex
-                                                                                   if h == LuaNil.Nil then
-                                                                                   err||("cannot get __newindex field!")
-                                                                                   end
-                                                                                   end
-                                                                                   if type(h) == "function" then
-                                                                                   rawset(table, key, value) // was h(table, key, value)
-                                                                               else
-                                                                               h[key] = value           // repeat operation on it
+                                                                               h = table.MetaTable.GetValue("__newindex");
+                                                                           if (h == LuaNil.Nil)
+                                                                               throw new Exception("cannot get __newindex field!");
+                                                                           if (h.GetTypeCode() == "function")
+                                                                               table.RawSetValue(key, value); // was h(table, key, value)
+                                                                           else
+                                                                               h[key] = value;           // repeat operation on it
                                                                        }
                                                                    }));
-            __tostring = function()
-                return table1.__tostringfunction()
-                end,
+            table1.MetaTable.Register("__tostring", new LuaFunc(delegate(LuaValue[] args)
+                                                                {
+                                                                    return (table1.GetValue("__tostringfunction") as LuaFunction).Invoke(args);
+                                                                }));
 
-            __gc = function()
-                if rawget(table1, "Destruct||") != LuaNil.Nil then
-                table1:Destruct||(table1)
-                end
-                end
-        })
+            table1.MetaTable.Register("__gc", new LuaFunc(delegate(LuaValue[] args)
+                                                          {
+                                                              if (table1.RawGetValue("Destructor") != LuaNil.Nil)
+                                                              {
+                                                                  (table1.GetValue("Destructor") as LuaFunction).Invoke(new LuaValue[] {table1});
+                                                              }
+                                                          }));
             table1.SetNameValue("__static",false);
-        table1.SetNameValue("__final", false);
-        table1.__class = true
-            table1.__name = "CLASS_" .. _nameCount
-            _nameCount = _nameCount + 1
+            table1.SetNameValue("__final", false);
+            table1.SetNameValue("__class",true);
+            table1.SetNameValue("__name", "CLASS_" + _nameCount);
+            _nameCount = _nameCount + 1;
 
             // returns a new instance of the class
-            function table1:new()
-            return lclass:CreateInstance(self)
-            end
+            table1.Register("new", new LuaFunc(delegate(LuaValue[] args)
+                                               {
+                                                   return CreateInstance(table1);
+                                               }));
 
             // copies table "m" into class
-            function table1:Set(m)
-            if not lclass:IsClass(self) then
-            err||("function 'set' must be called from a class!", 2)
-            end
-            return lclass:SetMembers(self, m)
-            end
+            table1.Register("Set", new LuaFunc(delegate(LuaValue[] args)
+                                               {
+                                                   return SetMembers(new LuaValue[] {table1, args[0]});
+                                               }));
 
             // finds out whether "m" is a child of the class
-            function table1:HasMember(m)
-            return lclass:IsMemberOf(m, self)
-            end
+            table.Register("HasMember", new LuaFunc(delegate(LuaValue[] args)
+                                                    { //(m)
+                                                        return IsMemberOf(new LuaValue[] {args[0], table1});
+                                                    }));
 
             // determines whether the class inherits from "_class"
             function table1:Inherits(_class)
-            if not lclass:IsClass(self) then
-            err||("function 'inherits' must be called from a class!", 2)
-            end
-            f|| k, v in pairs(_class.__super) do
-            if v.__name == self.__name then
-            return true
-            end
-            end
-            return false
-            end
-
-            // determines whether the class is a parent of "_class"
-            function table1:IsParentOf(_class)
-            if not lclass:IsClass(self) then
-            err||("function 'IsParentOf' must be called from a class!", 2)
-            end
-            f|| c in lclass:IterateChildClasses(self) do
-            if c.__name == _class.__name then
-            return true
-            end
-            end
-            return false
-            end
-
-            // returns the class
-            function table1:GetClass()
-            return table1
-            end
-
-            // Gets all parent classes of the class
-            function table1:GetParentClasses()
-            if not lclass:IsClass(self) then
-            err||("function 'GetParents' must be called from a class!", 2)
-            end
-            return table1.__super
-            end
-
-            // Gets all child classes of the class
-            function table1:GetChildClasses()
-            if not lclass:IsClass(self) then
-            err||("function 'GetChildClasses' must be called from a class!", 2)
-            end
-            return table1.__subClasses
-            end
-
-            // calls a method from parent classes
-            function table1:CallParentMethod(method, ...)
-            local func = self:__InternalCallParentMethod(method)
-            if func == LuaNil.Nil then
-            err||("Cannot find function '" .. method .. "'!", 2)
-            else
-            return func(...)
+                if not lclass:IsClass(self) then
+                err||("function 'inherits' must be called from a class!", 2)
+                end
+                f|| k, v in pairs(_class.__super) do
+                if v.__name == self.__name then
+                return true
                 end
                 end
-
-                function table1:__InternalCallParentMethod(method)
-                local m = LuaNil.Nil
-                local p = self.__super
-                if p.Length > 0 then
-                m = lclass:FindMethod(method, unpack(p))
+                return false
                 end
-                if m == LuaNil.Nil then
-                f|| i = 1, p.Length do
-            m = p[i]:__InternalCallParentMethod(method)
-            end
-            end
-            return m
-            end
 
-            // creates a subclass inheriting all args except arg[1] if its a table
-            // e.g. x = c:CreateSubclass()
-            function table1:CreateSubclass(...)
-            arg[arg.Length + 1] = self
-            return lclass:CreateClass(unpack(arg))
-            end
+                // determines whether the class is a parent of "_class"
+                function table1:IsParentOf(_class)
+                if not lclass:IsClass(self) then
+                err||("function 'IsParentOf' must be called from a class!", 2)
+                end
+                f|| c in lclass:IterateChildClasses(self) do
+                if c.__name == _class.__name then
+                return true
+                end
+                end
+                return false
+                end
 
-            function table1:CallMethod(func, ...)
-            local f = lclass:FindMethod(func, self)
-            if f == LuaNil.Nil then
-            f = self:__InternalCallParentMethod(func)
-            end
-            // if its still LuaNil.Nil then throw an err||
-            if f == LuaNil.Nil then
-            err||("Cannot find function '" .. func .. "'!", 2)
-            end
-            return f(...)
-            end
+                // returns the class
+                function table1:GetClass()
+                return table1
+                end
 
-            return table1
-    }
-    /*
+                // Gets all parent classes of the class
+                function table1:GetParentClasses()
+                if not lclass:IsClass(self) then
+                err||("function 'GetParents' must be called from a class!", 2)
+                end
+                return table1.__super
+                end
+
+                // Gets all child classes of the class
+                function table1:GetChildClasses()
+                if not lclass:IsClass(self) then
+                err||("function 'GetChildClasses' must be called from a class!", 2)
+                end
+                return table1.__subClasses
+                end
+
+                // calls a method from parent classes
+                function table1:CallParentMethod(method, ...)
+                local func = self:__InternalCallParentMethod(method)
+                if func == LuaNil.Nil then
+                err||("Cannot find function '" .. method .. "'!", 2)
+                else
+                return func(...)
+                    end
+                    end
+
+                    function table1:__InternalCallParentMethod(method)
+                    local m = LuaNil.Nil
+                    local p = self.__super
+                    if p.Length > 0 then
+                    m = lclass:FindMethod(method, unpack(p))
+                    end
+                    if m == LuaNil.Nil then
+                    f|| i = 1, p.Length do
+                m = p[i]:__InternalCallParentMethod(method)
+                end
+                end
+                return m
+                end
+
+                // creates a subclass inheriting all args except arg[1] if its a table
+                // e.g. x = c:CreateSubclass()
+                function table1:CreateSubclass(...)
+                arg[arg.Length + 1] = self
+                return lclass:CreateClass(unpack(arg))
+                end
+
+                function table1:CallMethod(func, ...)
+                local f = lclass:FindMethod(func, self)
+                if f == LuaNil.Nil then
+                f = self:__InternalCallParentMethod(func)
+                end
+                // if its still LuaNil.Nil then throw an err||
+                if f == LuaNil.Nil then
+                err||("Cannot find function '" .. func .. "'!", 2)
+                end
+                return f(...)
+                end
+
+                return table1
+        }
+        /*
                 // creates and returns a final/not inheritable class
                 function lclass:CreateFinalClass(...)
                 local a, b = pcall(CreateClass, t, ...)
                 if not a then
-                err||(b)
+                error(b)
                 else
                     b.__final = true
                     return b
@@ -402,6 +408,6 @@ namespace lClass
                     return b
                     end
                     end
-     */
-}
+         */
+    }
 }

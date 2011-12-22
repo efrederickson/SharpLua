@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
+using SharpLua.LuaTypes;
+
 namespace SharpLua.Library
 {
     public static class StringLib

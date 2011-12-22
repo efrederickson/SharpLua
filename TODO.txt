@@ -8,3 +8,54 @@
 - load .dll and .exe files, and check for Library pieces
 - set "..." to command line args in _G
 - create examples (Tests)
+- coroutines (type == "thread")
+  - create <func>
+  - resume <co>, <... (args)>
+  - running      (current coroutine), or nil
+  - status <co>  --> "running", "suspended", "normal", "dead"
+  - wrap <f>       (call that to resume coroutine, args = coroutine args)
+  - yield <...>    (... = resume args)
+- getfenv, setfenv
+- loadfile <filename>
+- load <func>[, chunkname]
+- rawequal <v1>, <v1>
+- xpcall <function>, <errorHandlerFunction>
+- module(<name>
+- package
+  - cpath   <load C>
+  - loaded  (table)
+  - loaders (table searcher functions)
+    - 1. package.preload
+    - 2. package.path
+    - 3. c library
+  - loadlib <lib>, <funcname>
+  - path (string, used by require)
+  - preload  (store loaders)
+  - seeall <module>    (<module>.__index = _G)
+- string.dump <func>
+- string.find <s, pattern [, init [, plain]]
+- string.gmatch <s>, <pattern>    returns iterator getting capture (regex?)
+- string.gsub <s>, <pattern>, <repl> [, n]
+- string.match
+- io.close <file> (aka file:close())
+- io.lines <file>  (file line iterator)
+- io.popen <program> [, mode]
+- io.type <obj>    (valid file handle)
+- file.setvbuf <mode> [, size]   (mode = "no"/no buffering, "full"/full buffering, "line"/line buffering
+- os.difftime <t2>, <t1>
+- os.setlocale <locale> [, category]
+- debug library
+  - debug     (interactive debug mode, execute line-by-line)
+  - getfenv <o>
+  - gethook [thread]
+  - getinfo [thread] <function> [what]   (table of info about function)
+  - getlocal [thread] <level> <local>
+  - getmetatable <object>
+  - getregistry     (table of registry)
+  - getupvalue <func> <up>    (func upvalue at index <up>)
+  - setfenv <object> <table>   (object environment = table, return object)
+  - sethook [thread] <hook> <mask> [count]
+  - setlocal [thread] <level< <local> <value>
+  - setmetatable <object> <table>
+  - setupvalue <func> <up> <value>
+  - traceback [thread] [message] [level]

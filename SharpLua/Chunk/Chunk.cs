@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using SharpLua.LuaTypes;
+
 namespace SharpLua
 {
     public partial class Chunk

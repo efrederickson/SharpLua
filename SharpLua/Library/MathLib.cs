@@ -4,6 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
+using SharpLua.LuaTypes;
+
 namespace SharpLua.Library
 {
     public static class MathLib

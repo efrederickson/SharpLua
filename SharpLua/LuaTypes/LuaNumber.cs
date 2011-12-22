@@ -3,32 +3,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace SharpLua
+namespace SharpLua.LuaTypes
 {
-    public class LuaUserdata : LuaValue
+    public class LuaNumber : LuaValue
     {
-        private object Object;
-
-        public LuaUserdata(object obj)
+        public LuaNumber(double number)
         {
             MetaTable = new LuaTable();
-            this.Object = obj;
+            this.Number = number;
         }
 
-        public LuaUserdata(object obj, LuaTable metatable)
-        {
-            this.Object = obj;
-            this.MetaTable = metatable;
-        }
+        public double Number { get; set; }
 
         public override object Value
         {
-            get { return this.Object; }
+            get { return this.Number; }
         }
-        
+
         public override string GetTypeCode()
         {
-            return "userdata";
+            return "number";
         }
 
         public override string ToString()
@@ -42,7 +36,7 @@ namespace SharpLua
                 }
             }
             
-            return "userdata";
+            return this.Number.ToString();
         }
     }
 }

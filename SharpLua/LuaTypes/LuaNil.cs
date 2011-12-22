@@ -3,26 +3,27 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace SharpLua
+namespace SharpLua.LuaTypes
 {
-    public class LuaNumber : LuaValue
+    public class LuaNil : LuaValue
     {
-        public LuaNumber(double number)
-        {
-            MetaTable = new LuaTable();
-            this.Number = number;
-        }
+        public static readonly LuaNil Nil = new LuaNil();
 
-        public double Number { get; set; }
+        private LuaNil() { MetaTable = new LuaTable(); }
 
         public override object Value
         {
-            get { return this.Number; }
+            get { return null; }
         }
 
         public override string GetTypeCode()
         {
-            return "number";
+            return "nil";
+        }
+
+        public override bool GetBooleanValue()
+        {
+            return false;
         }
 
         public override string ToString()
@@ -36,7 +37,7 @@ namespace SharpLua
                 }
             }
             
-            return this.Number.ToString();
+            return "nil";
         }
     }
 }

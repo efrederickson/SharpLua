@@ -8,6 +8,7 @@
  */
 using System;
 using System.Collections.Generic;
+using SharpLua.LuaTypes;
 
 namespace SharpLua.Library
 {

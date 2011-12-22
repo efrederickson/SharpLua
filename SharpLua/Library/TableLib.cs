@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
+using SharpLua.LuaTypes;
+
 namespace SharpLua.Library
 {
     public static class TableLib
@@ -176,16 +178,19 @@ namespace SharpLua.Library
                 LuaValue v = tbl.GetValue(key);
                 if (v.GetTypeCode() == "table")
                 {
-                    // print("subtable: " + k.ToString() + " = " + v.ToString());
-                    // print(i + "{");
-                    PrintTable(v as LuaTable, i + " ");
-                    // print(i + "}");
+                    // check that its not a reference of itself
+                    if (v.Value != tbl.Value)
+                        PrintTable(v as LuaTable, i + " ");
                 }
                 else
                 {
                     Console.WriteLine(i + " " + key.ToString() + " = " + v.ToString());
                 }
-            }
+            }/*
+            foreach (LuaValue key in tbl.MetaTable.Keys)
+            {
+                Console.WriteLine(i + "(MetaTable): " + key.ToString() + " = " + tbl.MetaTable.GetValue(key).ToString());
+            }*/
             Console.WriteLine(i + "}");
         }
         

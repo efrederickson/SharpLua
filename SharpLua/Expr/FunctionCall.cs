@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 
+using SharpLua.LuaTypes;
+
 namespace SharpLua
 {
     public partial class FunctionCall : Access
@@ -39,6 +41,12 @@ namespace SharpLua
 
                     return function.Function.Invoke(LuaMultiValue.UnWrapLuaValues(args.ToArray()));
                 }
+            }
+            else if ((baseValue as LuaTable) != null)
+            {
+                List<LuaValue> args = this.Args.ArgList.ConvertAll(arg => arg.Evaluate(enviroment));
+                args.Insert(0, baseValue);
+                return ((baseValue as LuaTable).MetaTable.GetValue("__call") as LuaFunction).Invoke(args.ToArray());
             }
             else
             {

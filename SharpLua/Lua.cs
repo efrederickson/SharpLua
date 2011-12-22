@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
+
 using SharpLua.Library;
+using SharpLua.LuaTypes;
 
 namespace SharpLua
 {
@@ -53,8 +55,9 @@ namespace SharpLua
             
             // check for interactive mode
             foreach (string arg in args)
-                if (arg.ToUpper() == "INTERACTIVE") 
+                if (arg.ToUpper() == "-I")
                     GoInteractive = true;
+            
             if (args.Length == 0)
                 GoInteractive = true;
             
@@ -68,7 +71,7 @@ namespace SharpLua
                 {
                     string line = Console.ReadLine();
                     
-                    if (line == "quit")
+                    if (line == "quit" || line == "exit" || line == "bye")
                     {
                         break;
                     }

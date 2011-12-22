@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+
 using SharpLua.Library;
+using SharpLua.LuaTypes;
 
 namespace SharpLua
 {
@@ -32,7 +34,7 @@ namespace SharpLua
             return chunk.Execute();
         }
 
-        static Parser parser = new Parser();
+        static Parser.Parser parser = new Parser.Parser();
 
         public static Chunk Parse(string luaCode)
         {
@@ -40,7 +42,7 @@ namespace SharpLua
             parser.Errors.Clear();
             
             bool success;
-            Chunk chunk = parser.ParseChunk(new TextInput(luaCode), out success);
+            Chunk chunk = parser.ParseChunk(new Parser.TextInput(luaCode), out success);
             if (success)
             {
                 return chunk;
@@ -65,8 +67,11 @@ namespace SharpLua
             ScriptLib.RegisterModule(global);
             WinFormLib.RegisterModule(global);
             ConsoleLib.RegisterModule(global);
+            GarbageCollectorLib.RegisterModule(global);
             
+            global.SetNameValue("_VERSION", new LuaString("Sharp Lua 1.0"));
             global.SetNameValue("_G", global);
+            // change to package.path template
             global.SetNameValue("LUA_PATH", new LuaString( ".\\;" + 
                                "require\\" // TODO: fill with lua libraries
                               ));// format: <dir>;<dir2>

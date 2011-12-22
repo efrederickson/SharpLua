@@ -104,6 +104,7 @@
     <Compile Include="Expr\VarName.cs" />
     <Compile Include="ExternalLibraryLoader.cs" />
     <Compile Include="Library\ConsoleLib.cs" />
+    <Compile Include="Library\GarbageCollectorLib.cs" />
     <Compile Include="Library\ILuaLibrary.cs" />
     <Compile Include="Lua.cs" />
     <Compile Include="Library\BaseLib.cs" />
@@ -116,16 +117,17 @@
     <Compile Include="Library\FileLib.cs" />
     <Compile Include="Library\IOLib.cs" />
     <Compile Include="LuaRuntime.cs" />
-    <Compile Include="LuaValue\LuaError.cs" />
-    <Compile Include="LuaValue\LuaUserdata.cs" />
-    <Compile Include="LuaValue\LuaBoolean.cs" />
-    <Compile Include="LuaValue\LuaFunction.cs" />
-    <Compile Include="LuaValue\LuaTable.cs" />
-    <Compile Include="LuaValue\LuaString.cs" />
-    <Compile Include="LuaValue\LuaNumber.cs" />
-    <Compile Include="LuaValue\LuaNil.cs" />
-    <Compile Include="LuaValue\LuaValue.cs" />
-    <Compile Include="LuaValue\LuaMultiValue.cs" />
+    <Compile Include="LuaTypes\LuaCoroutine.cs" />
+    <Compile Include="LuaTypes\LuaError.cs" />
+    <Compile Include="LuaTypes\LuaUserdata.cs" />
+    <Compile Include="LuaTypes\LuaBoolean.cs" />
+    <Compile Include="LuaTypes\LuaFunction.cs" />
+    <Compile Include="LuaTypes\LuaTable.cs" />
+    <Compile Include="LuaTypes\LuaString.cs" />
+    <Compile Include="LuaTypes\LuaNumber.cs" />
+    <Compile Include="LuaTypes\LuaNil.cs" />
+    <Compile Include="LuaTypes\LuaValue.cs" />
+    <Compile Include="LuaTypes\LuaMultiValue.cs" />
     <Compile Include="Parser\Parser.cs" />
     <Compile Include="Parser\ParserInput.cs" />
     <Compile Include="Parser\Syntax\Access.cs" />
@@ -185,6 +187,7 @@
   <ItemGroup>
     <None Include="#Lua.ico" />
     <None Include="..\README.txt" />
+    <None Include="string.patterns" />
     <None Include="Test\icon\add.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

@@ -10,6 +10,8 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 
+using SharpLua.LuaTypes;
+
 namespace SharpLua.Library
 {
     public class ScriptLib

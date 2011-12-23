@@ -17,5 +17,8 @@ namespace SharpLua.Library
     public interface ILuaLibrary
     {
         void RegisterModule(LuaTable environment);
+        
+        string ModuleName
+        {get;}
     }
 }

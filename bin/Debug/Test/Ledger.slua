@@ -5,7 +5,7 @@
         WinForms.TreeView{ Name="treeviewCategory", Dock="Fill", HideSelection=false },
         WinForms.Panel{
             Dock="Fill",
-            WinForms.ListView{ 
+            WinForms.ListView{
                 Name="listviewEntries", Dock="Fill", View="Details", GridLines=true, FullRowSelect=true,
                 ContextMenuStrip=WinForms.ContextMenuStrip {
                     WinForms.ToolStripMenuItem { Text="Delete", Click=function(sender,e) DeleteEntry() end }
@@ -16,9 +16,9 @@
     },
     WinForms.ToolStrip{
         Dock="Top", Top=0, Left=0, Width=700, Height=25,
-        WinForms.ToolStripButton { Name="btnOpen", Text="&Open", Width=88, Height=22, Image="icon\\open.png" },
-        WinForms.ToolStripButton { Name="btnSave", Text="&Save", Width=88, Height=22, Image="icon\\save.png" },
-        WinForms.ToolStripButton { Name="btnAdd", Text="&Add", Width=88, Height=22, Image="icon\\add.png" },
+        WinForms.ToolStripButton { Name="btnOpen", Text="&Open", Width=88, Height=22, Image="test\\icon\\open.png" },
+        WinForms.ToolStripButton { Name="btnSave", Text="&Save", Width=88, Height=22, Image="test\\icon\\save.png" },
+        WinForms.ToolStripButton { Name="btnAdd", Text="&Add", Width=88, Height=22, Image="test\\icon\\add.png" },
     }
 }
 

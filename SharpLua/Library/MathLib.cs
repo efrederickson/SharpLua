@@ -21,129 +21,129 @@ namespace SharpLua.Library
         {
             module.SetNameValue("huge", new LuaNumber(double.MaxValue));
             module.SetNameValue("pi", new LuaNumber(Math.PI));
-            module.Register("abs", abs);
-            module.Register("acos", acos);
-            module.Register("asin", asin);
-            module.Register("atan", atan);
-            module.Register("atan2", atan2);
-            module.Register("ceil", ceil);
-            module.Register("cos", cos);
-            module.Register("cosh", cosh);
-            module.Register("deg", deg);
-            module.Register("exp", exp);
-            module.Register("floor", floor);
-            module.Register("fmod", fmod);
-            module.Register("log", log);
-            module.Register("log10", log10);
-            module.Register("max", max);
-            module.Register("min", min);
-            module.Register("modf", modf);
-            module.Register("pow", pow);
-            module.Register("rad", rad);
-            module.Register("random", random);
-            module.Register("randomseed", randomseed);
-            module.Register("sin", sin);
-            module.Register("sinh", sinh);
-            module.Register("sqrt", sqrt);
-            module.Register("tan", tan);
-            module.Register("tanh", tanh);
+            module.Register("abs", Abs);
+            module.Register("acos", Acos);
+            module.Register("asin", Asin);
+            module.Register("atan", Atan);
+            module.Register("atan2", Atan2);
+            module.Register("ceil", Ceil);
+            module.Register("cos", Cos);
+            module.Register("cosh", Cosh);
+            module.Register("deg", Deg);
+            module.Register("exp", Exp);
+            module.Register("floor", Floor);
+            module.Register("fmod", Fmod);
+            module.Register("log", Log);
+            module.Register("log10", Log10);
+            module.Register("max", Max);
+            module.Register("min", Min);
+            module.Register("modf", ModF);
+            module.Register("pow", Pow);
+            module.Register("rad", Rad);
+            module.Register("random", Random);
+            module.Register("randomseed", RandomSeed);
+            module.Register("sin", Sin);
+            module.Register("sinh", SinH);
+            module.Register("sqrt", Sqrt);
+            module.Register("tan", Tan);
+            module.Register("tanh", TanH);
         }
 
-        public static LuaValue abs(LuaValue[] values)
+        public static LuaValue Abs(LuaValue[] values)
         {
             LuaNumber number = CheckArgs(values);
             return new LuaNumber(Math.Abs(number.Number));
         }
 
-        public static LuaValue acos(LuaValue[] values)
+        public static LuaValue Acos(LuaValue[] values)
         {
             LuaNumber number = CheckArgs(values);
             return new LuaNumber(Math.Acos(number.Number));
         }
 
-        public static LuaValue asin(LuaValue[] values)
+        public static LuaValue Asin(LuaValue[] values)
         {
             LuaNumber number = CheckArgs(values);
             return new LuaNumber(Math.Asin(number.Number));
         }
 
-        public static LuaValue atan(LuaValue[] values)
+        public static LuaValue Atan(LuaValue[] values)
         {
             LuaNumber number = CheckArgs(values);
             return new LuaNumber(Math.Atan(number.Number));
         }
 
-        public static LuaValue atan2(LuaValue[] values)
+        public static LuaValue Atan2(LuaValue[] values)
         {
             var numbers = CheckArgs2(values);
             return new LuaNumber(Math.Atan2(numbers.Item1, numbers.Item2));
         }
 
-        public static LuaValue ceil(LuaValue[] values)
+        public static LuaValue Ceil(LuaValue[] values)
         {
             LuaNumber number = CheckArgs(values);
             return new LuaNumber(Math.Ceiling(number.Number));
         }
 
-        public static LuaValue cos(LuaValue[] values)
+        public static LuaValue Cos(LuaValue[] values)
         {
             LuaNumber number = CheckArgs(values);
             return new LuaNumber(Math.Cos(number.Number));
         }
 
-        public static LuaValue cosh(LuaValue[] values)
+        public static LuaValue Cosh(LuaValue[] values)
         {
             LuaNumber number = CheckArgs(values);
             return new LuaNumber(Math.Cosh(number.Number));
         }
 
-        public static LuaValue deg(LuaValue[] values)
+        public static LuaValue Deg(LuaValue[] values)
         {
             LuaNumber number = CheckArgs(values);
             return new LuaNumber(number.Number * 180 / Math.PI);
         }
 
-        public static LuaValue exp(LuaValue[] values)
+        public static LuaValue Exp(LuaValue[] values)
         {
             LuaNumber number = CheckArgs(values);
             return new LuaNumber(Math.Exp(number.Number));
         }
 
-        public static LuaValue floor(LuaValue[] values)
+        public static LuaValue Floor(LuaValue[] values)
         {
             LuaNumber number = CheckArgs(values);
             return new LuaNumber(Math.Floor(number.Number));
         }
 
-        public static LuaValue fmod(LuaValue[] values)
+        public static LuaValue Fmod(LuaValue[] values)
         {
             var numbers = CheckArgs2(values);
             return new LuaNumber(Math.IEEERemainder(numbers.Item1, numbers.Item2));
         }
 
-        public static LuaValue log(LuaValue[] values)
+        public static LuaValue Log(LuaValue[] values)
         {
             LuaNumber number = CheckArgs(values);
             return new LuaNumber(Math.Log(number.Number));
         }
 
-        public static LuaValue log10(LuaValue[] values)
+        public static LuaValue Log10(LuaValue[] values)
         {
             LuaNumber number = CheckArgs(values);
             return new LuaNumber(Math.Log10(number.Number));
         }
 
-        public static LuaValue max(LuaValue[] values)
+        public static LuaValue Max(LuaValue[] values)
         {
             return new LuaNumber(values.Max(v => (v as LuaNumber).Number));
         }
 
-        public static LuaValue min(LuaValue[] values)
+        public static LuaValue Min(LuaValue[] values)
         {
             return new LuaNumber(values.Min(v => (v as LuaNumber).Number));
         }
 
-        public static LuaValue modf(LuaValue[] values)
+        public static LuaValue ModF(LuaValue[] values)
         {
             LuaNumber number = CheckArgs(values);
             double integer = Math.Floor(number.Number);
@@ -155,20 +155,20 @@ namespace SharpLua.Library
             );
         }
 
-        public static LuaValue pow(LuaValue[] values)
+        public static LuaValue Pow(LuaValue[] values)
         {
             var numbers = CheckArgs2(values);
             return new LuaNumber(Math.Pow(numbers.Item1, numbers.Item2));
         }
 
-        public static LuaValue rad(LuaValue[] values)
+        public static LuaValue Rad(LuaValue[] values)
         {
             LuaNumber number = CheckArgs(values);
             return new LuaNumber(number.Number * Math.PI / 180);
         }
 
         static Random randomGenerator = new Random();
-        public static LuaValue random(LuaValue[] values)
+        public static LuaValue Random(LuaValue[] values)
         {
             if (values.Length == 0)
             {
@@ -186,38 +186,38 @@ namespace SharpLua.Library
             }
         }
 
-        public static LuaValue randomseed(LuaValue[] values)
+        public static LuaValue RandomSeed(LuaValue[] values)
         {
             LuaNumber number = CheckArgs(values);
             randomGenerator = new Random((int)number.Number);
             return number;
         }
 
-        public static LuaValue sin(LuaValue[] values)
+        public static LuaValue Sin(LuaValue[] values)
         {
             LuaNumber number = CheckArgs(values);
             return new LuaNumber(Math.Sin(number.Number));
         }
 
-        public static LuaValue sinh(LuaValue[] values)
+        public static LuaValue SinH(LuaValue[] values)
         {
             LuaNumber number = CheckArgs(values);
             return new LuaNumber(Math.Sinh(number.Number));
         }
 
-        public static LuaValue sqrt(LuaValue[] values)
+        public static LuaValue Sqrt(LuaValue[] values)
         {
             LuaNumber number = CheckArgs(values);
             return new LuaNumber(Math.Sqrt(number.Number));
         }
 
-        public static LuaValue tan(LuaValue[] values)
+        public static LuaValue Tan(LuaValue[] values)
         {
             LuaNumber number = CheckArgs(values);
             return new LuaNumber(Math.Tan(number.Number));
         }
 
-        public static LuaValue tanh(LuaValue[] values)
+        public static LuaValue TanH(LuaValue[] values)
         {
             LuaNumber number = CheckArgs(values);
             return new LuaNumber(Math.Tanh(number.Number));

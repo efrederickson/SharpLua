@@ -18,11 +18,9 @@ namespace SharpLua.LuaTypes
             this.MetaTable = new LuaTable();
             this.MetaTable.SetNameValue("__index", parent);
             this.MetaTable.SetNameValue("__newindex", parent);
-            this.MetaTable.Register("__call", new LuaFunc(delegate(LuaValue[] args)
-                                                          {//TODO
-                                                              return null;
-                                                          }));
         }
+
+        public LuaTable MetaTable { get; set; }
 
         public override object Value
         {
@@ -75,7 +73,7 @@ namespace SharpLua.LuaTypes
                 }
             }
 
-            return "LuaTable: " + this.GetHashCode();
+            return "Table " + this.GetHashCode();
         }
 
         public IEnumerable<LuaValue> ListValues
@@ -100,20 +98,6 @@ namespace SharpLua.LuaTypes
                     foreach (LuaValue key in this.dict.Keys)
                     {
                         yield return key;
-                    }
-                }
-            }
-        }
-        
-        public IEnumerable<LuaValue> Values
-        {
-            get
-            {
-                if (this.Count > 0)
-                {
-                    foreach (LuaValue val in this.dict.Values)
-                    {
-                        yield return val;
                     }
                 }
             }
@@ -222,20 +206,6 @@ namespace SharpLua.LuaTypes
                 return this.list[index - 1];
             }
 
-            return LuaNil.Nil;
-        }
-        
-        public LuaValue GetKey(int index)
-        {
-            if (this.dict == null) return LuaNil.Nil;
-            
-            if (index > 0 && index <= this.Length)
-            {
-                LuaValue[] t = new LuaValue[this.dict.Count];
-                this.dict.Keys.CopyTo(t, 0);
-                return t[index - 1];
-            }
-            
             return LuaNil.Nil;
         }
 
@@ -373,7 +343,7 @@ namespace SharpLua.LuaTypes
             }
         }
 
-        private LuaValue GetValueFromMetaTable(string name)
+        public LuaValue GetValueFromMetaTable(string name)
         {
             LuaValue indexer = this.MetaTable.GetValue("__index");
 
@@ -394,7 +364,7 @@ namespace SharpLua.LuaTypes
             return LuaNil.Nil;
         }
 
-        private LuaValue GetValueFromMetaTable(LuaValue key)
+        public LuaValue GetValueFromMetaTable(LuaValue key)
         {
             LuaValue indexer = this.MetaTable.GetValue("__index");
 

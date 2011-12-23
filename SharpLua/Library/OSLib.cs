@@ -18,25 +18,25 @@ namespace SharpLua.Library
 
         public static void RegisterFunctions(LuaTable module)
         {
-            module.Register("clock", clock);
-            module.Register("date", date);
-            module.Register("time", time);
-            module.Register("execute", execute);
-            module.Register("exit", exit);
-            module.Register("getenv", getenv);
-            module.Register("remove", remove);
-            module.Register("rename", rename);
-            module.Register("tmpname", tmpname);
+            module.Register("clock", Clock);
+            module.Register("date", Date);
+            module.Register("time", Time);
+            module.Register("execute", Execute);
+            module.Register("exit", Exit);
+            module.Register("getenv", GetEnv);
+            module.Register("remove", Remove);
+            module.Register("rename", Rename);
+            module.Register("tmpname", TmpName);
             module.Register("difftime", DiffTime);
         }
 
-        public static LuaValue clock(LuaValue[] values)
+        public static LuaValue Clock(LuaValue[] values)
         {
             int seconds = Environment.TickCount / 1000;
             return new LuaNumber (seconds );
         }
 
-        public static LuaValue date(LuaValue[] values)
+        public static LuaValue Date(LuaValue[] values)
         {
             LuaString format = null;
             if (values.Length > 0)
@@ -66,12 +66,12 @@ namespace SharpLua.Library
             return new LuaString(DateTime.Now.ToShortDateString());
         }
 
-        public static LuaValue time(LuaValue[] values)
+        public static LuaValue Time(LuaValue[] values)
         {
             return new LuaNumber (new TimeSpan(DateTime.Now.Ticks).TotalSeconds);
         }
 
-        public static LuaValue execute(LuaValue[] values)
+        public static LuaValue Execute(LuaValue[] values)
         {
             if (values.Length > 0)
             {
@@ -81,13 +81,13 @@ namespace SharpLua.Library
             return new LuaNumber (1);
         }
 
-        public static LuaValue exit(LuaValue[] values)
+        public static LuaValue Exit(LuaValue[] values)
         {
             System.Threading.Thread.CurrentThread.Abort();
             return new LuaNumber(0);
         }
 
-        public static LuaValue getenv(LuaValue[] values)
+        public static LuaValue GetEnv(LuaValue[] values)
         {
             LuaString name = values[0] as LuaString;
             string variable = Environment.GetEnvironmentVariable(name.Text);
@@ -101,7 +101,7 @@ namespace SharpLua.Library
             }
         }
 
-        public static LuaValue remove(LuaValue[] values)
+        public static LuaValue Remove(LuaValue[] values)
         {
             LuaString file = values[0] as LuaString;
             if (File.Exists(file.Text))
@@ -127,7 +127,7 @@ namespace SharpLua.Library
             }
         }
 
-        public static LuaValue rename(LuaValue[] values)
+        public static LuaValue Rename(LuaValue[] values)
         {
             LuaString oldName = values[0] as LuaString;
             LuaString newName = values[1] as LuaString;
@@ -148,7 +148,7 @@ namespace SharpLua.Library
             }
         }
 
-        public static LuaValue tmpname(LuaValue[] values)
+        public static LuaValue TmpName(LuaValue[] values)
         {
             return new LuaString(Path.GetTempFileName());
         }

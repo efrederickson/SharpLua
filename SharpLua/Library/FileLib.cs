@@ -18,12 +18,12 @@ namespace SharpLua.Library
 
         public static void RegisterFunctions(LuaTable module)
         {
-            module.Register("close", close);
-            module.Register("read", read);
-            module.Register("write", write);
-            module.Register("lines", lines);
-            module.Register("flush", flush);
-            module.Register("seek", seek);
+            module.Register("close", Close);
+            module.Register("read", Read);
+            module.Register("write", Write);
+            module.Register("lines", Lines);
+            module.Register("flush", Flush);
+            module.Register("seek", Seek);
         }
 
         public static LuaTable CreateMetaTable()
@@ -34,7 +34,7 @@ namespace SharpLua.Library
             return metatable;
         }
 
-        public static LuaValue close(LuaValue[] values)
+        public static LuaValue Close(LuaValue[] values)
         {
             LuaUserdata data = values[0] as LuaUserdata;
             TextReader reader = data.Value as TextReader;
@@ -53,7 +53,7 @@ namespace SharpLua.Library
             return null;
         }
 
-        public static LuaValue read(LuaValue[] values)
+        public static LuaValue Read(LuaValue[] values)
         {
             LuaUserdata data = values[0] as LuaUserdata;
             TextReader reader = data.Value as TextReader;
@@ -104,7 +104,7 @@ namespace SharpLua.Library
             return null;
         }
 
-        public static LuaValue lines(LuaValue[] values)
+        public static LuaValue Lines(LuaValue[] values)
         {
             LuaUserdata data = values[0] as LuaUserdata;
             TextReader reader = data.Value as TextReader;
@@ -130,7 +130,7 @@ namespace SharpLua.Library
             return new LuaMultiValue(new LuaValue[] { func, data, LuaNil.Nil });
         }
 
-        public static LuaValue seek(LuaValue[] values)
+        public static LuaValue Seek(LuaValue[] values)
         {
             LuaUserdata data = values[0] as LuaUserdata;
             Stream stream = null;
@@ -178,7 +178,7 @@ namespace SharpLua.Library
             }
         }
 
-        public static LuaValue write(LuaValue[] values)
+        public static LuaValue Write(LuaValue[] values)
         {
             LuaUserdata data = values[0] as LuaUserdata;
             TextWriter writer = data.Value as TextWriter;
@@ -191,7 +191,7 @@ namespace SharpLua.Library
             return null;
         }
 
-        public static LuaValue flush(LuaValue[] values)
+        public static LuaValue Flush(LuaValue[] values)
         {
             LuaUserdata data = values[0] as LuaUserdata;
             TextWriter writer = data.Value as TextWriter;

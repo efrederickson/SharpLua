@@ -21,13 +21,13 @@ function circle_length(radius)
     return 2*PI*radius
 end
 
-print(string.format("length of cirecle is {0}", circle_length(10)))
+print(string.format("length of circle is {0}", circle_length(10)))
 
 Rectangle = {}
 Rectangle.__index = Rectangle;
 function Rectangle.new(w, h)
     rect = { width = w, height = h }
-    setmetatable(rect, Rectangle)
+    table.copy(rect, Rectangle)
     return rect
 end
 function Rectangle:area()

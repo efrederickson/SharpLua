@@ -56,7 +56,8 @@ namespace SharpLua
         public static LuaTable CreateGlobalEnviroment()
         {
             LuaTable global = new LuaTable();
-
+                    
+            // Register Lua Module
             BaseLib.RegisterFunctions(global);
             StringLib.RegisterModule(global);
             TableLib.RegisterModule(global);
@@ -74,6 +75,19 @@ namespace SharpLua
             global.SetNameValue("_WORKDIR", new LuaString(Application.StartupPath + "\\"));
             global.SetNameValue("_VERSION", new LuaString("Sharp Lua 1.0"));
             global.SetNameValue("_G", global);
+            // set package.preload table
+            LuaTable preload = (LuaTable) (global.GetValue("package") as LuaTable).GetValue("preload");
+            preload.SetNameValue("string", (LuaTable) global.GetValue("string"));
+            preload.SetNameValue("table", (LuaTable) global.GetValue("table"));
+            preload.SetNameValue("io", (LuaTable) global.GetValue("io"));
+            preload.SetNameValue("file", (LuaTable) global.GetValue("file"));
+            preload.SetNameValue("math", (LuaTable) global.GetValue("math"));
+            preload.SetNameValue("os", (LuaTable) global.GetValue("os"));
+            preload.SetNameValue("script", (LuaTable) global.GetValue("script"));
+            preload.SetNameValue("WinForms", (LuaTable) global.GetValue("WinForms"));
+            preload.SetNameValue("console", (LuaTable) global.GetValue("console"));
+            preload.SetNameValue("coroutine", (LuaTable) global.GetValue("coroutine"));
+            preload.SetNameValue("package", (LuaTable) global.GetValue("package"));
             
             return global;
         }

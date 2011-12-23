@@ -18,20 +18,20 @@ namespace SharpLua.Library
 
         public static void RegisterFunctions(LuaTable module)
         {
-            module.Register("input", input);
-            module.Register("output", output);
-            module.Register("open", open);
-            module.Register("read", read);
-            module.Register("write", write);
-            module.Register("flush", flush);
-            module.Register("tmpfile", tmpfile);
+            module.Register("input", Input);
+            module.Register("output", Output);
+            module.Register("open", Open);
+            module.Register("read", Read);
+            module.Register("write", Write);
+            module.Register("flush", Flush);
+            module.Register("tmpfile", TmpFile);
             module.Register("close", Close);
         }
 
         private static TextReader DefaultInput = Console.In;
         private static TextWriter DefaultOutput = Console.Out;
 
-        public static LuaValue input(LuaValue[] values)
+        public static LuaValue Input(LuaValue[] values)
         {
             if (values == null || values.Length == 0)
             {
@@ -55,7 +55,7 @@ namespace SharpLua.Library
             }
         }
 
-        public static LuaValue output(LuaValue[] values)
+        public static LuaValue Output(LuaValue[] values)
         {
             if (values == null || values.Length == 0)
             {
@@ -79,7 +79,7 @@ namespace SharpLua.Library
             }
         }
 
-        public static LuaValue open(LuaValue[] values)
+        public static LuaValue Open(LuaValue[] values)
         {
             LuaString file = values[0] as LuaString;
             LuaString modeStr = values.Length > 1 ? values[1] as LuaString : null;
@@ -104,28 +104,28 @@ namespace SharpLua.Library
             }
         }
 
-        public static LuaValue read(LuaValue[] values)
+        public static LuaValue Read(LuaValue[] values)
         {
             List<LuaValue> args = new List<LuaValue>(values.Length + 1);
-            args.Add(input(null));
+            args.Add(Input(null));
             args.AddRange(values);
-            return FileLib.read(args.ToArray());
+            return FileLib.Read(args.ToArray());
         }
 
-        public static LuaValue write(LuaValue[] values)
+        public static LuaValue Write(LuaValue[] values)
         {
             List<LuaValue> args = new List<LuaValue>(values.Length + 1);
-            args.Add(output(null));
+            args.Add(Output(null));
             args.AddRange(values);
-            return FileLib.write(args.ToArray());
+            return FileLib.Write(args.ToArray());
         }
 
-        public static LuaValue flush(LuaValue[] values)
+        public static LuaValue Flush(LuaValue[] values)
         {
-            return FileLib.flush(new LuaValue[] { output(null) });
+            return FileLib.Flush(new LuaValue[] { Output(null) });
         }
 
-        public static LuaValue tmpfile(LuaValue[] values)
+        public static LuaValue TmpFile(LuaValue[] values)
         {
             StreamWriter writer = File.CreateText(Path.GetTempFileName());
             return new LuaUserdata(writer);

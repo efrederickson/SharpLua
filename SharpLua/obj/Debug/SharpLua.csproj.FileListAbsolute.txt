@@ -17,10 +17,8 @@ C:\Users\elijah.FFHS2\Documents\Lua\SharpLua\bin\Debug\slua.pdb
 C:\Users\elijah.FFHS2\Documents\Lua\SharpLua\SharpLua\obj\Debug\ResolveAssemblyReference.cache
 C:\Users\elijah.FFHS2\Documents\Lua\SharpLua\SharpLua\obj\Debug\slua.exe
 C:\Users\elijah.FFHS2\Documents\Lua\SharpLua\SharpLua\obj\Debug\slua.pdb
-C:\Elijah - Libraries\SharpLua\SharpLua\obj\Debug\ResolveAssemblyReference.cache
-C:\Elijah - Libraries\SharpLua\SharpLua\obj\Debug\slua.exe
-C:\Elijah - Libraries\SharpLua\SharpLua\obj\Debug\slua.pdb
 C:\Elijah - Libraries\SharpLua\bin\Debug\Test\Ledger.slua
+C:\Elijah - Libraries\SharpLua\bin\Debug\Test\tablefunctions.slua
 C:\Elijah - Libraries\SharpLua\bin\Debug\Test\test.slua
 C:\Elijah - Libraries\SharpLua\bin\Debug\Test\WinFormExample.slua
 C:\Elijah - Libraries\SharpLua\bin\Debug\Test\icon\add.png
@@ -28,4 +26,6 @@ C:\Elijah - Libraries\SharpLua\bin\Debug\Test\icon\open.png
 C:\Elijah - Libraries\SharpLua\bin\Debug\Test\icon\save.png
 C:\Elijah - Libraries\SharpLua\bin\Debug\slua.exe
 C:\Elijah - Libraries\SharpLua\bin\Debug\slua.pdb
-C:\Elijah - Libraries\SharpLua\bin\Debug\Test\tablefunctions.slua
+C:\Elijah - Libraries\SharpLua\SharpLua\obj\Debug\ResolveAssemblyReference.cache
+C:\Elijah - Libraries\SharpLua\SharpLua\obj\Debug\slua.exe
+C:\Elijah - Libraries\SharpLua\SharpLua\obj\Debug\slua.pdb

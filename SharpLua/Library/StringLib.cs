@@ -18,19 +18,19 @@ namespace SharpLua.Library
 
         public static void RegisterFunctions(LuaTable module)
         {
-            module.Register("byte", @byte);
-            module.Register("char", @char);
-            module.Register("format", format);
-            module.Register("len", len);
-            module.Register("sub", sub);
-            module.Register("lower", lower);
-            module.Register("upper", upper);
-            module.Register("rep", rep);
-            module.Register("reverse", reverse);
+            module.Register("byte", Byte);
+            module.Register("char", Char);
+            module.Register("format", Format);
+            module.Register("len", Len);
+            module.Register("sub", Sub);
+            module.Register("lower", Lower);
+            module.Register("upper", Upper);
+            module.Register("rep", Rep);
+            module.Register("reverse", Reverse);
             module.Register("find", Find);
         }
 
-        public static LuaValue @byte(LuaValue[] values)
+        public static LuaValue Byte(LuaValue[] values)
         {
             LuaString str = values[0] as LuaString;
             LuaNumber startNumber = values.Length > 1 ? values[1] as LuaNumber : null;
@@ -48,7 +48,7 @@ namespace SharpLua.Library
             return new LuaMultiValue(numbers);
         }
 
-        public static LuaValue @char(LuaValue[] values)
+        public static LuaValue Char(LuaValue[] values)
         {
             char[] chars = new char[values.Length];
 
@@ -61,7 +61,7 @@ namespace SharpLua.Library
             return new LuaString(new string(chars));
         }
 
-        public static LuaValue format(LuaValue[] values)
+        public static LuaValue Format(LuaValue[] values)
         {
             LuaString format = values[0] as LuaString;
             object[] args = new object[values.Length - 1];
@@ -72,7 +72,7 @@ namespace SharpLua.Library
             return new LuaString(string.Format(format.Text, args));
         }
 
-        public static LuaValue sub(LuaValue[] values)
+        public static LuaValue Sub(LuaValue[] values)
         {
             LuaString str = values[0] as LuaString;
             LuaNumber startNumber = values[1] as LuaNumber;
@@ -93,7 +93,7 @@ namespace SharpLua.Library
             return new LuaString(str.Text.Substring(start - 1, end - start + 1));
         }
 
-        public static LuaValue rep(LuaValue[] values)
+        public static LuaValue Rep(LuaValue[] values)
         {
             LuaString str = values[0] as LuaString;
             LuaNumber number = values[1] as LuaNumber;
@@ -105,7 +105,7 @@ namespace SharpLua.Library
             return new LuaString(text.ToString());
         }
 
-        public static LuaValue reverse(LuaValue[] values)
+        public static LuaValue Reverse(LuaValue[] values)
         {
             LuaString str = values[0] as LuaString;
             char[] chars = str.Text.ToCharArray();
@@ -113,19 +113,19 @@ namespace SharpLua.Library
             return new LuaString(new string(chars));
         }
 
-        public static LuaValue len(LuaValue[] values)
+        public static LuaValue Len(LuaValue[] values)
         {
             LuaString str = values[0] as LuaString;
             return new LuaNumber(str.Text.Length);
         }
 
-        public static LuaValue lower(LuaValue[] values)
+        public static LuaValue Lower(LuaValue[] values)
         {
             LuaString str = values[0] as LuaString;
             return new LuaString(str.Text.ToLower());
         }
 
-        public static LuaValue upper(LuaValue[] values)
+        public static LuaValue Upper(LuaValue[] values)
         {
             LuaString str = values[0] as LuaString;
             return new LuaString(str.Text.ToUpper());

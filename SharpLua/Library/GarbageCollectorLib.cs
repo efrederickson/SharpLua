@@ -77,7 +77,7 @@ namespace SharpLua.Library
                 }
             }
             // scan child tables + child tables
-            foreach (LuaValue val in t.Values) // FIXME: t.Values is broken
+            foreach (LuaValue val in t.ListValues)
             {
                 if ((val == LuaNil.Nil) || val == null)
                 {

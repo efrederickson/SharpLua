@@ -103,6 +103,7 @@
     <Compile Include="Expr\VariableArg.cs" />
     <Compile Include="Expr\VarName.cs" />
     <Compile Include="ExternalLibraryLoader.cs" />
+    <Compile Include="Library\ClassLib.cs" />
     <Compile Include="Library\ConsoleLib.cs" />
     <Compile Include="Library\CoroutineLib.cs" />
     <Compile Include="Library\GarbageCollectorLib.cs" />
@@ -119,6 +120,7 @@
     <Compile Include="Library\FileLib.cs" />
     <Compile Include="Library\IOLib.cs" />
     <Compile Include="LuaRuntime.cs" />
+    <Compile Include="LuaTypes\LuaClass.cs" />
     <Compile Include="LuaTypes\LuaCoroutine.cs" />
     <Compile Include="LuaTypes\LuaError.cs" />
     <Compile Include="LuaTypes\LuaUserdata.cs" />
@@ -189,7 +191,11 @@
   <ItemGroup>
     <None Include="#Lua.ico" />
     <None Include="..\README.txt" />
-    <None Include="string.patterns" />
+    <None Include="..\TODO.txt">
+      <Link>TODO.txt</Link>
+    </None>
+    <None Include="string.patterns.txt" />
+    <None Include="..\CHANGELOG.txt" />
     <None Include="Test\icon\add.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -211,7 +217,6 @@
     <None Include="Test\WinFormExample.slua">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\TODO.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

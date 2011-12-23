@@ -62,47 +62,47 @@ namespace SharpLua.Library
         {
             LuaString typeString = values[0] as LuaString;
             string typeName = "System.Windows.Forms." + typeString.Text;
-            Type type = Assembly.GetAssembly(typeof(Application)).GetType(typeName);
+            Type type = Assembly.GetAssembly(typeof(Application)).GetType(typeName, true, true);
 
             LuaFunction func = new LuaFunction((LuaValue[] args) =>
-            {
-                object control = Activator.CreateInstance(type);
-                LuaTable table = args[0] as LuaTable;
-                string name = null;
+                                               {
+                                                   object control = Activator.CreateInstance(type);
+                                                   LuaTable table = args[0] as LuaTable;
+                                                   string name = null;
+                                                   
+                                                   if (table.Count > 0)
+                                                   {
+                                                       AddChildControls(control, table);
+                                                   }
 
-                if (table.Length > 0)
-                {
-                    AddChildControls(control, table);
-                }
+                                                   if (table.Count > 0)
+                                                   {
+                                                       foreach (var pair in table.KeyValuePairs)
+                                                       {
+                                                           string member = (pair.Key as LuaString).Text;
 
-                if (table.Count > 0)
-                {
-                    foreach (var pair in table.KeyValuePairs)
-                    {
-                        string member = (pair.Key as LuaString).Text;
+                                                           if (member == "Name")
+                                                           {
+                                                               name = (string)pair.Value.Value;
+                                                               continue;
+                                                           }
 
-                        if (member == "Name")
-                        {
-                            name = (string)pair.Value.Value;
-                            continue;
-                        }
+                                                           SetMemberValue(control, type, member, pair.Value.Value);
+                                                       }
+                                                   }
 
-                        SetMemberValue(control, type, member, pair.Value.Value);
-                    }
-                }
+                                                   LuaUserdata data = new LuaUserdata(control);
+                                                   data.MetaTable = GetControlMetaTable();
 
-                LuaUserdata data = new LuaUserdata(control);
-                data.MetaTable = GetControlMetaTable();
+                                                   if (name != null)
+                                                   {
+                                                       LuaTable enviroment = currentModule.GetValue("_G") as LuaTable;
+                                                       enviroment.SetNameValue(name, data);
+                                                   }
 
-                if (name != null)
-                {
-                    LuaTable enviroment = currentModule.GetValue("_G") as LuaTable;
-                    enviroment.SetNameValue(name, data);
-                }
-
-                return data;
-            }
-            );
+                                                   return data;
+                                               }
+                                              );
 
             currentModule.SetNameValue(typeString.Text, func);
             return func;
@@ -116,35 +116,35 @@ namespace SharpLua.Library
                 controlMetaTable = new LuaTable();
 
                 controlMetaTable.SetNameValue("__index", new LuaFunction((values) =>
-                    {
-                        LuaUserdata control = values[0] as LuaUserdata;
-                        Type type = control.Value.GetType();
+                                                                         {
+                                                                             LuaUserdata control = values[0] as LuaUserdata;
+                                                                             Type type = control.Value.GetType();
 
-                        LuaString member = values[1] as LuaString;
-                        if (member != null)
-                        {
-                            return GetMemberValue(control.Value, type, member.Text);
-                        }
+                                                                             LuaString member = values[1] as LuaString;
+                                                                             if (member != null)
+                                                                             {
+                                                                                 return GetMemberValue(control.Value, type, member.Text);
+                                                                             }
 
-                        LuaNumber index = values[1] as LuaNumber;
-                        if (index != null)
-                        {
-                            return GetIndexerValue(control.Value, type, index.Number);
-                        }
+                                                                             LuaNumber index = values[1] as LuaNumber;
+                                                                             if (index != null)
+                                                                             {
+                                                                                 return GetIndexerValue(control.Value, type, index.Number);
+                                                                             }
 
-                        return LuaNil.Nil;
-                    }));
+                                                                             return LuaNil.Nil;
+                                                                         }));
 
                 controlMetaTable.SetNameValue("__newindex", new LuaFunction((values) =>
-                    {
-                        LuaUserdata control = values[0] as LuaUserdata;
-                        LuaString member = values[1] as LuaString;
-                        LuaValue value = values[2];
+                                                                            {
+                                                                                LuaUserdata control = values[0] as LuaUserdata;
+                                                                                LuaString member = values[1] as LuaString;
+                                                                                LuaValue value = values[2];
 
-                        Type type = control.Value.GetType();
-                        SetMemberValue(control.Value, type, member.Text, value.Value);
-                        return null;
-                    }));
+                                                                                Type type = control.Value.GetType();
+                                                                                SetMemberValue(control.Value, type, member.Text, value.Value);
+                                                                                return null;
+                                                                            }));
             }
 
             return controlMetaTable;
@@ -161,40 +161,40 @@ namespace SharpLua.Library
             else
             {
                 return new LuaFunction((args) =>
-                    {
-                        MemberInfo[] members = type.GetMember(member);
+                                       {
+                                           MemberInfo[] members = type.GetMember(member);
 
-                        if (members.Length == 0)
-                        {
-                            throw new InvalidOperationException(string.Format("{0} is not defined in {1}", member, type.FullName));
-                        }
+                                           if (members.Length == 0)
+                                           {
+                                               throw new InvalidOperationException(string.Format("{0} is not defined in {1}", member, type.FullName));
+                                           }
 
-                        foreach (MemberInfo memberInfo in members)
-                        {
-                            MethodInfo methodInfo = memberInfo as MethodInfo;
-                            if (methodInfo != null)
-                            {
-                                try
-                                {
-                                    object result = methodInfo.Invoke(control, args.Select(a => a.Value).ToArray());
-                                    return ToLuaValue(result);
-                                }
-                                catch (TargetParameterCountException)
-                                {
-                                }
-                                catch (ArgumentException)
-                                {
-                                }
-                                catch (MethodAccessException)
-                                {
-                                }
-                                catch (InvalidOperationException)
-                                {
-                                }
-                            }
-                        }
-                        return LuaNil.Nil;
-                    });
+                                           foreach (MemberInfo memberInfo in members)
+                                           {
+                                               MethodInfo methodInfo = memberInfo as MethodInfo;
+                                               if (methodInfo != null)
+                                               {
+                                                   try
+                                                   {
+                                                       object result = methodInfo.Invoke(control, args.Select(a => a.Value).ToArray());
+                                                       return ToLuaValue(result);
+                                                   }
+                                                   catch (TargetParameterCountException)
+                                                   {
+                                                   }
+                                                   catch (ArgumentException)
+                                                   {
+                                                   }
+                                                   catch (MethodAccessException)
+                                                   {
+                                                   }
+                                                   catch (InvalidOperationException)
+                                                   {
+                                                   }
+                                               }
+                                           }
+                                           return LuaNil.Nil;
+                                       });
 
                 throw new Exception(string.Format("Cannot get {0} from {1}", member, control));
             }
@@ -296,15 +296,15 @@ namespace SharpLua.Library
                     {
                         case "System.EventHandler":
                             eventInfo.AddEventHandler(control, new EventHandler((sender, e) =>
-                            {
-                                (value as LuaFunc).Invoke(new LuaValue[] { new LuaUserdata(sender), new LuaUserdata(e) });
-                            }));
+                                                                                {
+                                                                                    (value as LuaFunc).Invoke(new LuaValue[] { new LuaUserdata(sender), new LuaUserdata(e) });
+                                                                                }));
                             break;
                         case "System.Windows.Forms.TreeViewEventHandler":
                             eventInfo.AddEventHandler(control, new TreeViewEventHandler((sender, e) =>
-                            {
-                                (value as LuaFunc).Invoke(new LuaValue[] { new LuaUserdata(sender), new LuaUserdata(e) });
-                            }));
+                                                                                        {
+                                                                                            (value as LuaFunc).Invoke(new LuaValue[] { new LuaUserdata(sender), new LuaUserdata(e) });
+                                                                                        }));
                             break;
                         default:
                             throw new NotImplementedException(eventInfo.EventHandlerType.FullName + " type not implemented.");
@@ -318,13 +318,16 @@ namespace SharpLua.Library
             ToolStrip toolStrip = control as ToolStrip;
             if (toolStrip != null)
             {
-                foreach (var item in table.ListValues)
+                foreach (var item in table.Keys)
                 {
-                    toolStrip.Items.Add((ToolStripItem)item.Value);
+                    try {
+                        toolStrip.Items.Add((ToolStripItem)table.GetValue(item).Value);
+                    } catch (Exception) {
+                    }
                 }
                 return;
             }
-
+            
             SplitContainer splitContainer = control as SplitContainer;
             if (splitContainer != null)
             {
@@ -334,9 +337,12 @@ namespace SharpLua.Library
             }
 
             Control container = control as Control;
-            foreach (var item in table.ListValues)
+            foreach (var item in table.Keys)
             {
-                container.Controls.Add((Control)item.Value);
+                try {
+                    container.Controls.Add((Control)table.GetValue(item).Value);
+                } catch (Exception) {
+                }
             }
         }
 

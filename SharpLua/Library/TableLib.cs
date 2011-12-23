@@ -18,12 +18,12 @@ namespace SharpLua.Library
 
         public static void RegisterFunctions(LuaTable module)
         {
-            module.Register("concat", concat);
-            module.Register("insert", insert);
-            module.Register("remove", remove);
-            module.Register("removeitem", removeitem);
-            module.Register("maxn", maxn);
-            module.Register("sort", sort);
+            module.Register("concat", Concat);
+            module.Register("insert", Insert);
+            module.Register("remove", Remove);
+            module.Register("removeitem", RemoveItem);
+            module.Register("maxn", Maxn);
+            module.Register("sort", Sort);
             module.Register("copy", Copy);
             // 3 different ways to call one function...
             module.Register("dump", PrintContents);
@@ -32,7 +32,7 @@ namespace SharpLua.Library
             module.Register("find", Find);
         }
 
-        public static LuaValue concat(LuaValue[] values)
+        public static LuaValue Concat(LuaValue[] values)
         {
             LuaTable table = values[0] as LuaTable;
             LuaString separator = values.Length > 1 ? values[1] as LuaString : LuaString.Empty;
@@ -40,7 +40,7 @@ namespace SharpLua.Library
             LuaNumber endNumber = values.Length > 3 ? values[3] as LuaNumber : null;
 
             int start = startNumber == null ? 1 : (int)startNumber.Number;
-            int end = endNumber == null ? table.Length : (int)endNumber.Number;
+            int end = endNumber == null ? table.Count : (int)endNumber.Number;
 
             if (start > end)
             {
@@ -61,7 +61,7 @@ namespace SharpLua.Library
             }
         }
 
-        public static LuaValue insert(LuaValue[] values)
+        public static LuaValue Insert(LuaValue[] values)
         {
             LuaTable table = values[0] as LuaTable;
             if (values.Length == 2)
@@ -79,10 +79,10 @@ namespace SharpLua.Library
             return null;
         }
 
-        public static LuaValue remove(LuaValue[] values)
+        public static LuaValue Remove(LuaValue[] values)
         {
             LuaTable table = values[0] as LuaTable;
-            int index = table.Length;
+            int index = table.Count;
             if (values.Length == 2)
             {
                 LuaNumber number = values[1] as LuaNumber;
@@ -94,7 +94,7 @@ namespace SharpLua.Library
             return item;
         }
 
-        public static LuaValue removeitem(LuaValue[] values)
+        public static LuaValue RemoveItem(LuaValue[] values)
         {
             LuaTable table = values[0] as LuaTable;
             LuaValue item = values[1];
@@ -103,14 +103,14 @@ namespace SharpLua.Library
             return LuaBoolean.From(removed);
         }
 
-        public static LuaValue maxn(LuaValue[] values)
+        public static LuaValue Maxn(LuaValue[] values)
         {
             LuaTable table = values[0] as LuaTable;
-            double maxIndex = double.MinValue;
+            double maxIndex = 0;
             foreach (var key in table.Keys)
             {
                 LuaNumber number = key as LuaNumber;
-                if (number != null && number.Number >0)
+                if (number != null && number.Number > 0)
                 {
                     if (number.Number > maxIndex)
                     {
@@ -120,8 +120,8 @@ namespace SharpLua.Library
             }
             return new LuaNumber(maxIndex);
         }
-
-        public static LuaValue sort(LuaValue[] values)
+        
+        public static LuaValue Sort(LuaValue[] values)
         {
             LuaTable table = values[0] as LuaTable;
             if (values.Length == 2)
@@ -138,8 +138,12 @@ namespace SharpLua.Library
         
         public static LuaValue Copy(LuaValue[] args)
         {
-            LuaTable _new = args[0] as LuaTable;
-            LuaTable old = args[1] as LuaTable;
+            LuaTable _new = (LuaTable) args[0];
+            LuaTable old = (LuaTable) args[1];
+            if (_new == null)
+                throw new ArgumentNullException("Table to copy to cannot be nil!");
+            if (old == null)
+                throw new ArgumentNullException("Table to copy from cannot be nil!");
             Dictionary<LuaValue, LuaValue> oldFields = (Dictionary<LuaValue, LuaValue>)old.KeyValuePairs;
             List<LuaValue> keys = new List<LuaValue>();
             List<LuaValue> values = new List<LuaValue>();
@@ -152,7 +156,11 @@ namespace SharpLua.Library
             // add to new table
             for (int i = 0; i < keys.Count; i++)
             {
-                _new.SetKeyValue(keys[i], values[i]);
+                try {
+                    _new.SetKeyValue(keys[i], values[i]);
+                } catch (Exception ex) {
+                    throw new Exception("Error copying at index " + i + ": " + ex.Message);
+                }
             }
             return _new;
         }

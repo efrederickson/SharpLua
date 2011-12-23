@@ -16,7 +16,7 @@ namespace SharpLua.LuaTypes
     /// </summary>
     public class LuaCoroutine : LuaValue
     {
-        public static LuaCoroutine Running;
+        public static LuaCoroutine Running = null;
         
         string _status;
         Thread thread;
@@ -49,6 +49,7 @@ namespace SharpLua.LuaTypes
                                                             _status = "running";
                                                             func.Invoke(args);
                                                             _status = "dead";
+                                                            Running = null;
                                                         } catch (Exception) {
                                                             _status = "dead";
                                                         }

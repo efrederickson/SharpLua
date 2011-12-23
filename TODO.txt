@@ -1,7 +1,6 @@
 ﻿TODO
 - built-in class library (of type class)
 - Compiler
-- add ':' function notation with 'self' variable
 - error: error level also
 - load .dll and .exe files, and check for Library pieces
 - set "..." to command line args in _G
@@ -9,14 +8,9 @@
 - getfenv, setfenv
 - load <func>[, chunkname]
 - rawequal <v1>, <v2>
-- module(<name>
+- module <name>
 - package
-    - loaders (table searcher functions)
-    - 1. package.preload
-    - 2. package.path
-    - 3. c library
   - loadlib <lib>, <funcname>
-  - preload  (store loaders)
 - string.dump <func>
 - string.find <s, pattern [, init [, plain]]
 - string.gmatch <s>, <pattern>    returns iterator getting capture (regex?)
@@ -27,18 +21,4 @@
 - io.type <obj>    (valid file handle)
 - file.setvbuf <mode> [, size]   (mode = "no"/no buffering, "full"/full buffering, "line"/line buffering
 - os.setlocale <locale> [, category]
-- debug library
-  - debug     (interactive debug mode, execute line-by-line)
-  - getfenv <o>
-  - gethook [thread]
-  - getinfo [thread] <function> [what]   (table of info about function)
-  - getlocal [thread] <level> <local>
-  - getmetatable <object>
-  - getregistry     (table of registry)
-  - getupvalue <func> <up>    (func upvalue at index <up>)
-  - setfenv <object> <table>   (object environment = table, return object)
-  - sethook [thread] <hook> <mask> [count]
-  - setlocal [thread] <level< <local> <value>
-  - setmetatable <object> <table>
-  - setupvalue <func> <up> <value>
-  - traceback [thread] [message] [level]
+- lua pattern to regex

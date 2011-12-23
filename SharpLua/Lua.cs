@@ -20,11 +20,12 @@ namespace SharpLua
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             GlobalEnvironment = LuaRuntime.CreateGlobalEnviroment();
-            #if DEBUG
-            GlobalEnvironment.SetNameValue("showfullerror", LuaBoolean.True);
-            #else
-            GlobalEnvironment.SetNameValue("showfullerror", LuaBoolean.False);
-            #endif
+            
+            // how to handle errors
+            GlobalEnvironment.SetNameValue("DEBUG", LuaBoolean.True);
+            //GlobalEnvironment.SetNameValue("DEBUG", LuaBoolean.False);
+            
+            Prompt = ">";
             
             // check command line args
             if (args.Length > 0)
@@ -69,6 +70,7 @@ namespace SharpLua
                 PrintBanner();
                 while (true)
                 {
+                    Console.Write(Prompt);
                     string line = Console.ReadLine();
                     
                     if (line == "quit" || line == "exit" || line == "bye")
@@ -83,7 +85,7 @@ namespace SharpLua
                         }
                         catch (Exception error)
                         {
-                            if (((LuaBoolean)GlobalEnvironment.GetValue(GlobalEnvironment.GetKey("showfullerror"))) == LuaBoolean.True)
+                            if (((LuaBoolean)GlobalEnvironment.GetValue(GlobalEnvironment.GetKey("DEBUG"))) == LuaBoolean.True)
                                 Console.WriteLine(error.ToString());
                             else
                                 Console.WriteLine("Error: " + error.Message);
@@ -119,6 +121,10 @@ namespace SharpLua
         public static void PrintBanner()
         {
             Console.WriteLine("SharpLua " + Application.ProductVersion + ", Copyright (C) 2011 mlnlover11 Productions");
+            //Console.WriteLine(Prompt);
         }
+        
+        public static string Prompt
+        {get; set; }
     }
 }

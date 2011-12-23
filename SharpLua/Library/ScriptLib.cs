@@ -186,11 +186,12 @@ namespace SharpLua.Library
             {
                 return new LuaFunction((args) =>
                                        {
-                                           MemberInfo[] members = type.GetMember(member, BindingFlags.IgnoreCase);
+                                           MemberInfo[] members = type.GetMember(member);
+                                           //, BindingFlags.IgnoreCase);
                                            
                                            if (members.Length == 0)
                                            {
-                                               throw new InvalidOperationException(string.Format("'{0}' is not defined in '{1}'", member, type.FullName));
+                                               throw new InvalidOperationException(string.Format("Function '{0}' is not defined in '{1}'", member, type.FullName));
                                            }
                                            
                                            foreach (MemberInfo memberInfo in members)

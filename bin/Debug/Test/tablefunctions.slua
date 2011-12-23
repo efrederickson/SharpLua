@@ -1,4 +1,4 @@
--- cannot use table:function, as that doesn't work.
+-- cannot use table:function, as that doesn't work internally
 
 function a()
     t = { }

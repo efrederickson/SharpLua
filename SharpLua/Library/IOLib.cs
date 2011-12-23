@@ -25,6 +25,7 @@ namespace SharpLua.Library
             module.Register("write", write);
             module.Register("flush", flush);
             module.Register("tmpfile", tmpfile);
+            module.Register("close", Close);
         }
 
         private static TextReader DefaultInput = Console.In;
@@ -128,6 +129,25 @@ namespace SharpLua.Library
         {
             StreamWriter writer = File.CreateText(Path.GetTempFileName());
             return new LuaUserdata(writer);
+        }
+        
+        public static LuaValue Close(LuaValue[] args)
+        {
+            LuaUserdata data = args[0] as LuaUserdata;
+            TextReader reader = data.Value as TextReader;
+            if (reader != null)
+            {
+                reader.Close();
+                return null;
+            }
+
+            TextWriter writer = data.Value as TextWriter;
+            if (writer != null)
+            {
+                writer.Close();
+            }
+
+            return null;
         }
     }
 }

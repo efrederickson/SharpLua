@@ -27,6 +27,7 @@ namespace SharpLua.Library
             module.Register("upper", upper);
             module.Register("rep", rep);
             module.Register("reverse", reverse);
+            module.Register("find", Find);
         }
 
         public static LuaValue @byte(LuaValue[] values)
@@ -128,6 +129,30 @@ namespace SharpLua.Library
         {
             LuaString str = values[0] as LuaString;
             return new LuaString(str.Text.ToUpper());
+        }
+        
+        public static LuaValue Find(LuaValue[] args)
+        {
+            string s = (args[0] as LuaString).Text;
+            string format = (args[1] as LuaString).Text;
+            int init = 0;
+            if (args.Length > 2)
+                init = (int.Parse((args[2] as LuaNumber).Number.ToString()) - 1) > 0 ? (int.Parse((args[2] as LuaNumber).Number.ToString()) - 1) : 0;
+            bool plain = false;
+            if (args.Length > 3)
+                plain = (args[3] as LuaBoolean).BoolValue;
+            // TODO: return captures
+            if (plain)
+            {
+                int start = s.IndexOf(format);
+                int end = format.Length;
+                return new LuaMultiValue(new LuaValue[] { new LuaNumber(start), new LuaNumber(end), LuaNil.Nil});
+            }
+            else
+            {
+                //TODO: format->regex
+                return LuaNil.Nil;
+            }
         }
     }
 }

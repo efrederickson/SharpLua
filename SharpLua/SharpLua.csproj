@@ -104,8 +104,10 @@
     <Compile Include="Expr\VarName.cs" />
     <Compile Include="ExternalLibraryLoader.cs" />
     <Compile Include="Library\ConsoleLib.cs" />
+    <Compile Include="Library\CoroutineLib.cs" />
     <Compile Include="Library\GarbageCollectorLib.cs" />
     <Compile Include="Library\ILuaLibrary.cs" />
+    <Compile Include="Library\PackageLib.cs" />
     <Compile Include="Lua.cs" />
     <Compile Include="Library\BaseLib.cs" />
     <Compile Include="Library\ScriptLib.cs" />

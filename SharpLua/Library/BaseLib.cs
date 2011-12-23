@@ -13,36 +13,38 @@ namespace SharpLua.Library
     {
         public static void RegisterFunctions(LuaTable module)
         {
-            module.Register("print", print);
-            module.Register("type", type);
-            module.Register("getmetatable", getmetatable);
-            module.Register("setmetatable", setmetatable);
-            module.Register("tostring", tostring);
-            module.Register("tonumber", tonumber);
-            module.Register("ipairs", ipairs);
-            module.Register("pairs", pairs);
-            module.Register("next", next);
-            module.Register("assert", assert);
-            module.Register("error", error);
-            module.Register("rawget", rawget);
-            module.Register("rawset", rawset);
-            module.Register("select", select);
-            module.Register("dofile", dofile);
-            module.Register("loadstring", loadstring);
-            module.Register("unpack", unpack);
-            module.Register("pcall", pcall);
+            module.Register("print", Print);
+            module.Register("type", Type);
+            module.Register("getmetatable", GetMetaTable);
+            module.Register("setmetatable", SetMetaTable);
+            module.Register("tostring", Tostring);
+            module.Register("tonumber", Tonumber);
+            module.Register("ipairs", IPairs);
+            module.Register("pairs", Pairs);
+            module.Register("next", Next);
+            module.Register("assert", Assert);
+            module.Register("error", Error);
+            module.Register("rawget", RawGet);
+            module.Register("rawset", RawSet);
+            module.Register("select", Select);
+            module.Register("dofile", DoFile);
+            module.Register("loadstring", LoadString);
+            module.Register("unpack", UnPack);
+            module.Register("pcall", Pcall);
             module.Register("openfile", OpenFile);
             module.Register("require", Require);
             module.Register("set", Set);
+            module.Register("loadfile", LoadFile);
+            module.Register("xpcall", XPcall);
         }
 
-        public static LuaValue print(LuaValue[] values)
+        public static LuaValue Print(LuaValue[] values)
         {
             Console.WriteLine(string.Join<LuaValue>("    ", values));
             return null;
         }
 
-        public static LuaValue type(LuaValue[] values)
+        public static LuaValue Type(LuaValue[] values)
         {
             if (values.Length > 0)
             {
@@ -54,12 +56,12 @@ namespace SharpLua.Library
             }
         }
 
-        public static LuaValue tostring(LuaValue[] values)
+        public static LuaValue Tostring(LuaValue[] values)
         {
             return new LuaString(values[0].ToString());
         }
 
-        public static LuaValue tonumber(LuaValue[] values)
+        public static LuaValue Tonumber(LuaValue[] values)
         {
             LuaString text = values[0] as LuaString;
             if (text != null)
@@ -76,7 +78,7 @@ namespace SharpLua.Library
             return LuaNil.Nil;
         }
 
-        public static LuaValue setmetatable(LuaValue[] values)
+        public static LuaValue SetMetaTable(LuaValue[] values)
         {
             LuaValue val = values[0] as LuaValue;
             LuaTable metatable = values[1] as LuaTable;
@@ -84,19 +86,19 @@ namespace SharpLua.Library
             return null;
         }
 
-        public static LuaValue getmetatable(LuaValue[] values)
+        public static LuaValue GetMetaTable(LuaValue[] values)
         {
-            return (values[0] as LuaValue).MetaTable;
+            return values[0].MetaTable;
         }
 
-        public static LuaValue rawget(LuaValue[] values)
+        public static LuaValue RawGet(LuaValue[] values)
         {
             LuaTable table = values[0] as LuaTable;
             LuaValue index = values[1];
             return table.RawGetValue(index);
         }
 
-        public static LuaValue rawset(LuaValue[] values)
+        public static LuaValue RawSet(LuaValue[] values)
         {
             LuaTable table = values[0] as LuaTable;
             LuaValue index = values[1];
@@ -105,7 +107,7 @@ namespace SharpLua.Library
             return null;
         }
 
-        public static LuaValue ipairs(LuaValue[] values)
+        public static LuaValue IPairs(LuaValue[] values)
         {
             LuaTable table = values[0] as LuaTable;
             LuaFunction func = new LuaFunction(
@@ -129,14 +131,14 @@ namespace SharpLua.Library
             return new LuaMultiValue(new LuaValue[] { func, table, new LuaNumber(0) });
         }
 
-        public static LuaValue pairs(LuaValue[] values)
+        public static LuaValue Pairs(LuaValue[] values)
         {
             LuaTable table = values[0] as LuaTable;
-            LuaFunction func = new LuaFunction(next);
+            LuaFunction func = new LuaFunction(Next);
             return new LuaMultiValue(new LuaValue[] { func, table, LuaNil.Nil });
         }
 
-        public static LuaValue next(LuaValue[] values)
+        public static LuaValue Next(LuaValue[] values)
         {
             LuaTable table = values[0] as LuaTable;
             LuaValue index = values.Length > 1 ? values[1] : LuaNil.Nil;
@@ -156,7 +158,7 @@ namespace SharpLua.Library
             return new LuaMultiValue(new LuaValue[] { nextIndex, table.GetValue(nextIndex) });
         }
 
-        public static LuaValue assert(LuaValue[] values)
+        public static LuaValue Assert(LuaValue[] values)
         {
             bool condition = values[0].GetBooleanValue();
             LuaString message = values.Length > 1 ? values[1] as LuaString : null;
@@ -171,7 +173,7 @@ namespace SharpLua.Library
             // return new LuaMultiValue { Values = values };
         }
 
-        public static LuaValue error(LuaValue[] values)
+        public static LuaValue Error(LuaValue[] values)
         {
             if (values.Length > 0)
             {
@@ -184,7 +186,7 @@ namespace SharpLua.Library
             }
         }
 
-        public static LuaValue select(LuaValue[] values)
+        public static LuaValue Select(LuaValue[] values)
         {
             LuaNumber number = values[0] as LuaNumber;
             if (number != null)
@@ -207,14 +209,14 @@ namespace SharpLua.Library
             return LuaNil.Nil;
         }
 
-        public static LuaValue dofile(LuaValue[] values)
+        public static LuaValue DoFile(LuaValue[] values)
         {
             LuaString file = values[0] as LuaString;
             LuaTable enviroment = values[1] as LuaTable;
             return LuaRuntime.RunFile(file.Text, enviroment);
         }
 
-        public static LuaValue loadstring(LuaValue[] values)
+        public static LuaValue LoadString(LuaValue[] values)
         {
             LuaString code = values[0] as LuaString;
             LuaTable enviroment = values[1] as LuaTable;
@@ -231,7 +233,7 @@ namespace SharpLua.Library
             return func;
         }
 
-        public static LuaValue unpack(LuaValue[] values)
+        public static LuaValue UnPack(LuaValue[] values)
         {
             LuaTable table = values[0] as LuaTable;
             LuaNumber startNumber = values.Length > 1 ? values[1] as LuaNumber : null;
@@ -248,7 +250,7 @@ namespace SharpLua.Library
             return new LuaMultiValue(section);
         }
 
-        public static LuaValue pcall(LuaValue[] values)
+        public static LuaValue Pcall(LuaValue[] values)
         {
             LuaFunction func = values[0] as LuaFunction;
             try
@@ -282,8 +284,8 @@ namespace SharpLua.Library
         
         public static LuaValue Require(LuaValue[] args)
         {
-            // get LUA_PATH variable
-            string path = Lua.GlobalEnvironment.GetValue("LUA_PATH").Value.ToString();
+            // get package.path variable
+            string path = Lua.GlobalEnvironment.GetValue("package.path").Value.ToString();
             // split into paths
             string[] paths = path.Split(';');
             // check file names
@@ -292,7 +294,7 @@ namespace SharpLua.Library
                 foreach (LuaValue arg in args)
                 {
                     string sfn = arg.Value.ToString();
-                    string fn = LuaRuntime.FindFullPath(p + sfn);
+                    string fn = p.Replace("?", sfn);
                     if (File.Exists(fn))
                     {
                         if (fn.ToLower().EndsWith(".dll") || fn.ToLower().EndsWith(".exe"))
@@ -313,6 +315,25 @@ namespace SharpLua.Library
             LuaTable t = args[0] as LuaTable;
             t.SetKeyValue(args[1], args[2]);
             return t;
+        }
+        
+        public static LuaValue LoadFile(LuaValue[] args)
+        {
+            return DoFile(args);
+        }
+        
+        public static LuaValue XPcall(LuaValue[] args)
+        {
+            LuaFunction f = args[0] as LuaFunction;
+            LuaFunction ef = args[1] as LuaFunction;
+            LuaValue v = null;
+            try {
+               v =  f.Invoke(new LuaValue[] {});
+            } catch (Exception ex) {
+                ef.Invoke(new LuaValue[] { new LuaUserdata(ex)});
+                return new LuaMultiValue(new LuaValue[] { LuaBoolean.False, new LuaString(ex.Message)});
+            }
+            return new LuaMultiValue(new LuaValue[] {LuaBoolean.True, v });
         }
     }
 }

@@ -27,6 +27,7 @@ namespace SharpLua.Library
             module.Register("remove", remove);
             module.Register("rename", rename);
             module.Register("tmpname", tmpname);
+            module.Register("difftime", DiffTime);
         }
 
         public static LuaValue clock(LuaValue[] values)
@@ -37,7 +38,9 @@ namespace SharpLua.Library
 
         public static LuaValue date(LuaValue[] values)
         {
-            LuaString format = values[0] as LuaString;
+            LuaString format = null;
+            if (values.Length > 0)
+                format = values[0] as LuaString;
             if (format != null)
             {
                 if (format.Text == "*t")
@@ -148,6 +151,14 @@ namespace SharpLua.Library
         public static LuaValue tmpname(LuaValue[] values)
         {
             return new LuaString(Path.GetTempFileName());
+        }
+        
+        public static LuaValue DiffTime(LuaValue[] args)
+        {
+            // FIXM
+            DateTime t2 = DateTime.Parse(args[0].Value.ToString());
+            DateTime t1 = DateTime.Parse(args[1].Value.ToString());
+            return new LuaUserdata(t2 - t1);
         }
     }
 }

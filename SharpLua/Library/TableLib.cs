@@ -25,6 +25,9 @@ namespace SharpLua.Library
             module.Register("maxn", maxn);
             module.Register("sort", sort);
             module.Register("copy", Copy);
+            // 3 different ways to call one function...
+            module.Register("dump", PrintContents);
+            module.Register("print", PrintContents);
             module.Register("printcontents", PrintContents);
             module.Register("find", Find);
         }

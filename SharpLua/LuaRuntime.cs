@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-
+using System.Windows.Forms;
 using SharpLua.Library;
 using SharpLua.LuaTypes;
 
@@ -68,14 +68,12 @@ namespace SharpLua
             WinFormLib.RegisterModule(global);
             ConsoleLib.RegisterModule(global);
             GarbageCollectorLib.RegisterModule(global);
+            CoroutineLib.RegisterModule(global);
+            PackageLib.RegisterModule(global);
             
+            global.SetNameValue("_WORKDIR", new LuaString(Application.StartupPath + "\\"));
             global.SetNameValue("_VERSION", new LuaString("Sharp Lua 1.0"));
             global.SetNameValue("_G", global);
-            // change to package.path template
-            global.SetNameValue("LUA_PATH", new LuaString( ".\\;" + 
-                               "require\\" // TODO: fill with lua libraries
-                              ));// format: <dir>;<dir2>
-                                            // it automatically takes care of extensions
             
             return global;
         }
@@ -92,7 +90,12 @@ namespace SharpLua
                 return spath + ".slua";
             if (File.Exists(spath + ".mlua")) // MetaLua
                 return spath + ".mlua";
-            // TODO: .so, .c, .cs, .dll, .exe, .luac
+            if (File.Exists(spath + ".dll"))
+                return spath + ".dll";
+            if (File.Exists(spath + ".exe"))
+                return spath + ".exe";
+            
+            // TODO: .so, .c, .cs, .luac
             
             return spath; // let the caller handle the invalid filename
         }

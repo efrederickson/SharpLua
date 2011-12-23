@@ -16,6 +16,8 @@ namespace SharpLua.LuaTypes
     /// </summary>
     public class LuaCoroutine : LuaValue
     {
+        public static LuaCoroutine Running;
+        
         string _status;
         Thread thread;
         LuaFunction func;
@@ -37,7 +39,7 @@ namespace SharpLua.LuaTypes
             return "thread";
         }
         
-        public void Resume(LuaValue[] args)
+        public bool Resume(LuaValue[] args)
         {
             if (thread == null)
             {
@@ -51,18 +53,35 @@ namespace SharpLua.LuaTypes
                                                             _status = "dead";
                                                         }
                                                     }));
-            thread.Start();
+                thread.SetApartmentState(ApartmentState.MTA);
+                thread.Start();
             }
             else
-                thread.Resume();
-            _status = "running";
+                if (_status == "dead")
+                    throw new Exception("Error: coroutine is dead, it cannot be resumed!");
+            try {
+                if (_status == "suspended")
+                    thread.Resume();
+                else
+                    thread.Start();
+                _status = "running";
+            } catch (Exception ex) {
+                _status = "dead";
+                throw ex;
+            }
+            
+            Running = this;
+            return true;
         }
         
-        public string Status()
+        public string Status
         {
-            if (thread == null)
-                return "dead";
-            return _status;
+            get
+            {
+                if (thread == null)
+                    return "dead";
+                return _status;
+            }
         }
         
         public void Pause()

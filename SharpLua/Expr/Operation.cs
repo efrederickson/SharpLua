@@ -70,7 +70,7 @@ namespace SharpLua
                     var table = rightValue as LuaTable;
                     if (table != null)
                     {
-                        return new LuaNumber(table.Count);
+                        return new LuaNumber(table.Length);
                     }
                     var str = rightValue as LuaString;
                     if (str != null)

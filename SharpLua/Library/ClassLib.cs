@@ -40,6 +40,12 @@ namespace SharpLua.Library
             mod.Register("CreateStaticClass", CreateStaticClass);
             mod.Register("CreateClass", CreateClass);
             mod.Register("IterateChildClasses", IterateChildClasses);
+            LuaTable mt = new LuaTable();
+            mt.Register("__call", new LuaFunc((LuaValue[] args) =>
+                                              {
+                                                  return CreateClass(args);
+                                              }));
+            mod.MetaTable = mt;
         }
         
         public static LuaValue CreateInstance(LuaValue[] args)

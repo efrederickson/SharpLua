@@ -2,3 +2,7 @@ Version 1.0.*
 + Inital Creation
 + Added basic .NET interop
 + extended base libraries
+Version 1.1.*
++ Added Built-in classes
++ More advanced .NET interop
++ coroutine

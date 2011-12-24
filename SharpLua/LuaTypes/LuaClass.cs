@@ -28,13 +28,11 @@ namespace SharpLua.LuaTypes
         public LuaFunction ToStringFunction;
         public LuaTable Self;
         
-        public LuaClass(string name, bool final, bool _static, List<LuaClass> parents, List<LuaClass> childs)
+        public LuaClass(string name, bool final, bool _static)
         {
             this.Name = name;
             this.Final = final;
             this.Static = _static;
-            this.ParentClasses = parents;
-            this.ChildClasses = childs;
             
             this.IndexFunction = new LuaFunction(new LuaFunc((LuaValue[] args) =>
                                                              {return null; }));
@@ -43,26 +41,194 @@ namespace SharpLua.LuaTypes
             this.NewIndexFunction = new LuaFunction(new LuaFunc((LuaValue[] args) =>
                                                                 {return null; }));
             this.ToStringFunction = new LuaFunction(new LuaFunc((LuaValue[] args) =>
-                                                                {return new LuaString("Class: " + GetHashCode()); }));
-            
+                                                                {return new LuaString("Lua Class: " + GetHashCode() + ", Name: " + Name); }));
             this.Self = new LuaTable();
+            Self.Register("new", New);
+            Self.Register("Set", Set);
+            Self.Register("HasMember", HasMember);
+            Self.Register("Inherits", Inherits);
+            Self.Register("IsParentOf", IsParentOf);
+            Self.Register("GetParentClasses", GetParentClasses);
+            Self.Register("GetChildClasses", GetChildClasses);
+            Self.Register("CallParentMethod", CallParentMethod);
+            Self.Register("CreateSubclass", CreateSubClass);
+            Self.Register("CallMethod", CallMethod);
+            Self.Register("GetTable", GetTable);
+            GenerateMetaTable();
+        }
+        
+        public override object Value {
+            get {
+                return Self;
+            }
+        }
+        
+        public override string GetTypeCode()
+        {
+            return "class";
+        }
+        
+        public LuaValue New(LuaValue[] args)
+        {
+            return ClassLib.CreateInstance(new LuaValue[] {this });
+        }
+        
+        public LuaValue Set(LuaValue[] args)
+        {
+            for (int i = 1; i < args.Length; i++)
+                TableLib.Copy(new LuaValue[] {Self, args[i]});
+            return Self;
+        }
+        
+        public LuaValue HasMember(LuaValue[] args)
+        { //(m)
+            return ClassLib.IsMemberOf(new LuaValue[] {args[0], this});
+        }
+        
+        public LuaValue Inherits(LuaValue[] args)
+        { //(_class)
+            foreach (LuaClass c in this.ParentClasses)
+            {
+                if (Name == c.Name)
+                    return LuaBoolean.True;
+            }
+            return LuaBoolean.False;
+        }
+        
+        public LuaValue IsParentOf(LuaValue[] args)
+        {
+            LuaClass _class = args[0] as LuaClass;
+            foreach (LuaClass c in ChildClasses)
+                if (c.Name == _class.Name)
+                    return LuaBoolean.True;
+            return LuaBoolean.False;
+        }
+        
+        public LuaValue GetTable(LuaValue[] args)
+        {
+            return Self;
+        }
+        
+        public LuaValue GetParentClasses(LuaValue[] args)
+        {
+            LuaTable t = new LuaTable();
+            foreach (LuaClass p in ParentClasses)
+                t.AddValue(p);
+            return t;
+        }
+        
+        public LuaValue GetChildClasses(LuaValue[] args)
+        {
+            LuaTable t = new LuaTable();
+            foreach (LuaClass p in ChildClasses)
+                t.AddValue(p);
+            return t;
+        }
+
+        public LuaValue CallParentMethod(LuaValue[] args)
+        {
+            //method, ...
+            string method = args[0].Value.ToString();
+            // strip method name
+            List<LuaValue> args2 = new List<LuaValue>();
+            foreach (LuaValue a in args)
+                args2.Add(a);
+            args2.RemoveAt(0);
+            
+            LuaFunction func = InternalCallParentMethod(method) as LuaFunction;
+            if (func == null)
+                throw new Exception("Cannot find function '" + method + "'!");
+            else
+                return func.Invoke(args2.ToArray());
+        }
+        
+        public LuaValue InternalCallParentMethod(string method)
+        {
+            LuaValue m = LuaNil.Nil;
+            if (ParentClasses.Count > 0)
+            {
+                foreach (LuaClass c in ParentClasses)
+                {
+                    m = ClassLib.FindMethod(new LuaValue[] {new LuaString(method), c});
+                    if (m != null)
+                        break;
+                }
+            }
+            if (m == LuaNil.Nil)
+                for (int i = 0;i < ParentClasses.Count; i++)
+                    m = ParentClasses[i].InternalCallParentMethod(method);
+            return m;
+        }
+
+        // creates a subclass inheriting all args except arg[1] if its a table
+        // e.g. x = c:CreateSubclass()
+        public LuaValue CreateSubClass(LuaValue[] args)
+        {
+            List<LuaValue> args2 = new List<LuaValue>();
+            foreach (LuaValue a in args)
+            {
+                args2.Add(a);
+            }
+            args2.Add(this);
+            return ClassLib.CreateClass(args);
+        }
+
+        public LuaValue CallMethod(LuaValue[] args)
+        {
+            //(func, ...)
+            // strip method name
+            string func = args[0].Value.ToString();
+            List<LuaValue> args2 = new List<LuaValue>();
+            foreach (LuaValue a in args)
+                args2.Add(a);
+            args2.RemoveAt(0);
+            LuaFunction f = ClassLib.FindMethod(new LuaValue[] {new LuaString(func), this}) as LuaFunction;
+            if ((f == null))
+                f = InternalCallParentMethod(func) as LuaFunction;
+            // if its still LuaNil.Nil then throw an error
+            if ((f == null))
+                throw new Exception("Cannot find function '" + func + "'!");
+            
+            return f.Invoke(args2.ToArray());
+        }
+        
+        public override string ToString()
+        {
+            return ToStringFunction.Invoke(new LuaValue[] {}).ToString();
+        }
+        
+        public LuaValue GetObject(LuaValue key, LuaClass p)
+        {
+            if ((p.Self.RawGetValue(key) != null) && (p.Self.RawGetValue(key) != LuaNil.Nil))
+                return p.Self.RawGetValue(key);
+            else
+            {
+                foreach (LuaClass c in p.ParentClasses)
+                    return GetObject(key, c);
+            }
+            return LuaNil.Nil;
+        }
+        
+        public void GenerateMetaTable()
+        {
+            Self.MetaTable = new LuaTable();
             Self.MetaTable.Register("__index",new LuaFunc(delegate(LuaValue[] args)
                                                           { //(table, key)
-                                                              LuaTable table = args[0] as LuaTable;
-                                                              LuaValue key = args[1];
-                                                              IndexFunction.Invoke(new LuaValue[] {table, key}); // user defined __index function
-                                                              return CallMethod.Invoke(new LuaValue[] {key});
+                                                              LuaValue key = args[0];
+                                                              IndexFunction.Invoke(new LuaValue[] {Self, key}); // user defined __index function
+                                                              // attempt to get from parents also
+                                                              return GetObject(key, this); //CallMethod(new LuaValue[] {key});
                                                           }));
             
             Self.MetaTable.Register("__call", new LuaFunc(delegate(LuaValue[] args)
                                                           { //(func, ...)
-                                                              LuaFunction func = args[0] as LuaFunction;
+                                                              
                                                               List<LuaValue> args2 = new List<LuaValue>();
                                                               foreach (LuaValue a in args)
                                                                   args2.Add(a);
                                                               args2.RemoveAt(0);
-                                                              CallFunction.Invoke(new LuaValue[] {func, new LuaMultiValue(args2.ToArray())}); // user defined __call function
-                                                              return func.Invoke(args2.ToArray()); // call function
+                                                              CallFunction.Invoke(new LuaValue[] {args[0], new LuaMultiValue(args2.ToArray())}); // user defined __call function
+                                                              return CallMethod(new LuaValue[] {args[0], args2.ToArray()}); // call function
                                                           }));
             
             Self.MetaTable.Register("__newindex",new LuaFunc(delegate(LuaValue[] args)
@@ -92,130 +258,8 @@ namespace SharpLua.LuaTypes
                                                               {
                                                                   return ToStringFunction.Invoke(new LuaValue[] {});
                                                               }));
-        }
-        
-        public override object Value {
-            get {
-                return Self;
-            }
-        }
-        
-        public override string GetTypeCode()
-        {
-            return "class";
-        }
-        
-        // returns a new instance of the class
-        public LuaValue New(LuaValue[] args)
-        {
-            return ClassLib.CreateInstance(table1);
+            this.MetaTable = Self.MetaTable;
         }
 
-        // copies table "m" into class
-        public LuaValue Set(LuaValue[] args)
-        {
-            for (int i = 1; i < args.Length; i++)
-                TableLib.Copy(new LuaValue[] {Self, args[i]});
-            return Self;
-        }
-
-        // finds out whether "m" is a child of the class
-        public LuaValue HasMember(LuaValue[] args)
-        { //(m)
-            return IsMemberOf(new LuaValue[] {args[0], table1});
-        }
-
-        // determines whether the class inherits from "_class"
-        public LuaValue Inherits(LuaValue[] args)
-        { //(_class)
-            foreach (LuaClass c in ParentClasses)
-            {
-                if (Name == c.Name)
-                    return LuaBoolean.True;
-            }
-            return LuaBoolean.False;
-        }
-
-        // determines whether the class is a parent of "_class"
-        public LuaValue IsParentOf(LuaValue[] args)
-        {
-            LuaClass _class = args[0] as LuaClass;
-            foreach (LuaClass c in ChildClasses)
-                if c.Name == _class.Name)
-                    return LuaBoolean.True;
-            return LuaBoolean.False;
-        }
-
-        // returns the class
-        //function table1:GetClass()
-        //    return table1
-        //end
-
-        public LuaValue GetParentClasses()
-        {
-            return ParentClasses;
-        }
-
-        public LuaValue GetChildClasses()
-        {
-            return ChildClasses;
-        }
-
-        public LuaValue CallParentMethod(LuaValue[] args)
-        {
-            //method, ...
-            string method = args[0].Value.ToString();
-            // strip method name
-            List<LuaValue> args2 = new List<LuaValue>();
-            foreach (LuaValue a in args)
-                args2.Add(a);
-            args2.RemoveAt(0);
-            
-            LuaFunction func = InternalCallParentMethod(method) as LuaFunction;
-            if (func == null)
-                throw new Exception("Cannot find function '" + method + "'!");
-            else
-                return func.Invoke(args2.ToArray());
-        }
-        
-
-        public LuaValue InternalCallParentMethod(string method)
-        {
-            LuaValue m = LuaNil.Nil;
-            if (ParentClasses.Count > 0)
-                m = ClassLib.FindMethod(method, ParentClasses);
-            
-            if (m == LuaNil.Nil)
-                for (int i = 0;i < ParentClasses.Count; i++)
-                    m = p[i].InternalCallParentMethod(method);
-            return m;
-        }
-
-        // creates a subclass inheriting all args except arg[1] if its a table
-        // e.g. x = c:CreateSubclass()
-        public LuaValue CreateSubClass(LuaValue[] args)
-        {
-            args[args.Length + 1] = this;
-            return ClassLib.CreateClass(args);
-    }
-
-        public LuaValue CallMethod(LuaValue[] args)
-            {
-            //(func, ...)
-            // strip method name
-            string func = args[0].Value.ToString();
-            List<LuaValue> args2 = new List<LuaValue>();
-            foreach (LuaValue a in args)
-                args2.Add(a);
-            args2.RemoveAt(0);
-            LuaFunction f = ClassLib.FindMethod(new LuaValue[] {func, Self});
-            if ((f == LuaNil.Nil) || (f == null))
-                f = InternalCallParentMethod(func) as LuaFunction;
-            // if its still LuaNil.Nil then throw an error
-            if ((f == LuaNil.Nil) || (f == null))
-                throw new Exception("Cannot find function '" + func + "'!");
-            
-            return f.Invoke(args2.ToArray());
-        }
     }
 }

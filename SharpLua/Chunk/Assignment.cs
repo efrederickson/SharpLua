@@ -65,24 +65,31 @@ namespace SharpLua
             LuaTable table = baseValue as LuaTable;
             if (table != null)
             {
-                if (table.ContainsKey(key))
+                if (table.MetaTable != null)
+                {
+                    newIndex = table.MetaTable.GetValue("__newindex");
+                    // to be finished at the end of this method
+                }
+
+                if (newIndex == LuaNil.Nil)
                 {
                     table.SetKeyValue(key, value);
                     return;
                 }
+            }
+            else if ((baseValue as LuaClass) != null)
+            {
+                LuaClass c = baseValue as LuaClass;
+                // null checks (mainly for debugging)
+                if (c.Self.MetaTable == null)
+                    c.GenerateMetaTable();
+                    //throw new Exception("Class metatable is nil!");
+                newIndex = c.Self.MetaTable.GetValue("__newindex");
+                if (newIndex == LuaNil.Nil)
+                    c.Self.SetKeyValue(key, value);
                 else
-                {
-                    if (table.MetaTable != null)
-                    {
-                        newIndex = table.MetaTable.GetValue("__newindex");
-                    }
-
-                    if (newIndex == LuaNil.Nil)
-                    {
-                        table.SetKeyValue(key, value);
-                        return;
-                    }
-                }
+                    (newIndex as LuaFunction).Invoke(new LuaValue[] { baseValue, key, value });
+                return;
             }
             else
             {
@@ -100,7 +107,7 @@ namespace SharpLua
                     }
                 }
             }
-
+            
             LuaFunction func = newIndex as LuaFunction;
             if (func != null)
             {

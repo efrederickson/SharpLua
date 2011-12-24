@@ -33,8 +33,16 @@ namespace SharpLua
             else if ((value as LuaTable) != null)
             {
                 List<LuaValue> args = this.Args.ArgList.ConvertAll(arg => arg.Evaluate(enviroment));
-                args.Insert(0, baseValue);
                 return ((value as LuaTable).MetaTable.GetValue("__call") as LuaFunction).Invoke(args.ToArray());
+            }
+            else if ((baseValue as LuaClass) != null)
+            {
+                LuaClass c = baseValue as LuaClass;
+                List<LuaValue> args = this.Args.ArgList.ConvertAll(arg => arg.Evaluate(enviroment));
+                args.Insert(0, new LuaString(this.Method));
+                if (c.Self.MetaTable == null)
+                    c.GenerateMetaTable();
+                return (c.Self.MetaTable.GetValue("__call") as LuaFunction).Invoke(args.ToArray());
             }
             else
             {

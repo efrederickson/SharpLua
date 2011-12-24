@@ -50,6 +50,8 @@ namespace SharpLua.LuaTypes
         public static LuaValue GetKeyValue(LuaValue baseValue, LuaValue key)
         {
             LuaTable table = baseValue as LuaTable;
+            if (((baseValue as LuaClass) != null) && table == null)
+                table = (baseValue as LuaClass).Self;
             
             if (table != null)
             {
@@ -68,10 +70,12 @@ namespace SharpLua.LuaTypes
                             LuaFunction func = index as LuaFunction;
                             if (func != null)
                             {
+                                // its a getter function
                                 return func.Invoke(new LuaValue[] { baseValue, key });
                             }
                             else
                             {
+                                // its a probably a table
                                 return GetKeyValue(index, key);
                             }
                         }

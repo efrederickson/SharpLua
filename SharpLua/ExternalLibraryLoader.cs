@@ -63,7 +63,7 @@ namespace SharpLua
                 }
                 pluginAssembly = null;
                 //more cleanup
-            } catch (Exception e) {
+            } catch (Exception) {
             }
             return modules.ToArray();
         }

@@ -80,6 +80,8 @@ namespace SharpLua.Library
 
         public static LuaValue SetMetaTable(LuaValue[] values)
         {
+            if ((values[0] as LuaClass) != null)
+                throw new Exception("Cannot set meta tables on Classes, use functions instead.");
             LuaValue val = (LuaValue) values[0];
             if (val.MetaTable == null)
                 val.MetaTable = new LuaTable();
@@ -90,6 +92,8 @@ namespace SharpLua.Library
 
         public static LuaValue GetMetaTable(LuaValue[] values)
         {
+            if ((values[0] as LuaClass) != null)
+                return ((values[0] as LuaClass).Self).MetaTable;
             return values[0].MetaTable;
         }
 

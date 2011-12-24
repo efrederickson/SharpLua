@@ -144,6 +144,8 @@ namespace SharpLua.Library
                 throw new ArgumentNullException("Table to copy to cannot be nil!");
             if (old == null)
                 throw new ArgumentNullException("Table to copy from cannot be nil!");
+            if (old.Count == 0)
+                return _new; // nothing to copy
             Dictionary<LuaValue, LuaValue> oldFields = (Dictionary<LuaValue, LuaValue>)old.KeyValuePairs;
             List<LuaValue> keys = new List<LuaValue>();
             List<LuaValue> values = new List<LuaValue>();

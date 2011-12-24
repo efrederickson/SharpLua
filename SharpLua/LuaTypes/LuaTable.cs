@@ -20,8 +20,6 @@ namespace SharpLua.LuaTypes
             this.MetaTable.SetNameValue("__newindex", parent);
         }
 
-        public LuaTable MetaTable { get; set; }
-
         public override object Value
         {
             get { return this; }
@@ -329,13 +327,13 @@ namespace SharpLua.LuaTypes
                         return this.list[index - 1];
                     }
                 }
-
-                if (this.dict != null && this.dict.ContainsKey(key))
+                else if (this.dict != null && this.dict.ContainsKey(key))
                 {
                     return this.dict[key];
                 }
                 else if (this.MetaTable != null)
                 {
+                    // pass to meta table function
                     return this.GetValueFromMetaTable(key);
                 }
 

@@ -7,6 +7,7 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
+using System.Collections.Generic;
 using SharpLua.LuaTypes;
 
 namespace SharpLua.Library
@@ -29,7 +30,33 @@ namespace SharpLua.Library
         
         public static void RegisterFunctions(LuaTable mod)
         {
+            mod.Register("CreateInstance", CreateInstance);
+            mod.Register("FindMethod", FindMethod);
+            mod.Register("IsClass", IsClass);
+            mod.Register("IsObject", IsObject);
+            mod.Register("IsObjectOf", IsObjectOf);
+            mod.Register("SetMembers", SetMembers);
+            mod.Register("CreateFinalClass", CreateFinalClass);
+            mod.Register("CreateStaticClass", CreateStaticClass);
+            mod.Register("CreateClass", CreateClass);
+            mod.Register("IterateChildClasses", IterateChildClasses);
+        }
+        
+        public static LuaValue CreateInstance(LuaValue[] args)
+        {
+            // copy args[0] to a new LuaClass and return it
+            LuaClass c = args[0] as LuaClass;
+            LuaClass n = new LuaClass(c.Name, c.Final, c.Static);
+            n.CallFunction = c.CallFunction;
+            n.ChildClasses = c.ChildClasses;
+            n.IndexFunction = c.IndexFunction;
+            n.MetaTable = c.MetaTable;
+            n.NewIndexFunction = c.NewIndexFunction;
+            n.ParentClasses = c.ParentClasses;
+            TableLib.Copy(new LuaValue[] { n.Self, c.Self });
+            n.ToStringFunction = c.ToStringFunction;
             
+            return n;
         }
         
         public static LuaValue FindMethod(LuaValue[] args)
@@ -37,9 +64,10 @@ namespace SharpLua.Library
             //(method, ...)
             string method = (args[0] as LuaString).Text;
             
-            foreach (LuaValue k in args)
+            for (int i = 1; i < args.Length; i++)
             {
-                LuaValue m = (k as LuaTable).GetValue(method);
+                LuaValue k = args[i];
+                LuaValue m = (k as LuaClass).Self.GetValue(method);
                 if (m != null && m.GetTypeCode() == "function")
                     return m;
             }
@@ -48,30 +76,15 @@ namespace SharpLua.Library
 
         public static LuaValue IsClass(LuaValue[] args)
         {
-            LuaTable item = args[0] as LuaTable;
-            //arg
-            if (item == null)
-            {
-                return LuaBoolean.False;
-            }
-            else if (item.GetValue("__class") == LuaBoolean.True ||
-                     item.GetValue("__static") != LuaNil.Nil ||
-                     item.GetValue("__final") != LuaNil.Nil ||
-                     item.GetValue("__super") != LuaNil.Nil ||
-                     item.GetValue("__indexfunction") != LuaNil.Nil ||
-                     item.GetValue("__newindexfunction") != LuaNil.Nil ||
-                     item.GetValue("__callfunction") != LuaNil.Nil ||
-                     item.GetValue("__subClasses") != LuaNil.Nil )
-            {
+            if ((args[0] as LuaClass) != null)
                 return LuaBoolean.True;
-            }
-            return LuaBoolean.False;
+            else
+                return LuaBoolean.False;
         }
         
         public static LuaValue IsObject(LuaValue[] args)
         {
-            LuaTable item = args[0] as LuaTable;
-            if (item.GetValue("GetClass") != null || item.GetValue("GetParentClasses") != null)
+            if ((args[0] as LuaClass) != null)
                 return LuaBoolean.False; // its a class
             else
                 return LuaBoolean.True;
@@ -79,60 +92,37 @@ namespace SharpLua.Library
         
         public static LuaValue IsObjectOf(LuaValue[] args)
         {
-            LuaTable obj = args[0] as LuaTable;
-            LuaTable _class = args[1] as LuaTable;
-            if (! (IsClass(new LuaValue[] {_class}) as LuaBoolean).BoolValue)
-            {
-                throw new Exception("item 'class' isn't a valid class!");
-            }
-            if (obj.GetValue("GetClass") == null)
-            {
-                throw new Exception("item 'obj' isn't a valid class!");
-            }
-            LuaTable c = (obj.GetValue("GetClass") as LuaFunction).Invoke(new LuaValue[] {}) as LuaTable;
+            LuaClass c = args[0] as LuaClass;
+            LuaClass _class = args[1] as LuaClass;
             return LuaBoolean.From(c == _class);
         }
         
         public static LuaValue IsMemberOf(LuaValue[] args)
         {
-            LuaTable _class = args[1] as LuaTable;
+            LuaClass _class = args[1] as LuaClass;
             LuaValue obj = args[0];
-            if (! (IsClass(new LuaValue[] {_class}) as LuaBoolean).BoolValue)
-                throw new Exception("item 'class' isn't a valid class!");
             
-            return LuaBoolean.From(_class.GetValue(obj) != LuaNil.Nil);
+            return LuaBoolean.From(_class.Self.GetValue(obj) != LuaNil.Nil);
         }
         
         public static LuaValue SetMembers(LuaValue[] args)
         {
-            LuaTable _class = args[0] as LuaTable;
-            if ((IsClass(new LuaValue[] {_class}) as LuaBoolean).BoolValue == false)
-            {
-                throw new Exception("item 'class' isn't a valid class!");
-            }
+            LuaClass _class = args[0] as LuaClass;
             for (int i = 1; i < args.Length; i++)
-                SharpLua.Library.TableLib.Copy(new LuaValue[] {_class, args[i]});
+                SharpLua.Library.TableLib.Copy(new LuaValue[] {_class.Self, args[i]});
             return _class;
         }
         
         #region ITERATORS ** FIX **
-        /*
+        
         public static LuaValue IterateChildClasses(LuaValue[] args)
         {
-            LuaTable _class = args[0] as LuaTable;
-            if ( (IsClass(new LuaValue[] {_class}) as LuaBoolean).BoolValue = true)
-                throw new Exception("item 'class' isn't a valid class!");
-            int current = 0;
-            int count = (_class.GetValue("__subClasses") as LuaTable).Length;
-            return new LuaMultiValue(new LuaValue[] { new LuaFunction(SharpLua.Library.BaseLib.next), _class, LuaNil.Nil });
-           
-            return function()
-                current = current + 1
-                if current <= count then
-                return _class.__subClasses[current]
+            LuaClass _class = args[0] as LuaClass;
+            LuaFunction f = new LuaFunction(BaseLib.Next);
+            return new LuaMultiValue(new LuaValue[] { f, _class.GetChildClasses(new LuaValue[] {}), LuaNil.Nil });
         }
         
-        
+        /*
             // parent/super class iterat||
             // iterates over all the parent classes of 'class'
             // (classes which 'class' inherits from
@@ -156,20 +146,46 @@ namespace SharpLua.Library
          */
         #endregion
         
-        // creates and returns a final/not inheritable class
         public static LuaValue CreateFinalClass(LuaValue[] args)
         {
-            LuaClass c = CreateClass(args);
+            LuaClass c = CreateClass(args) as LuaClass;
             c.Final = true;
             return c;
         }
-
-        // creates and returns a static class
+        
         public static LuaValue CreateStaticClass(LuaValue[] args)
         {
-            LuaClass c = CreateClass(args);
+            LuaClass c = CreateClass(args) as LuaClass;
             c.Static = true;
             return c;
+        }
+        
+        private static int classCount = 0;
+        public static LuaValue CreateClass(LuaValue[] args)
+        {
+            LuaTable from = new LuaTable();
+            if (args[0].GetTypeCode() == "table" && ((IsClass(new LuaValue[] {args[0]}) as LuaBoolean).BoolValue == false) && ((args[0] as LuaTable).GetValue("CreateClass") == null))
+                from = args[0] as LuaTable;
+            LuaClass nClass = new LuaClass("CLASS_" + classCount++, false, false);
+            List<LuaClass> Parents = new List<LuaClass>();
+            for( int i = 0; i < args.Length; i++)
+            {
+                LuaClass c = args[i] as LuaClass;
+                if (c == null)
+                    continue;
+                if (c.Final)
+                    throw new Exception("Cannot inherit from a final class");
+                else
+                {
+                    Parents.Add(c);
+                    c.ChildClasses.Add(nClass);
+                }
+            }
+            nClass.ParentClasses = Parents;
+            TableLib.Copy(new LuaValue[] {nClass.Self, from});
+            
+            
+            return nClass;
         }
     }
 }

@@ -71,6 +71,7 @@ namespace SharpLua
             GarbageCollectorLib.RegisterModule(global);
             CoroutineLib.RegisterModule(global);
             PackageLib.RegisterModule(global);
+            ClassLib.RegisterModule(global);
             
             global.SetNameValue("_WORKDIR", new LuaString(Application.StartupPath + "\\"));
             global.SetNameValue("_VERSION", new LuaString("Sharp Lua 1.0"));
@@ -88,6 +89,7 @@ namespace SharpLua
             preload.SetNameValue("console", (LuaTable) global.GetValue("console"));
             preload.SetNameValue("coroutine", (LuaTable) global.GetValue("coroutine"));
             preload.SetNameValue("package", (LuaTable) global.GetValue("package"));
+            preload.SetNameValue("class", (LuaTable) global.GetValue("class"));
             
             return global;
         }

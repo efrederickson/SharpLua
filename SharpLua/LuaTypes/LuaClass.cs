@@ -179,6 +179,10 @@ namespace SharpLua.LuaTypes
             // strip method name
             string func = args[0].Value.ToString();
             List<LuaValue> args2 = new List<LuaValue>();
+            if ((args[1] as LuaUserdata) != null)
+                foreach (LuaValue a in ((args[1] as LuaUserdata).Value as LuaValue[]))
+                    args2.Add(a);
+                else
             foreach (LuaValue a in args)
                 args2.Add(a);
             args2.RemoveAt(0);
@@ -228,7 +232,7 @@ namespace SharpLua.LuaTypes
                                                                   args2.Add(a);
                                                               args2.RemoveAt(0);
                                                               CallFunction.Invoke(new LuaValue[] {args[0], new LuaMultiValue(args2.ToArray())}); // user defined __call function
-                                                              return CallMethod(new LuaValue[] {args[0], args2.ToArray()}); // call function
+                                                              return CallMethod(new LuaValue[] {args[0], new LuaUserdata(args2.ToArray())}); // call function
                                                           }));
             
             Self.MetaTable.Register("__newindex",new LuaFunc(delegate(LuaValue[] args)

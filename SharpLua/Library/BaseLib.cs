@@ -36,6 +36,7 @@ namespace SharpLua.Library
             module.Register("set", Set);
             module.Register("loadfile", LoadFile);
             module.Register("xpcall", XPcall);
+            module.Register("wait", Wait);
         }
 
         public static LuaValue Print(LuaValue[] values)
@@ -218,14 +219,14 @@ namespace SharpLua.Library
         public static LuaValue DoFile(LuaValue[] values)
         {
             LuaString file = values[0] as LuaString;
-            LuaTable enviroment = Lua.GlobalEnvironment;
+            LuaTable enviroment = LuaRuntime.GlobalEnvironment;
             return LuaRuntime.RunFile(file.Text, enviroment);
         }
 
         public static LuaValue LoadString(LuaValue[] values)
         {
             LuaString code = values[0] as LuaString;
-            LuaTable enviroment = Lua.GlobalEnvironment;
+            LuaTable enviroment = LuaRuntime.GlobalEnvironment;
             Chunk chunk = LuaRuntime.Parse(code.Text);
 
             LuaFunction func = new LuaFunction(
@@ -278,11 +279,11 @@ namespace SharpLua.Library
         public static LuaValue OpenFile(LuaValue[] values)
         {
             OpenFileDialog ofd = new OpenFileDialog();
-            ofd.Filter = "Lua files|*.lua|SharpLua files|*.slua|wLua files|*.wlua|MetaLua files|*.mlua|All Files|*.*";
+            ofd.Filter = "Lua files|*.lua|SharpLua files|*.slua|wLua files|*.wlua|All Files|*.*";
             if (ofd.ShowDialog() == DialogResult.OK)
             {
                 Console.WriteLine("Loading file '" + Path.GetFileName(ofd.FileName) + "'...");
-                return LuaRuntime.RunFile(ofd.FileName, Lua.GlobalEnvironment);
+                return LuaRuntime.RunFile(ofd.FileName, LuaRuntime.GlobalEnvironment);
             }
             else
                 return LuaNil.Nil;
@@ -291,7 +292,7 @@ namespace SharpLua.Library
         public static LuaValue Require(LuaValue[] args)
         {
             // get loaders table
-            LuaTable t = (Lua.GlobalEnvironment.GetValue("package") as LuaTable).GetValue("loaders") as LuaTable;
+            LuaTable t = (LuaRuntime.GlobalEnvironment.GetValue("package") as LuaTable).GetValue("loaders") as LuaTable;
             if (t == null)
                 throw new Exception("Cannot get loaders table from package module!");
              if (t.Count == 0)
@@ -351,6 +352,15 @@ namespace SharpLua.Library
                 return new LuaMultiValue(new LuaValue[] { LuaBoolean.False, new LuaString(ex.Message), v});
             }
             return new LuaMultiValue(new LuaValue[] {LuaBoolean.True, v });
+        }
+        
+        public static LuaValue Wait(LuaValue[] args)
+        {
+            LuaNumber time = args[0] as LuaNumber;
+            if (time == null)
+                throw new Exception("object '" + args[0] + "' is not a number!");
+            System.Threading.Thread.Sleep(int.Parse((time.Number * 1000).ToString()));
+            return null;
         }
     }
 }

@@ -1,0 +1,63 @@
+﻿--[[
+llock in #Lua
+TODO:
+- lock accessing members
+- lock deletion
+]]
+function lock(obj, password)
+    local lindex = function(table, index)
+        if getmetatable(obj).lockinfo.locked then
+            error("object is locked!")
+        end
+        return rawget(table, index)
+    end
+
+    local lnewindex = function(table, index, value)
+        if getmetatable(obj).lockinfo.locked then
+            error("object is locked!")
+        end
+        rawset(table, index, value)
+    end
+
+    local lcall = function(f, ...)
+        if getmetatable(obj).lockinfo.locked then
+            error("object is locked!")
+        end
+        f(unpack(arg))
+    end
+    
+    local ldelete = function() error"Cannot delete object: object is locked!" end
+    local linfo = { }
+    linfo.locked = true
+    linfo.__password = password
+
+    setmetatable(obj, { 
+        __index = lindex,
+        __newindex = lnewindex,
+        __call = lcall,
+        __destructor = ldelete,
+        lockinfo = linfo})
+    return obj
+end
+
+function unlock(obj, password)
+    if getmetatable(obj).lockinfo == nil then error("object isn't locked!") end
+    if getmetatable(obj).lockinfo.locked == false then error("object isn't locked!") end
+    if getmetatable(obj).lockinfo.__password == password then
+        setmetatable(obj, { lockinfo = {locked = false, __password = password }})
+    else
+        error("incorrect password!")
+    end
+    return obj
+end
+
+--[[ test
+t={}
+t.hai = false
+lock(t, "pwd")
+t.thiswillfail = true     --> fail, locked object
+t.hai = true              --> fail, even though already created
+print(t.hai)              --> fail, locked object
+unlock(t, "password")     --> fail, wrong password
+unlock(t, "pwd")
+]]

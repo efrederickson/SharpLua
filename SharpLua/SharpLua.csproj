@@ -103,13 +103,13 @@
     <Compile Include="Expr\VariableArg.cs" />
     <Compile Include="Expr\VarName.cs" />
     <Compile Include="ExternalLibraryLoader.cs" />
+    <Compile Include="Inspector.cs" />
     <Compile Include="Library\ClassLib.cs" />
     <Compile Include="Library\ConsoleLib.cs" />
     <Compile Include="Library\CoroutineLib.cs" />
     <Compile Include="Library\GarbageCollectorLib.cs" />
     <Compile Include="Library\ILuaLibrary.cs" />
     <Compile Include="Library\PackageLib.cs" />
-    <Compile Include="Lua.cs" />
     <Compile Include="Library\BaseLib.cs" />
     <Compile Include="Library\ScriptLib.cs" />
     <Compile Include="Library\WinFormLib.cs" />
@@ -196,6 +196,9 @@
     </None>
     <None Include="string.patterns.txt" />
     <None Include="..\CHANGELOG.txt" />
+    <None Include="Test\ClassesExample.slua">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Test\icon\add.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -205,13 +208,14 @@
     <None Include="Test\icon\save.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Test\Ledger.slua">
+    <None Include="Test\LedgerExample.slua">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Test\lock.slua" />
     <None Include="Test\tablefunctions.slua">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Test\test.slua">
+    <None Include="Test\BasicTest.slua">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Test\WinFormExample.slua">

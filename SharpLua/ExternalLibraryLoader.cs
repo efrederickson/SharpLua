@@ -45,7 +45,7 @@ namespace SharpLua
                                     try {
                                         Library.ILuaLibrary lib= (Library.ILuaLibrary)Activator.CreateInstance(pluginAssembly.GetType(pluginType.ToString()));
                                         //Call initialization for the plugin
-                                        lib.RegisterModule(Lua.GlobalEnvironment);
+                                        lib.RegisterModule(LuaRuntime.GlobalEnvironment);
                                         modules.Add(lib.ModuleName);
                                     } catch (Exception ex) {
                                         Console.WriteLine("Error: " + ex.ToString());

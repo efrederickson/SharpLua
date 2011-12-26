@@ -28,7 +28,7 @@ namespace SharpLua.Library
         {
             // cpath -> cspath?
             module.SetNameValue("cpath", new LuaString(".\\?;.\\?.dll;.\\?.exe"));
-            module.SetNameValue("path", new LuaString(".\\?;.\\?.lua;.\\?.slua;.\\?.wlua.\\?.mlua"));
+            module.SetNameValue("path", new LuaString(".\\?;.\\?.lua;.\\?.slua;.\\?.wlua"));
             module.SetNameValue("loaded", new LuaTable());
             module.SetNameValue("preload", new LuaTable());
             module.Register("seeall", SeeAll);
@@ -36,7 +36,7 @@ namespace SharpLua.Library
             // Load package loader functions
             LuaTable loaderfunctions = new LuaTable();
             loaderfunctions.Register("PreloadSearcher", new LuaFunc(delegate(LuaValue[] args) {
-                                                                        LuaTable t = (Lua.GlobalEnvironment.GetValue("package") as LuaTable).GetValue("preload") as LuaTable;
+                                                                        LuaTable t = (LuaRuntime.GlobalEnvironment.GetValue("package") as LuaTable).GetValue("preload") as LuaTable;
                                                                         string mod = (args[0] as LuaString).Text;
                                                                         LuaValue v = t.GetValue(mod);
                                                                         if (v != null && v != LuaNil.Nil)
@@ -48,7 +48,7 @@ namespace SharpLua.Library
             loaderfunctions.Register("PathSearcher", new LuaFunc(delegate(LuaValue[] args)
                                                                  {
                                                                      // get package.path variable
-                                                                     string path = (Lua.GlobalEnvironment.GetValue("package") as LuaTable).GetValue("path").Value.ToString();
+                                                                     string path = (LuaRuntime.GlobalEnvironment.GetValue("package") as LuaTable).GetValue("path").Value.ToString();
                                                                      // split into paths
                                                                      string[] paths = path.Split(';');
                                                                      // check file names
@@ -72,7 +72,7 @@ namespace SharpLua.Library
             loaderfunctions.Register("CSPathSearcher", new LuaFunc(delegate(LuaValue[] args)
                                                                    {
                                                                        // get package.path variable
-                                                                       string path = (Lua.GlobalEnvironment.GetValue("package") as LuaTable).GetValue("cpath").Value.ToString();
+                                                                       string path = (LuaRuntime.GlobalEnvironment.GetValue("package") as LuaTable).GetValue("cpath").Value.ToString();
                                                                        // split into paths
                                                                        string[] paths = path.Split(';');
                                                                        // check file names
@@ -86,7 +86,7 @@ namespace SharpLua.Library
                                                                                {
                                                                                    Console.WriteLine("Loading file '" + fn + "'...");
                                                                                    string[] modules = ExternalLibraryLoader.Load(fn);
-                                                                                   LuaTable t = Lua.GlobalEnvironment.GetValue(modules[0]) as LuaTable;
+                                                                                   LuaTable t = LuaRuntime.GlobalEnvironment.GetValue(modules[0]) as LuaTable;
                                                                                    
                                                                                    return new LuaMultiValue(new LuaValue[] {LuaBoolean.True, t});
                                                                                }
@@ -104,7 +104,7 @@ namespace SharpLua.Library
         public static LuaValue SeeAll(LuaValue[] args)
         {
             LuaTable t = args[0] as LuaTable;
-            t.MetaTable.SetNameValue("__index", Lua.GlobalEnvironment);
+            t.MetaTable.SetNameValue("__index", LuaRuntime.GlobalEnvironment);
             return t;
         }
     }

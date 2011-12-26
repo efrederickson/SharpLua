@@ -25,6 +25,7 @@ namespace SharpLua.Library
         public static void RegisterModule(LuaTable module)
         {
             module.Register("collectgarbage", CollectGarbage);
+            module.Register("destroy", Destroy);
         }
         
         public static LuaValue CollectGarbage(LuaValue[] args)
@@ -57,7 +58,7 @@ namespace SharpLua.Library
         private static void _collectGarbage()
         {
             DateTime now = DateTime.Now;
-            int result = ScanTable(Lua.GlobalEnvironment);
+            int result = ScanTable(LuaRuntime.GlobalEnvironment);
             DateTime newNow = DateTime.Now;
             Console.WriteLine("Garbage Collector: removed '" + result + "' dead items. Time taken: " + (now - newNow).ToString());
         }
@@ -71,6 +72,8 @@ namespace SharpLua.Library
             {
                 if ((key == LuaNil.Nil) || (key == null))
                 {
+                    if ((key as LuaClass) != null)
+                        (key as LuaClass).Destructor.Invoke(new LuaValue[] {key});
                     // its dead, remove it.
                     t2.RemoveKey(key);
                     r++;
@@ -81,16 +84,35 @@ namespace SharpLua.Library
             {
                 if ((val == LuaNil.Nil) || val == null)
                 {
+                    if ((val as LuaClass) != null)
+                        (val as LuaClass).Destructor.Invoke(new LuaValue[] {val});
                     t2.Remove(val);
                     r++;
                 }
                 
                 if (val is LuaTable)
                     r += ScanTable(val as LuaTable);
+                if (val is LuaClass)
+                    r += ScanTable((val as LuaClass).Self);
             }
             t = t2;
             
             return r;
+        }
+        
+        public static LuaValue Destroy(LuaValue[] args)
+        {
+            LuaValue v = args[0];
+            if ((v as LuaClass) != null)
+                (v as LuaClass).Destructor.Invoke(new LuaValue[] { v });
+            if (v.MetaTable != null)
+            {
+                LuaFunction f = v.MetaTable.GetValue("__destructor") as LuaFunction;
+                if (f != null)
+                    f.Invoke(new LuaValue[] { v });
+            }
+            LuaRuntime.GlobalEnvironment.SetKeyValue(v, null);
+            return null;
         }
     }
 }

@@ -10,6 +10,11 @@ namespace SharpLua
 {
     public class LuaRuntime
     {
+        public static string Prompt
+        {get; set; }
+        public static LuaTable GlobalEnvironment;
+        private static bool GoInteractive = false;
+        
         public static LuaValue RunFile(string luaFile)
         {
             luaFile = FindFullPath(luaFile);
@@ -56,7 +61,7 @@ namespace SharpLua
         public static LuaTable CreateGlobalEnviroment()
         {
             LuaTable global = new LuaTable();
-                    
+            
             // Register Lua Module
             BaseLib.RegisterFunctions(global);
             StringLib.RegisterModule(global);
@@ -91,6 +96,8 @@ namespace SharpLua
             preload.SetNameValue("package", (LuaTable) global.GetValue("package"));
             preload.SetNameValue("class", (LuaTable) global.GetValue("class"));
             
+            GlobalEnvironment = global;
+            
             return global;
         }
         
@@ -104,8 +111,6 @@ namespace SharpLua
                 return spath + ".wlua"; // wLua
             if (File.Exists(spath + ".slua")) // sLua (SharpLua)
                 return spath + ".slua";
-            if (File.Exists(spath + ".mlua")) // MetaLua
-                return spath + ".mlua";
             if (File.Exists(spath + ".dll"))
                 return spath + ".dll";
             if (File.Exists(spath + ".exe"))
@@ -115,5 +120,136 @@ namespace SharpLua
             
             return spath; // let the caller handle the invalid filename
         }
+
+        
+        [STAThread]
+        static void Main(string[] args)
+        {
+            // Create global variables
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            GlobalEnvironment = LuaRuntime.CreateGlobalEnviroment();
+            
+            // how to handle errors
+            GlobalEnvironment.SetNameValue("DEBUG", LuaBoolean.True);
+            //GlobalEnvironment.SetNameValue("DEBUG", LuaBoolean.False);
+            
+            Prompt = "> ";
+            
+            // check command line args
+            if (args.Length > 0)
+            {
+                string file = args[0];
+                if (File.Exists(file))
+                {
+                    try
+                    {
+                        LuaRuntime.RunFile(file);
+                        // it loaded successfully
+                        if (args.Length > 1) // possibly interactive mode after
+                            Console.WriteLine("Loaded file '" + Path.GetFileName(file) + "'");
+                    }
+                    catch (Exception error)
+                    {
+                        Console.WriteLine(error.Message);
+                    }
+                    //Console.ReadKey(true);
+                    //return;
+                    // instead, go to interactive
+                }
+                else
+                {
+                    Console.WriteLine(file + " not found.");
+                }
+            }
+            
+            // check for interactive mode
+            foreach (string arg in args)
+                if (arg.ToUpper() == "-I")
+                    GoInteractive = true;
+            
+            if (args.Length == 0)
+                GoInteractive = true;
+            
+            // load startup scripts
+            LoadFiles();
+            
+            if (GoInteractive)
+            {
+                PrintBanner();
+                while (true)
+                {
+                    Console.Write(Prompt);
+                    string line = Console.ReadLine();
+                    
+                    if (line == "quit" || line == "exit" || line == "bye")
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        try
+                        {
+                            LuaRuntime.Run(line, GlobalEnvironment);
+                        }
+                        catch (Exception error)
+                        {
+                            if (((LuaBoolean)GlobalEnvironment.GetValue(GlobalEnvironment.GetKey("DEBUG"))) == LuaBoolean.True)
+                                Console.WriteLine(error.ToString());
+                            else
+                                Console.WriteLine("Error: " + error.Message);
+                        }
+                    }
+                }
+            }
+        }
+        
+        /// <summary>
+        /// private function to check for startup scripts "init", "boot", and "start" of
+        /// any valid slua filetype
+        /// </summary>
+        private static void LoadFiles()
+        {
+            try {
+                // check startup script
+                LuaRuntime.RunFile(Application.StartupPath + "\\init", GlobalEnvironment);
+            } catch (IOException) {
+                // probly dont exist.
+                // just ignore
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error loading startup script 'init': " + e.ToString());
+            }
+            try {
+                // check startup script
+                LuaRuntime.RunFile(Application.StartupPath + "\\boot", GlobalEnvironment);
+            } catch (IOException) {
+                // probly dont exist.
+                // just ignore
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error loading startup script 'boot': " + e.ToString());
+            }
+            try {
+                // check startup script
+                LuaRuntime.RunFile(Application.StartupPath + "\\start", GlobalEnvironment);
+            } catch (IOException) {
+                // probly dont exist.
+                // just ignore
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error loading startup script 'start': " + e.ToString());
+            }
+        }
+        
+        public static void PrintBanner()
+        {
+            Console.WriteLine("SharpLua " + Application.ProductVersion + ", Copyright (C) 2011 mlnlover11 Productions");
+            //Console.WriteLine(Prompt);
+        }
+        
     }
 }

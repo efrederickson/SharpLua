@@ -5,4 +5,6 @@ Version 1.0.*
 Version 1.1.*
 + Added Built-in classes
 + More advanced .NET interop
-+ coroutine
++ coroutine library
++ basic gc library
++ combined class Lua and class LuaRuntime

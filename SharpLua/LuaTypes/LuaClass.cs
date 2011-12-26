@@ -17,20 +17,35 @@ namespace SharpLua.LuaTypes
     /// </summary>
     public class LuaClass : LuaValue
     {
+        private static List<string> classNames = new List<string>();
+        
         public bool Final = false;
         public bool Static = false;
-        public string Name = "";
+        private string _name = "";
+        public string Name
+        {
+            get
+            {
+                return _name;
+            }
+            set
+            {
+                _name = Rename(value);
+            }
+        }
         public List<LuaClass> ParentClasses = new List<LuaClass>();
         public List<LuaClass> ChildClasses = new List<LuaClass>();
         public LuaFunction IndexFunction;
         public LuaFunction NewIndexFunction;
         public LuaFunction CallFunction;
         public LuaFunction ToStringFunction;
+        public LuaFunction Constructor;
+        public LuaFunction Destructor;
         public LuaTable Self;
         
         public LuaClass(string name, bool final, bool _static)
         {
-            this.Name = name;
+            this.Name = Rename(name);
             this.Final = final;
             this.Static = _static;
             
@@ -42,6 +57,16 @@ namespace SharpLua.LuaTypes
                                                                 {return null; }));
             this.ToStringFunction = new LuaFunction(new LuaFunc((LuaValue[] args) =>
                                                                 {return new LuaString("Lua Class: " + GetHashCode() + ", Name: " + Name); }));
+            this.Constructor = new LuaFunction(new LuaFunc((LuaValue[] args) =>
+                                                           {
+                                                               // do nothing
+                                                               return LuaNil.Nil;
+                                                           }));
+            this.Destructor = new LuaFunction(new LuaFunc((LuaValue[] args) =>
+                                                          {
+                                                              // do nothing
+                                                              return LuaNil.Nil;
+                                                          }));
             this.Self = new LuaTable();
             Self.Register("new", New);
             Self.Register("Set", Set);
@@ -70,7 +95,9 @@ namespace SharpLua.LuaTypes
         
         public LuaValue New(LuaValue[] args)
         {
-            return ClassLib.CreateInstance(new LuaValue[] {this });
+            LuaClass n = ClassLib.CreateInstance(new LuaValue[] {this }) as LuaClass;
+            n.Constructor.Invoke(args);
+            return n;
         }
         
         public LuaValue Set(LuaValue[] args)
@@ -183,8 +210,8 @@ namespace SharpLua.LuaTypes
                 foreach (LuaValue a in ((args[1] as LuaUserdata).Value as LuaValue[]))
                     args2.Add(a);
                 else
-            foreach (LuaValue a in args)
-                args2.Add(a);
+                    foreach (LuaValue a in args)
+                        args2.Add(a);
             args2.RemoveAt(0);
             LuaFunction f = ClassLib.FindMethod(new LuaValue[] {new LuaString(func), this}) as LuaFunction;
             if ((f == null))
@@ -242,18 +269,28 @@ namespace SharpLua.LuaTypes
                                                                  //(table, key, value)
                                                                  NewIndexFunction.Invoke(new LuaValue[] {Self, key, value}); // user defined __newindex function
                                                                  // check for user defined "metamethods"
-                                                                 string func = key.Value.ToString();
-                                                                 if (func == "__index")
+                                                                 string obj = key.Value.ToString();
+                                                                 if (obj == "__index")
                                                                  {
                                                                      // assign this to the __indexfunction variable
                                                                      Self.RawSetValue("__indexfunction", value);
                                                                  }
-                                                                 else if (func == "__newindex")
-                                                                     Self.RawSetValue("__newindexfunction", value);
-                                                                 else if (func == "__call")
-                                                                     Self.RawSetValue("__callfunction", value);
-                                                                 else if (func == "__tostring")
-                                                                     Self.RawSetValue("__tostringfunction", value);
+                                                                 else if (obj == "__newindex")
+                                                                     NewIndexFunction = value as LuaFunction;
+                                                                 else if (obj == "__call")
+                                                                     CallFunction = value as LuaFunction;
+                                                                 else if (obj == "__tostring")
+                                                                     ToStringFunction = value as LuaFunction;
+                                                                 else if (obj == "final")
+                                                                     Final = true;
+                                                                 else if (obj == "static")
+                                                                     Static = true;
+                                                                 else if (obj == "name")
+                                                                     Name = Rename(value.Value.ToString());
+                                                                 else if (obj == "constructor")
+                                                                     Constructor = (LuaFunction) value;
+                                                                 else if (obj == "destructor")
+                                                                     Destructor = (LuaFunction) value;
                                                                  else // its a normal key/value pair
                                                                      Self.SetKeyValue(key, value);
                                                                  return LuaNil.Nil;
@@ -263,6 +300,14 @@ namespace SharpLua.LuaTypes
                                                                   return ToStringFunction.Invoke(new LuaValue[] {});
                                                               }));
             this.MetaTable = Self.MetaTable;
+        }
+        
+        string Rename(string val)
+        {
+            classNames.Remove(this.Name);
+            if (classNames.Contains(val))
+                throw new Exception("Class '" + val + "' is already defined!");
+            return val;
         }
 
     }

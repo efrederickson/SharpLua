@@ -1,16 +1,16 @@
 ﻿TODO
-- built-in class library (of type class)
+- Documentation/guides
 - Compiler
+- serializer
+- cryptography library (seperate project), use IExtendFramework 
+- compression library (separate project), using ICSharpCode.SharpZipLib
 - error: error level also
-- load .dll and .exe files, and check for Library pieces
 - set "..." to command line args in _G
 - create examples (Tests)
-- getfenv, setfenv
-- load <func>[, chunkname]
+- Lists
+
+STANDARD LUA FUNCTIONS
 - rawequal <v1>, <v2>
-- module <name>
-- package
-  - loadlib <lib>, <funcname>
 - string.dump <func>
 - string.find <s, pattern [, init [, plain]]
 - string.gmatch <s>, <pattern>    returns iterator getting capture (regex?)
@@ -20,5 +20,3 @@
 - io.popen <program> [, mode]
 - io.type <obj>    (valid file handle)
 - file.setvbuf <mode> [, size]   (mode = "no"/no buffering, "full"/full buffering, "line"/line buffering
-- os.setlocale <locale> [, category]
-- lua pattern to regex

@@ -23,6 +23,7 @@ namespace SharpLua
 
                     if (varName != null)
                     {
+                        // inital creation, no metatable yet
                         SetKeyValue(enviroment, new LuaString(varName.Name), values[i]);
                         continue;
                     }
@@ -83,7 +84,7 @@ namespace SharpLua
                 // null checks (mainly for debugging)
                 if (c.Self.MetaTable == null)
                     c.GenerateMetaTable();
-                    //throw new Exception("Class metatable is nil!");
+                //throw new Exception("Class metatable is nil!");
                 newIndex = c.Self.MetaTable.GetValue("__newindex");
                 if (newIndex == LuaNil.Nil)
                     c.Self.SetKeyValue(key, value);

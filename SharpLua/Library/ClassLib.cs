@@ -59,6 +59,8 @@ namespace SharpLua.Library
             n.MetaTable = c.MetaTable;
             n.NewIndexFunction = c.NewIndexFunction;
             n.ParentClasses = c.ParentClasses;
+            n.Constructor = c.Constructor;
+            n.Destructor = c.Destructor;
             TableLib.Copy(new LuaValue[] { n.Self, c.Self });
             n.ToStringFunction = c.ToStringFunction;
             

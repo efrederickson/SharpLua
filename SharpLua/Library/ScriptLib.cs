@@ -29,6 +29,8 @@ namespace SharpLua.Library
             module.Register("reference", Reference);
             module.Register("create", Create);
             module.Register("import", Import);
+            module.Register("getinfo", GetInfo);
+            module.Register("dump", Dump);
         }
         
         public static LuaValue Reference(LuaValue[] args)
@@ -129,7 +131,7 @@ namespace SharpLua.Library
             }
             else if (propertyInfo.PropertyType.FullName == "System.Drawing.Image")
             {
-                LuaTable enviroment = Lua.GlobalEnvironment.GetValue("_G") as LuaTable;
+                LuaTable enviroment = LuaRuntime.GlobalEnvironment.GetValue("_G") as LuaTable;
                 LuaString workDir = enviroment.GetValue("_WORKDIR") as LuaString;
                 var image = System.Drawing.Image.FromFile(Path.Combine(workDir.Text, (string)value));
                 propertyInfo.SetValue(obj, image, null);
@@ -348,6 +350,17 @@ namespace SharpLua.Library
             }
 
             return controlMetaTable;
+        }
+        
+        public static LuaValue GetInfo(LuaValue[] args)
+        {
+            return new LuaString(Inspector.Inspect(args[0].Value));
+        }
+        
+        public static LuaValue Dump(LuaValue[] args)
+        {
+            Console.WriteLine(Inspector.Inspect(args[0].Value));
+            return LuaNil.Nil;
         }
     }
 }

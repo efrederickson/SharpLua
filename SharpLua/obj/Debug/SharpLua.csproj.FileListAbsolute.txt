@@ -30,3 +30,4 @@ C:\Elijah - Libraries\SharpLua\SharpLua\obj\Debug\slua.pdb
 C:\Elijah - Libraries\SharpLua\bin\Debug\Test\ClassesExample.slua
 C:\Elijah - Libraries\SharpLua\bin\Debug\Test\LedgerExample.slua
 C:\Elijah - Libraries\SharpLua\bin\Debug\Test\BasicTest.slua
+C:\Elijah - Libraries\SharpLua\bin\Debug\Test\Battle.slua

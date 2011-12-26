@@ -295,7 +295,7 @@ namespace SharpLua.Library
             LuaTable t = (LuaRuntime.GlobalEnvironment.GetValue("package") as LuaTable).GetValue("loaders") as LuaTable;
             if (t == null)
                 throw new Exception("Cannot get loaders table from package module!");
-             if (t.Count == 0)
+            if (t.Count == 0)
                 throw new Exception("Loaders table is empty!");
             // whether package was found/loaded
             LuaBoolean b = LuaBoolean.False;
@@ -308,8 +308,10 @@ namespace SharpLua.Library
                     LuaMultiValue lmv = f.Invoke(new LuaValue[] {new LuaString(args[0].Value.ToString())}) as LuaMultiValue;
                     b = lmv.Values[0] as LuaBoolean;
                     if (b.BoolValue == true)
+                    {
+                        module = lmv.Values[1] as LuaTable;
                         break;
-                    module = lmv.Values[1] as LuaTable;
+                    }
                 }
                 else
                 {
@@ -346,7 +348,7 @@ namespace SharpLua.Library
             LuaFunction ef = args[1] as LuaFunction;
             LuaValue v = null;
             try {
-               v =  f.Invoke(new LuaValue[] {});
+                v =  f.Invoke(new LuaValue[] {});
             } catch (Exception ex) {
                 v = ef.Invoke(new LuaValue[] { new LuaUserdata(ex)});
                 return new LuaMultiValue(new LuaValue[] { LuaBoolean.False, new LuaString(ex.Message), v});

@@ -4,6 +4,8 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # SharpDevelop 4.2.0.8322-alpha
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpLua", "SharpLua\SharpLua.csproj", "{9B6F4AAC-1B76-4CB6-B7CE-EFBBB0C7F5C0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpLuaAddIn", "SharpLuaAddIn\SharpLuaAddIn.csproj", "{30C23BA2-6437-42AB-A1D0-C3CDCCCEEA6E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -20,6 +22,14 @@ Global
 		{9B6F4AAC-1B76-4CB6-B7CE-EFBBB0C7F5C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9B6F4AAC-1B76-4CB6-B7CE-EFBBB0C7F5C0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9B6F4AAC-1B76-4CB6-B7CE-EFBBB0C7F5C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{30C23BA2-6437-42AB-A1D0-C3CDCCCEEA6E}.Debug|x86.Build.0 = Debug|x86
+		{30C23BA2-6437-42AB-A1D0-C3CDCCCEEA6E}.Debug|x86.ActiveCfg = Debug|x86
+		{30C23BA2-6437-42AB-A1D0-C3CDCCCEEA6E}.Debug|Any CPU.Build.0 = Debug|x86
+		{30C23BA2-6437-42AB-A1D0-C3CDCCCEEA6E}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{30C23BA2-6437-42AB-A1D0-C3CDCCCEEA6E}.Release|x86.Build.0 = Release|x86
+		{30C23BA2-6437-42AB-A1D0-C3CDCCCEEA6E}.Release|x86.ActiveCfg = Release|x86
+		{30C23BA2-6437-42AB-A1D0-C3CDCCCEEA6E}.Release|Any CPU.Build.0 = Release|x86
+		{30C23BA2-6437-42AB-A1D0-C3CDCCCEEA6E}.Release|Any CPU.ActiveCfg = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

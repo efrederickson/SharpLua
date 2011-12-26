@@ -61,8 +61,8 @@ namespace SharpLua.Library
                                                                              if (File.Exists(fn))
                                                                              {
                                                                                  LuaTable m = new LuaTable();
-                                                                                 m.AddValue(LuaRuntime.RunFile(fn));
-                                                                                 return new LuaMultiValue(new LuaValue[] {LuaBoolean.True, m});
+                                                                                 m.AddValue(LuaRuntime.RunFile(fn, LuaRuntime.GlobalEnvironment));
+                                                                                 return new LuaMultiValue(new LuaValue[] {LuaBoolean.True, LuaRuntime.GlobalEnvironment.GetValue(Path.GetFileNameWithoutExtension(fn))});
                                                                              }
                                                                          }
                                                                      }

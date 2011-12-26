@@ -1,0 +1,116 @@
+<?xml version="1.0"?>
+<!-- Syntax Definition for SharpLua -->
+
+<SyntaxDefinition name = "SharpLua" extensions = ".slua;.lua">
+    
+    <Properties>
+        <Property name="LineComment" value="--"/>
+    </Properties>
+    
+    <Digits name = "Digits" bold = "false" italic = "false" color = "DarkBlue"/>
+    
+    <RuleSets>
+        <RuleSet ignorecase="false">
+            <Delimiters>&amp;&lt;&gt;~!%^*()-+=|\#/{}[]:;"' ,	.?</Delimiters>
+            
+            <Span name = "LineComment" rule = "CommentMarkerSet" bold = "false" italic = "false" color = "Green" stopateol = "true">
+                <Begin>--</Begin>
+            </Span>
+            
+            <Span name = "Char" bold = "false" italic = "false" color = "DarkBlue" stopateol = "true" escapecharacter="\">
+                <Begin>&apos;</Begin>
+                <End>&apos;</End>
+            </Span>
+            <Span name = "BlockComment" rule = "CommentMarkerSet" bold = "false" italic = "false" color = "Green" stopateol = "false">
+                <Begin>--[[</Begin>
+                <End>]]</End>
+            </Span>
+            
+            <Span name = "String" bold = "false" italic = "false" color = "DarkBlue" stopateol = "false" escapecharacter="\">
+                <Begin>"</Begin>
+                <End>"</End>
+            </Span>
+            
+            <Span name = "MultiLineString" bold = "false" italic = "false" color = "DarkBlue" stopateol = "false" escapecharacter='"'>
+                <Begin>[[</Begin>
+                <End>]]</End>
+            </Span>
+            
+            <KeyWords name = "Punctuation" bold = "false" italic = "false" color = "DarkGreen">
+                <Key word = "?" />
+                <Key word = "," />
+                <Key word = "." />
+                <Key word = ";" />
+                <Key word = "(" />
+                <Key word = ")" />
+                <Key word = "[" />
+                <Key word = "]" />
+                <Key word = "{" />
+                <Key word = "}" />
+                <Key word = "+" />
+                <Key word = "-" />
+                <Key word = "/" />
+                <Key word = "%" />
+                <Key word = "*" />
+                <Key word = "&lt;" />
+                <Key word = "&gt;" />
+                <Key word = "^" />
+                <Key word = "=" />
+                <Key word = "~" />
+                <Key word = "!" />
+                <Key word = "|" />
+                <Key word = "&amp;" />
+                <Key word = "@" />
+                <Key word = "#" />
+                <Key word = "$" />
+            </KeyWords>
+            
+            <KeyWords name = "CurrentKeywords" bold="true" italic="false" color="Blue">
+                <Key word="and"/>
+                <Key word="break"/>
+                <Key word="do"/>
+                <Key word="else"/>
+                <Key word="elseif"/>
+                <Key word="end"/>
+                <Key word="false"/>
+                <Key word="for"/>
+                <Key word="function"/>
+                <Key word="if"/>
+                <Key word="in"/>
+                <Key word="local"/>
+                <Key word="nil"/>
+                <Key word="not"/>
+                <Key word="or"/>
+                <Key word="repeat"/>
+                <Key word="return"/>
+                <Key word="then"/>
+                <Key word="true"/>
+                <Key word="until"/>
+                <Key word="while"/>
+                <Key word="print"/>
+                <Key word="collectgarbage" />
+            </KeyWords>
+            
+            <KeyWords name="Tables" bold="false" italic="false" color="DarkBlue">
+                <Key word="io"/>
+                <Key word="os"/>
+                <Key word="class" />
+                <Key word="table" />
+                <Key word="script" />
+            <Key word="file" />
+            <Key word="WinForms" />
+            </KeyWords>
+        </RuleSet>
+        <RuleSet name = "CommentMarkerSet" ignorecase = "false">
+            <Delimiters>&lt;&gt;~!@%^*()-+=|\#/{}[]:;"' ,	.?</Delimiters>
+            <KeyWords name = "ErrorWords" bold="true" italic="false" color="Red">
+                <Key word = "TODO" />
+                <Key word = "FIXME" />
+            </KeyWords>
+            <KeyWords name = "WarningWords" bold="true" italic="false" color="#EEE0E000">
+                <Key word = "HACK" />
+                <Key word = "UNDONE" />
+            </KeyWords>
+        </RuleSet>
+    </RuleSets>
+</SyntaxDefinition>

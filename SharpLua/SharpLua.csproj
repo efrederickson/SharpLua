@@ -196,6 +196,9 @@
     </None>
     <None Include="string.patterns.txt" />
     <None Include="..\CHANGELOG.txt" />
+    <None Include="Test\Battle.slua">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Test\ClassesExample.slua">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

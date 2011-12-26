@@ -176,7 +176,7 @@ namespace SharpLua.Library
                 from = args[0] as LuaTable;
             LuaClass nClass = new LuaClass("CLASS_" + classCount++, false, false);
             List<LuaClass> Parents = new List<LuaClass>();
-            for( int i = 0; i < args.Length; i++)
+            for (int i = 0; i < args.Length; i++)
             {
                 LuaClass c = args[i] as LuaClass;
                 if (c == null)
@@ -191,8 +191,6 @@ namespace SharpLua.Library
             }
             nClass.ParentClasses = Parents;
             TableLib.Copy(new LuaValue[] {nClass.Self, from});
-            
-            
             return nClass;
         }
     }

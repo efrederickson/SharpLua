@@ -95,6 +95,8 @@ namespace SharpLua.LuaTypes
         
         public LuaValue New(LuaValue[] args)
         {
+            if (Static)
+                throw new Exception("Cannot create an instance of a static class!");
             LuaClass n = ClassLib.CreateInstance(new LuaValue[] {this }) as LuaClass;
             n.Constructor.Invoke(args);
             return n;
@@ -253,7 +255,8 @@ namespace SharpLua.LuaTypes
             
             Self.MetaTable.Register("__call", new LuaFunc(delegate(LuaValue[] args)
                                                           { //(func, ...)
-                                                              
+                                                              if (args.Length == 0)
+                                                                  return LuaNil.Nil;
                                                               List<LuaValue> args2 = new List<LuaValue>();
                                                               foreach (LuaValue a in args)
                                                                   args2.Add(a);
@@ -273,7 +276,7 @@ namespace SharpLua.LuaTypes
                                                                  if (obj == "__index")
                                                                  {
                                                                      // assign this to the __indexfunction variable
-                                                                     Self.RawSetValue("__indexfunction", value);
+                                                                     IndexFunction = value as LuaFunction;
                                                                  }
                                                                  else if (obj == "__newindex")
                                                                      NewIndexFunction = value as LuaFunction;

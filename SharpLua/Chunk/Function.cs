@@ -34,11 +34,15 @@ namespace SharpLua
                 for (int i = 0; i < this.Name.FullName.Count; i++)
                 {
                     LuaValue obj = enviroment.GetValue(this.Name.FullName[i]);
-                    table = obj as LuaTable;
-
+                    
+                    if ((obj as LuaClass) != null)
+                        table = (obj as LuaClass).Self;
+                    else
+                        table = obj as LuaTable;
+                    
                     if (table == null)
                     {
-                        throw new Exception("Not a table " + this.Name.FullName[i]);
+                        throw new Exception("Not a table: " + this.Name.FullName[i]);
                     }
                 }
 

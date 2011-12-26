@@ -4,6 +4,7 @@ using System.Text;
 
 namespace SharpLua.AST
 {
+    [Serializable()]
     public partial class Args
     {
         public List<Expr> ArgList = new List<Expr>();

@@ -6,6 +6,7 @@ using SharpLua.LuaTypes;
 
 namespace SharpLua.AST
 {
+    [Serializable()]
     public partial class FunctionCall : Access
     {
         public override LuaValue Evaluate(LuaValue baseValue, LuaTable enviroment)

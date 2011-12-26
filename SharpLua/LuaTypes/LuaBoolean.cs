@@ -5,6 +5,7 @@ using System.Text;
 
 namespace SharpLua.LuaTypes
 {
+    [Serializable()]
     public class LuaBoolean : LuaValue
     {
         public static readonly LuaBoolean False = new LuaBoolean { BoolValue = false };

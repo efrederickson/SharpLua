@@ -12,8 +12,9 @@ using System.Threading;
 namespace SharpLua.LuaTypes
 {
     /// <summary>
-    /// A coroutine
+    /// A coroutine/thread
     /// </summary>
+    [Serializable()]
     public class LuaCoroutine : LuaValue
     {
         public static LuaCoroutine Running = null;

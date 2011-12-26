@@ -9,6 +9,7 @@ namespace SharpLua.AST
     /// <summary>
     /// A Lua function
     /// </summary>
+    [Serializable()]
     public partial class Function : Statement
     {
         /// <summary>

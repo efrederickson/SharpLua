@@ -7,6 +7,7 @@ using SharpLua.LuaTypes;
 
 namespace SharpLua.AST
 {
+    [Serializable()]
     public abstract partial class Statement
     {
         public abstract LuaValue Execute(LuaTable enviroment, out bool isBreak);

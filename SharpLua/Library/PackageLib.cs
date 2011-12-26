@@ -29,6 +29,7 @@ namespace SharpLua.Library
             // cpath -> cspath?
             module.SetNameValue("cpath", new LuaString(".\\?;.\\?.dll;.\\?.exe"));
             module.SetNameValue("path", new LuaString(".\\?;.\\?.lua;.\\?.slua;.\\?.wlua"));
+            module.SetNameValue("bpath", new LuaString(".\\?;.\\?.luac;.\\?.out;.\\?.sluac"));
             module.SetNameValue("loaded", new LuaTable());
             module.SetNameValue("preload", new LuaTable());
             module.Register("seeall", SeeAll);
@@ -93,6 +94,30 @@ namespace SharpLua.Library
                                                                            }
                                                                        }
                                                                        return new LuaMultiValue(new LuaValue[] {LuaBoolean.False});
+                                                                   }));
+            loaderfunctions.Register("BinarySearcher", new LuaFunc(delegate(LuaValue[] args) 
+                                                                   {
+                                                                     // get package.path variable
+                                                                     string path = (LuaRuntime.GlobalEnvironment.GetValue("package") as LuaTable).GetValue("bpath").Value.ToString();
+                                                                     // split into paths
+                                                                     string[] paths = path.Split(';');
+                                                                     // check file names
+                                                                     foreach (string p in paths)
+                                                                     {
+                                                                         foreach (LuaValue arg in args)
+                                                                         {
+                                                                             string sfn = arg.Value.ToString();
+                                                                             string fn = p.Replace("?", sfn);
+                                                                             if (File.Exists(fn))
+                                                                             {
+                                                                                 LuaTable m = new LuaTable();
+                                                                                 bool isBreak;
+                                                                                 m.AddValue(Serializer.Deserialize(fn).Execute(LuaRuntime.GlobalEnvironment, out isBreak));
+                                                                                 return new LuaMultiValue(new LuaValue[] {LuaBoolean.True, LuaRuntime.GlobalEnvironment.GetValue(Path.GetFileNameWithoutExtension(fn))});
+                                                                             }
+                                                                         }
+                                                                     }
+                                                                     return new LuaMultiValue(new LuaValue[] {LuaBoolean.False});
                                                                    }));
             module.SetNameValue("loaders", loaderfunctions);
             module.Register("loadlib", new LuaFunc((LuaValue[] args) =>

@@ -6,6 +6,7 @@ using SharpLua.LuaTypes;
 
 namespace SharpLua.AST
 {
+    [Serializable()]
     public abstract partial class Expr
     {
         public abstract LuaValue Evaluate(LuaTable enviroment);

@@ -10,6 +10,7 @@ namespace SharpLua.AST
     /// <summary>
     /// Base class for lua code
     /// </summary>
+    [Serializable()]
     public partial class Chunk
     {
         /// <summary>

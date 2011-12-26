@@ -38,6 +38,7 @@ namespace SharpLua.Library
             module.Register("loadfile", LoadFile);
             module.Register("xpcall", XPcall);
             module.Register("wait", Wait);
+            module.Register("loadbin", LoadBin);
         }
 
         public static LuaValue Print(LuaValue[] values)
@@ -366,6 +367,15 @@ namespace SharpLua.Library
                 throw new Exception("object '" + args[0] + "' is not a number!");
             System.Threading.Thread.Sleep(int.Parse((time.Number * 1000).ToString()));
             return null;
+        }
+        
+        public static LuaValue LoadBin(LuaValue[] args)
+        {
+            string fn = (args[0] as LuaString).Text;
+            Chunk c = (Chunk) Serializer.Deserialize(fn);
+            bool success;
+            c.Enviroment = LuaRuntime.GlobalEnvironment;
+            return c.Execute(LuaRuntime.GlobalEnvironment, out success);
         }
     }
 }

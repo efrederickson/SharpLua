@@ -9,6 +9,7 @@ namespace SharpLua.AST
     /// <summary>
     /// Represent Unary or Binary Operation, for Unary Operation the LeftOperand is not used.
     /// </summary>
+    [Serializable()]
     public partial class Operation : Term
     {
         public string Operator;

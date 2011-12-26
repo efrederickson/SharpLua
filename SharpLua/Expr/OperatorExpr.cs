@@ -6,6 +6,7 @@ using SharpLua.LuaTypes;
 
 namespace SharpLua.AST
 {
+    [Serializable()]
     public partial class OperatorExpr : Expr
     {
         public LinkedList<object> Terms = new LinkedList<object>();

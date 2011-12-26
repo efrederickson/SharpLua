@@ -198,7 +198,18 @@ namespace SharpLua
                 {
                     try
                     {
-                        LuaRuntime.RunFile(file);
+                        GlobalEnvironment.SetNameValue("_WORKDIR", new LuaString(Path.GetDirectoryName(file)));
+                        if (file.EndsWith(".out") || file.EndsWith(".luac") || file.EndsWith(".sluac"))
+                        {
+                            Chunk c = Serializer.Deserialize(file);
+                            c.Enviroment = GlobalEnvironment;
+                            bool isBreak;
+                            c.Execute(GlobalEnvironment, out isBreak);
+                        }
+                        else
+                        {
+                            LuaRuntime.RunFile(file, GlobalEnvironment);
+                        }
                         // it loaded successfully
                         if (args.Length > 1) // possibly interactive mode after
                             Console.WriteLine("Loaded file '" + Path.GetFileName(file) + "'");

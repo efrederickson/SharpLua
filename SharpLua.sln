@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpLua", "SharpLua\SharpL
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpLuaAddIn", "SharpLuaAddIn\SharpLuaAddIn.csproj", "{30C23BA2-6437-42AB-A1D0-C3CDCCCEEA6E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpLua.Compiler", "SharpLua.Compiler\SharpLua.Compiler.csproj", "{3C2FAD20-CEE7-41E0-8752-EBA884AA68A4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -30,6 +32,14 @@ Global
 		{30C23BA2-6437-42AB-A1D0-C3CDCCCEEA6E}.Release|x86.ActiveCfg = Release|x86
 		{30C23BA2-6437-42AB-A1D0-C3CDCCCEEA6E}.Release|Any CPU.Build.0 = Release|x86
 		{30C23BA2-6437-42AB-A1D0-C3CDCCCEEA6E}.Release|Any CPU.ActiveCfg = Release|x86
+		{3C2FAD20-CEE7-41E0-8752-EBA884AA68A4}.Debug|x86.Build.0 = Debug|x86
+		{3C2FAD20-CEE7-41E0-8752-EBA884AA68A4}.Debug|x86.ActiveCfg = Debug|x86
+		{3C2FAD20-CEE7-41E0-8752-EBA884AA68A4}.Debug|Any CPU.Build.0 = Debug|x86
+		{3C2FAD20-CEE7-41E0-8752-EBA884AA68A4}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{3C2FAD20-CEE7-41E0-8752-EBA884AA68A4}.Release|x86.Build.0 = Release|x86
+		{3C2FAD20-CEE7-41E0-8752-EBA884AA68A4}.Release|x86.ActiveCfg = Release|x86
+		{3C2FAD20-CEE7-41E0-8752-EBA884AA68A4}.Release|Any CPU.Build.0 = Release|x86
+		{3C2FAD20-CEE7-41E0-8752-EBA884AA68A4}.Release|Any CPU.ActiveCfg = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

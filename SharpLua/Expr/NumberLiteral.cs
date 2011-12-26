@@ -7,6 +7,7 @@ using SharpLua.LuaTypes;
 
 namespace SharpLua.AST
 {
+    [Serializable()]
     public partial class NumberLiteral : Term
     {
         public override LuaValue Evaluate(LuaTable enviroment)

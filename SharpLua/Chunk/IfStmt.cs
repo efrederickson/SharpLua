@@ -9,9 +9,10 @@ namespace SharpLua.AST
     /// <summary>
     /// An if/then statement
     /// </summary>
+    [Serializable()]
     public partial class IfStmt : Statement
     {
-                /// <summary>
+        /// <summary>
         /// Executes the chunk
         /// </summary>
         /// <param name="enviroment">The environment to run in</param>

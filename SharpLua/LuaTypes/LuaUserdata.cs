@@ -5,6 +5,7 @@ using System.Text;
 
 namespace SharpLua.LuaTypes
 {
+    [Serializable()]
     public class LuaUserdata : LuaValue
     {
         private object Object;

@@ -5,6 +5,7 @@ using System.Text;
 
 namespace SharpLua.LuaTypes
 {
+    [Serializable()]
     public class LuaMultiValue : LuaValue
     {
         public LuaMultiValue(LuaValue[] values)

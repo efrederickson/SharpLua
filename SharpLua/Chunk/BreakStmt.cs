@@ -9,6 +9,7 @@ namespace SharpLua.AST
     /// <summary>
     /// A statement that breaks the current loop
     /// </summary>
+    [Serializable()]
     public partial class BreakStmt : Statement
     {
         /// <summary>

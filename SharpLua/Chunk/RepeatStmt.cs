@@ -6,6 +6,7 @@ using SharpLua.LuaTypes;
 
 namespace SharpLua.AST
 {
+    [Serializable()]
     public partial class RepeatStmt : Statement
     {
         public override LuaValue Execute(LuaTable enviroment, out bool isBreak)

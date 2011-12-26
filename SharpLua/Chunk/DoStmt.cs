@@ -9,6 +9,7 @@ namespace SharpLua.AST
     /// <summary>
     /// A do statement
     /// </summary>
+    [Serializable()]
     public partial class DoStmt : Statement
     {
         /// <summary>

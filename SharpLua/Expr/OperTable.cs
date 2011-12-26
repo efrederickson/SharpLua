@@ -4,6 +4,7 @@ using System.Text;
 
 namespace SharpLua.AST
 {
+    [Serializable()]
     public enum Associativity
     {
         NonAssociative,
@@ -11,6 +12,7 @@ namespace SharpLua.AST
         RightAssociative
     }
 
+    [Serializable()]
     public class OperTable
     {
         static Dictionary<string, int> precedence = new Dictionary<string, int>();

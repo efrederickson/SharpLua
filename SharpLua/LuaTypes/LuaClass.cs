@@ -15,6 +15,7 @@ namespace SharpLua.LuaTypes
     /// <summary>
     /// A Lua class
     /// </summary>
+    [Serializable()]
     public class LuaClass : LuaValue
     {
         private static List<string> classNames = new List<string>();

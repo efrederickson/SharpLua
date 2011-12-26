@@ -6,6 +6,7 @@ using SharpLua.LuaTypes;
 
 namespace SharpLua.AST
 {
+    [Serializable()]
     public partial class FunctionBody
     {
         public LuaValue Evaluate(LuaTable enviroment)
@@ -36,6 +37,7 @@ namespace SharpLua.AST
                                     remainedArgs[i] = args[argCount + i];
                                 }
                                 table.SetNameValue("...", new LuaMultiValue(remainedArgs));
+                                table.SetNameValue("arg", new LuaMultiValue(remainedArgs));
                             }
                         }
                     }

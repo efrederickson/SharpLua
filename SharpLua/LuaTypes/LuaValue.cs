@@ -5,6 +5,7 @@ using System.Text;
 
 namespace SharpLua.LuaTypes
 {
+    [Serializable()]
     public abstract class LuaValue : IEquatable<LuaValue>
     {
         

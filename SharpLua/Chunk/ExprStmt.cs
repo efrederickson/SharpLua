@@ -9,6 +9,7 @@ namespace SharpLua.AST
     /// <summary>
     /// An Expression
     /// </summary>
+    [Serializable()]
     public partial class ExprStmt : Statement
     {
         /// <summary>

@@ -1,0 +1,15 @@
+C:\Elijah - Libraries\SharpLua\SharpLua\bin\Debug\Test\Battle.slua
+C:\Elijah - Libraries\SharpLua\SharpLua\bin\Debug\Test\ClassesExample.slua
+C:\Elijah - Libraries\SharpLua\SharpLua\bin\Debug\Test\LedgerExample.slua
+C:\Elijah - Libraries\SharpLua\SharpLua\bin\Debug\Test\tablefunctions.slua
+C:\Elijah - Libraries\SharpLua\SharpLua\bin\Debug\Test\BasicTest.slua
+C:\Elijah - Libraries\SharpLua\SharpLua\bin\Debug\Test\WinFormExample.slua
+C:\Elijah - Libraries\SharpLua\SharpLua\bin\Debug\Test\icon\add.png
+C:\Elijah - Libraries\SharpLua\SharpLua\bin\Debug\Test\icon\open.png
+C:\Elijah - Libraries\SharpLua\SharpLua\bin\Debug\Test\icon\save.png
+C:\Elijah - Libraries\SharpLua\SharpLua\bin\Debug\slua.exe
+C:\Elijah - Libraries\SharpLua\SharpLua\bin\Debug\slua.pdb
+C:\Elijah - Libraries\SharpLua\SharpLua\obj\x86\Debug\ResolveAssemblyReference.cache
+C:\Elijah - Libraries\SharpLua\SharpLua\obj\x86\Debug\slua.exe
+C:\Elijah - Libraries\SharpLua\SharpLua\obj\x86\Debug\slua.pdb
+C:\Elijah - Libraries\SharpLua\SharpLua\bin\Debug\Test\lock.slua

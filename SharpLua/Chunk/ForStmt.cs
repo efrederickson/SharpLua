@@ -9,6 +9,7 @@ namespace SharpLua.AST
     /// <summary>
     /// A for loop
     /// </summary>
+    [Serializable()]
     public partial class ForStmt : Statement
     {
         /// <summary>

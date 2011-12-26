@@ -9,6 +9,7 @@ namespace SharpLua.AST
     /// <summary>
     /// An assignment statement 
     /// </summary>
+    [Serializable()]
     public partial class Assignment : Statement
     {
         /// <summary>

@@ -9,6 +9,7 @@ namespace SharpLua.AST
     /// <summary>
     /// A local function
     /// </summary>
+    [Serializable()]
     public partial class LocalFunc : Statement
     {
         /// <summary>

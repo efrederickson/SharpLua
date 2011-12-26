@@ -6,6 +6,7 @@ using SharpLua.LuaTypes;
 
 namespace SharpLua.AST
 {
+    [Serializable()]
     public partial class GroupExpr : BaseExpr
     {
         public override LuaValue Evaluate(LuaTable enviroment)

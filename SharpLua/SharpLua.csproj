@@ -182,6 +182,7 @@
     <Compile Include="Parser\TextInput.cs" />
     <Compile Include="Parser\TextParserCommon.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Serializer.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Lua.Grammar.txt" />

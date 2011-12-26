@@ -5,8 +5,10 @@ using System.Text;
 
 namespace SharpLua.LuaTypes
 {
+    [Serializable()]
     public delegate LuaValue LuaFunc(LuaValue[] args);
-
+    
+    [Serializable()]
     public class LuaFunction : LuaValue
     {
         public LuaFunction(LuaFunc function)

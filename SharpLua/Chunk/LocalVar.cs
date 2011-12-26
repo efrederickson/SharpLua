@@ -9,6 +9,7 @@ namespace SharpLua.AST
     /// <summary>
     /// A local variable
     /// </summary>
+    [Serializable()]
     public partial class LocalVar : Statement
     {
         /// <summary>

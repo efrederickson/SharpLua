@@ -5,6 +5,7 @@ using System.Text;
 
 namespace SharpLua.LuaTypes
 {
+    [Serializable()]
     public class LuaNil : LuaValue
     {
         public static readonly LuaNil Nil = new LuaNil();

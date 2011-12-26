@@ -4,7 +4,7 @@ using System.Text;
 
 using SharpLua.LuaTypes;
 
-namespace SharpLua
+namespace SharpLua.AST
 {
     /// <summary>
     /// Represent Unary or Binary Operation, for Unary Operation the LeftOperand is not used.

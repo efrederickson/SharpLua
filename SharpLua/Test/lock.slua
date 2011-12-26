@@ -1,42 +1,80 @@
-﻿--[[
+﻿--[[ 
 llock in #Lua
 TODO:
-- lock accessing members
-- lock deletion
+- lock classes and non-table items
 ]]
+
 function lock(obj, password)
     local lindex = function(table, index)
-        if getmetatable(obj).lockinfo.locked then
-            error("object is locked!")
+        if type(obj) == "class" then
+            if rawget(obj, "lockinfo").locked then
+                error("object is locked!")
+            end
+        else
+            if getmetatable(obj).lockinfo.locked then
+                error("object is locked!")
+            end
         end
         return rawget(table, index)
     end
 
     local lnewindex = function(table, index, value)
-        if getmetatable(obj).lockinfo.locked then
-            error("object is locked!")
+        if type(obj) == "class" then
+            if rawget(obj, "lockinfo").locked then
+                error("object is locked!")
+            end
+        else
+            if getmetatable(obj).lockinfo.locked then
+                error("object is locked!")
+            end
         end
         rawset(table, index, value)
     end
 
     local lcall = function(f, ...)
-        if getmetatable(obj).lockinfo.locked then
-            error("object is locked!")
+        if type(obj) == "class" then
+            if rawget(obj, "lockinfo").locked then
+                error("object is locked!")
+            end
+        else
+            if getmetatable(obj).lockinfo.locked then
+                error("object is locked!")
+            end
         end
         f(unpack(arg))
     end
     
-    local ldelete = function() error"Cannot delete object: object is locked!" end
+    local ldelete = function(self) 
+        if type(obj) == "class" then
+            if rawget(obj, "lockinfo").locked then
+                error("object is locked!")
+            end
+        else
+            if getmetatable(obj).lockinfo.locked then
+                error("object is locked!")
+            end
+        end
+        error("cannot remove object: object is locked!")
+    end
     local linfo = { }
     linfo.locked = true
     linfo.__password = password
-
-    setmetatable(obj, { 
-        __index = lindex,
-        __newindex = lnewindex,
-        __call = lcall,
-        __destructor = ldelete,
+    
+    if type(obj) == "class" then
+        rawset(obj, "__index", lindex)
+        rawset(obj, "__newindex", lnewindex)
+        rawset(obj, "__call", lcall)
+        rawset(obj, "__destructor", ldelete)
+        rawset(obj, "lockinfo", linfo)
+    else
+        setmetatable(obj, { 
+            __index = lindex,
+            __newindex = lnewindex,
+            __call = lcall,
+            __destructor = ldelete,
         lockinfo = linfo})
+    end
+        
     return obj
 end
 
@@ -44,7 +82,12 @@ function unlock(obj, password)
     if getmetatable(obj).lockinfo == nil then error("object isn't locked!") end
     if getmetatable(obj).lockinfo.locked == false then error("object isn't locked!") end
     if getmetatable(obj).lockinfo.__password == password then
-        setmetatable(obj, { lockinfo = {locked = false, __password = password }})
+        -- remove password also
+        if type(obj) == "class" then
+            rawset(obj, "lockinfo", { locked = false, __password = "" })
+        else
+            setmetatable(obj, { lockinfo = {locked = false, __password = "" }})
+        end
     else
         error("incorrect password!")
     end

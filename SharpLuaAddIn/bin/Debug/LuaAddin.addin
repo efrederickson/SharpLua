@@ -7,7 +7,7 @@
 >
     
     <Runtime>
-        <Import assembly = "SharpLua.SharpDevelop.AddIn.dll"/>
+        <Import assembly = "SharpLuaAddIn.dll"/>
     </Runtime>
     <Manifest>
         <Identity name = "SharpLua.SharpDevelop.AddIn"/>

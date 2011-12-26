@@ -1,4 +1,4 @@
--- cannot use table:function, as that doesn't work internally
+-- cannot use [table]:function, as that doesn't work internally
 
 function a()
     t = { }
@@ -10,3 +10,19 @@ end
 
 tbl = a()
 tbl.b()
+
+-- you can copy tables:
+tbl2 = { ["hi"] = "hi" }
+table.copy(tbl, tbl2)
+-- and then you can access it, because its in the new table
+print(tbl.hi)
+tbl2.hi = math.pi
+print(tbl.hi)
+print(tbl2.hi)
+
+-- you can print tables also
+-- using table.dump, table.print, and table.printcontents
+table.dump(tbl)
+-- but if you have some varaible pointing to its parent, such as _G, 
+-- because you can access it like _G._G._G._G._G._G, it may cause weird printing
+table.dump(_G)

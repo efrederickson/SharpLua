@@ -11,7 +11,7 @@
     
     <RuleSets>
         <RuleSet ignorecase="false">
-            <Delimiters>&amp;&lt;&gt;~!%^*()-+=|\#/{}[]:;"' ,	.?</Delimiters>
+            <Delimiters>&amp;&lt;&gt;~!%^*()-+=|\/{}[]:;"' ,	.?</Delimiters>
             
             <Span name = "LineComment" rule = "CommentMarkerSet" bold = "false" italic = "false" color = "Green" stopateol = "true">
                 <Begin>--</Begin>
@@ -61,7 +61,6 @@
                 <Key word = "|" />
                 <Key word = "&amp;" />
                 <Key word = "@" />
-                <Key word = "#" />
                 <Key word = "$" />
             </KeyWords>
             
@@ -89,6 +88,29 @@
                 <Key word="while"/>
                 <Key word="print"/>
                 <Key word="collectgarbage" />
+                <Key word="type" />
+                <Key word="tostring" />
+                <Key word="tonumber" />
+                <Key word="print" />
+                <Key word="pairs" />
+                <Key word="ipairs" />
+                <Key word="next" />
+                <Key word="assert" />
+                <Key word="pcall" />
+                <Key word="xpcall" />
+                <Key word="error" />
+                <Key word="select" />
+                <Key word="dofile" />
+                <Key word="require" />
+                <Key word="openfile" />
+                <Key word="loadstring" />
+                <Key word="set" />
+                <Key word="loadfile" />
+                <Key word="wait" />
+                <Key word="rawset" />
+                <Key word="rawget" />
+                <Key word="getmetatable" />
+                <Key word="setmetatable" />
             </KeyWords>
             
             <KeyWords name="Tables" bold="false" italic="false" color="DarkBlue">
@@ -97,8 +119,13 @@
                 <Key word="class" />
                 <Key word="table" />
                 <Key word="script" />
-            <Key word="file" />
-            <Key word="WinForms" />
+                <Key word="file" />
+                <Key word="WinForms" />
+                <Key word="math" />
+                <Key word="console" />
+                <Key word="coroutine" />
+                <Key word="package" />
+                <Key word="string" />
             </KeyWords>
         </RuleSet>
         <RuleSet name = "CommentMarkerSet" ignorecase = "false">

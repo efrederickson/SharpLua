@@ -167,13 +167,15 @@ namespace SharpLua.Library
             return _new;
         }
         
+        static LuaTable scanned = new LuaTable();
         public static LuaValue PrintContents(LuaValue[] args)
         {
+            scanned = new LuaTable();
             PrintTable(args[0] as LuaTable, "");
             return LuaNil.Nil;
         }
         
-        private static void PrintTable(LuaTable tbl, string indent)
+        private static void PrintTable(LuaTable tbl, string indent, LuaValue _key = null)
         {
             /* sample output:
                     table: 002CCBA8
@@ -184,7 +186,10 @@ namespace SharpLua.Library
                     }
              */
             string i = indent;
-            Console.WriteLine(i + tbl.ToString() + "\n" + i + "{");
+            Console.Write(i);
+            if (_key != null)
+                Console.Write(_key.ToString() + " = ");
+            Console.WriteLine(tbl.ToString() + "\n" + i + "{");
             
             foreach (LuaValue key in tbl.Keys)
             {
@@ -192,11 +197,19 @@ namespace SharpLua.Library
                 if (v.GetTypeCode() == "table")
                 {
                     // check that its not a reference of itself
-                    if (v.Value != tbl.Value)
-                        PrintTable(v as LuaTable, i + " ");
+                    if (!scanned.ContainsKey(key))
+                    {
+                        scanned.SetKeyValue(key, v);
+                        PrintTable(v as LuaTable, i + " ", key);
+                    }
+                    else
+                    {
+                        Console.WriteLine(i + " " + key.ToString() + " = " + v.ToString());
+                    }
                 }
                 else
                 {
+                    scanned.SetKeyValue(key, v);
                     Console.WriteLine(i + " " + key.ToString() + " = " + v.ToString());
                 }
             }/*

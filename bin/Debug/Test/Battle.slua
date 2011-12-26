@@ -12,8 +12,7 @@ player.MaxHealth = 100
 player.Damage = math.random(1, 100)
 player.Dead = false
 -- get their name
-io.write("Name: ")
-player.Name = io.read()
+player.Name = "Bob"
 function player:Attack()
 	dmg = player.Damage
 	player.Damage = math.random(1, 100)

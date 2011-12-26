@@ -4,10 +4,19 @@ using System.Text;
 
 using SharpLua.LuaTypes;
 
-namespace SharpLua
+namespace SharpLua.AST
 {
+    /// <summary>
+    /// An assignment statement 
+    /// </summary>
     public partial class Assignment : Statement
     {
+        /// <summary>
+        /// Runs the Statement
+        /// </summary>
+        /// <param name="enviroment">The environment to run in</param>
+        /// <param name="isBreak">whether to break execution or not</param>
+        /// <returns></returns>
         public override LuaValue Execute(LuaTable enviroment, out bool isBreak)
         {
             LuaValue[] values = this.ExprList.ConvertAll(expr => expr.Evaluate(enviroment)).ToArray();
@@ -59,7 +68,13 @@ namespace SharpLua
             isBreak = false;
             return null;
         }
-
+        
+        /// <summary>
+        /// Sets the assignment
+        /// </summary>
+        /// <param name="baseValue"></param>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
         private static void SetKeyValue(LuaValue baseValue, LuaValue key, LuaValue value)
         {
             LuaValue newIndex = LuaNil.Nil;

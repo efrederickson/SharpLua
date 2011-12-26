@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 
+using SharpLua.AST;
+
 namespace SharpLua.Parser
 {
     public partial class Parser

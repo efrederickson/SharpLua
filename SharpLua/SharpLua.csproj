@@ -23,6 +23,7 @@
     <SignAssembly>False</SignAssembly>
     <DelaySign>False</DelaySign>
     <ApplicationIcon>#Lua.ico</ApplicationIcon>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>
@@ -214,7 +215,9 @@
     <None Include="Test\LedgerExample.slua">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Test\lock.slua" />
+    <None Include="Test\lock.slua">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Test\tablefunctions.slua">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

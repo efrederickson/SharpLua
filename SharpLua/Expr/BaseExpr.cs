@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace SharpLua
+namespace SharpLua.AST
 {
     public abstract partial class BaseExpr : Term
     {

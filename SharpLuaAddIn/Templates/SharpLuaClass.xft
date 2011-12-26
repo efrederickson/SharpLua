@@ -8,7 +8,7 @@
         defaultname = "SharpLua Script ${Number}.slua"
         language    = "Lua"/>
     
-    <Description>A Sample #Lua Script with a class</Description>
+    <Description>A #Lua Script with a class</Description>
     
     <Files>
         <File name="${FullName}" language="SharpLua"><![CDATA[

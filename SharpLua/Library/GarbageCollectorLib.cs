@@ -111,7 +111,7 @@ namespace SharpLua.Library
                 if (f != null)
                     f.Invoke(new LuaValue[] { v });
             }
-            LuaRuntime.GlobalEnvironment.SetKeyValue(v, null);
+            LuaRuntime.GlobalEnvironment.SetKeyValue(v, LuaNil.Nil);
             return null;
         }
     }

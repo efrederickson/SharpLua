@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
+using SharpLua.AST;
 using SharpLua.LuaTypes;
 
 namespace SharpLua.Library
@@ -108,9 +109,11 @@ namespace SharpLua.Library
         public static LuaValue RawSet(LuaValue[] values)
         {
             LuaTable table = values[0] as LuaTable;
+            if ((table == null) && ((values[0] as LuaClass) != null))
+                table = (values[0] as LuaClass).Self;
             LuaValue index = values[1];
             LuaValue value = values[2];
-            table.SetKeyValue(index, value);
+            table.RawSetValue(index.Value.ToString(), value);
             return null;
         }
 

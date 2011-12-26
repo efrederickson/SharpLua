@@ -5,7 +5,7 @@
             category="Lua" 
             defaultname="SharpLua Script ${Number}.slua" 
             language="Lua" />
-    <Description>A Sample #Lua Script</Description>
+    <Description>A #Lua Script</Description>
     <Files>
         <File name="${FullName}" language="SharpLua">
 <![CDATA[-- Basic #Lua script

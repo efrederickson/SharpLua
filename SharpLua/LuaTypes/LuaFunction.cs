@@ -30,5 +30,20 @@ namespace SharpLua.LuaTypes
         {
             return this.Function.Invoke(args);
         }
+        
+        public override string ToString()
+        {
+            if (this.MetaTable != null)
+            {
+                LuaFunction function = this.MetaTable.GetValue("__tostring") as LuaFunction;
+                if (function != null)
+                {
+                    return function.Invoke(new LuaValue[] { this }).ToString();
+                }
+            }
+            
+            return "Function " + GetHashCode();
+        }
+
     }
 }

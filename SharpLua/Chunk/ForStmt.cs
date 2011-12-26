@@ -4,10 +4,19 @@ using System.Text;
 
 using SharpLua.LuaTypes;
 
-namespace SharpLua
+namespace SharpLua.AST
 {
+    /// <summary>
+    /// A for loop
+    /// </summary>
     public partial class ForStmt : Statement
     {
+        /// <summary>
+        /// Executes the chunk
+        /// </summary>
+        /// <param name="enviroment">Runs in the given environment</param>
+        /// <param name="isBreak">whether to break execution</param>
+        /// <returns></returns>
         public override LuaValue Execute(LuaTable enviroment, out bool isBreak)
         {
             LuaNumber start = this.Start.Evaluate(enviroment) as LuaNumber;

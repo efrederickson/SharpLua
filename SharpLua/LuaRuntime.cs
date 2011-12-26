@@ -3,44 +3,85 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
+
+using SharpLua.AST;
 using SharpLua.Library;
 using SharpLua.LuaTypes;
 
 namespace SharpLua
 {
+    /// <summary>
+    /// A Lua Runtime for running files, strings, and has a REPL (Main)
+    /// </summary>
     public class LuaRuntime
     {
+        /// <summary>
+        /// The Prompt used in Interactive Mode
+        /// </summary>
         public static string Prompt
         {get; set; }
+        /// <summary>
+        /// The GlobalEnvironment used by #Lua when calling CreateGlobalEnvironment
+        /// It also is used in many of the base #Lua functions
+        /// </summary>
         public static LuaTable GlobalEnvironment;
+        
         private static bool GoInteractive = false;
         
+        /// <summary>
+        /// Runs a file using a new environment
+        /// </summary>
+        /// <param name="luaFile"></param>
+        /// <returns></returns>
         public static LuaValue RunFile(string luaFile)
         {
             luaFile = FindFullPath(luaFile);
             return Run(File.ReadAllText(luaFile));
         }
-
+        
+        /// <summary>
+        /// Runs a file using the given environment (useful for using in loading files
+        /// into a session)
+        /// </summary>
+        /// <param name="luaFile"></param>
+        /// <param name="enviroment"></param>
+        /// <returns></returns>
         public static LuaValue RunFile(string luaFile, LuaTable enviroment)
         {
             luaFile = FindFullPath(luaFile);
             return Run(File.ReadAllText(luaFile), enviroment);
         }
-
+        
+        /// <summary>
+        /// Runs given code in a new environment
+        /// </summary>
+        /// <param name="luaCode"></param>
+        /// <returns></returns>
         public static LuaValue Run(string luaCode)
         {
             return Run(luaCode, CreateGlobalEnviroment());
         }
-
+        
+        /// <summary>
+        /// Runs code in the given environment
+        /// </summary>
+        /// <param name="luaCode"></param>
+        /// <param name="enviroment"></param>
+        /// <returns></returns>
         public static LuaValue Run(string luaCode, LuaTable enviroment)
         {
             Chunk chunk = Parse(luaCode);
             chunk.Enviroment = enviroment;
             return chunk.Execute();
         }
-
+        
         static Parser.Parser parser = new Parser.Parser();
-
+        
+        /// <summary>
+        /// Parses some code, returns the parsed code
+        /// </summary>
+        /// <param name="luaCode"></param>
+        /// <returns></returns>
         public static Chunk Parse(string luaCode)
         {
             // remove previous errors
@@ -57,7 +98,12 @@ namespace SharpLua
                 throw new ArgumentException("Code has syntax errors:\r\n" + parser.GetErrorMessages());
             }
         }
-
+        
+        /// <summary>
+        /// Creates a global environment with all the base modules registered and
+        /// some default values set.
+        /// </summary>
+        /// <returns></returns>
         public static LuaTable CreateGlobalEnviroment()
         {
             LuaTable global = new LuaTable();
@@ -101,6 +147,11 @@ namespace SharpLua
             return global;
         }
         
+        /// <summary>
+        /// Attempts to find a file from a shortened path (no extension)
+        /// </summary>
+        /// <param name="spath"></param>
+        /// <returns></returns>
         public static string FindFullPath(string spath)
         {
             if (File.Exists(spath))
@@ -120,10 +171,13 @@ namespace SharpLua
             
             return spath; // let the caller handle the invalid filename
         }
-
         
+        /// <summary>
+        /// SharpLua's entry point, and a REPL function
+        /// </summary>
+        /// <param name="args">Application startup args</param>
         [STAThread]
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             // Create global variables
             Application.EnableVisualStyles();
@@ -245,6 +299,9 @@ namespace SharpLua
             }
         }
         
+        /// <summary>
+        /// Prints the SharpLua Banner
+        /// </summary>
         public static void PrintBanner()
         {
             Console.WriteLine("SharpLua " + Application.ProductVersion + ", Copyright (C) 2011 mlnlover11 Productions");

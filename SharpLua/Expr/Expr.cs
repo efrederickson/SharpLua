@@ -4,7 +4,7 @@ using System.Text;
 
 using SharpLua.LuaTypes;
 
-namespace SharpLua
+namespace SharpLua.AST
 {
     public abstract partial class Expr
     {

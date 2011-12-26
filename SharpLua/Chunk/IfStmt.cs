@@ -4,10 +4,19 @@ using System.Text;
 
 using SharpLua.LuaTypes;
 
-namespace SharpLua
+namespace SharpLua.AST
 {
+    /// <summary>
+    /// An if/then statement
+    /// </summary>
     public partial class IfStmt : Statement
     {
+                /// <summary>
+        /// Executes the chunk
+        /// </summary>
+        /// <param name="enviroment">The environment to run in</param>
+        /// <param name="isBreak">whether to break execution</param>
+        /// <returns></returns>
         public override LuaValue Execute(LuaTable enviroment, out bool isBreak)
         {
             LuaValue condition = this.Condition.Evaluate(enviroment);

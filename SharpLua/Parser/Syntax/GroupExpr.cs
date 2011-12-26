@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace SharpLua
+namespace SharpLua.AST
 {
     public partial class GroupExpr : BaseExpr
     {

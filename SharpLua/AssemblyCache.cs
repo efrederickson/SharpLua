@@ -7,7 +7,7 @@ namespace SharpLua
 {
     /// <summary>
     /// Keeps a list of the assemblies that are loaded. Ensures that we don't
-    /// load an assembly more than once. 
+    /// load an assembly more than once.
     /// </summary>
     public class AssemblyCache
     {
@@ -116,7 +116,7 @@ namespace SharpLua
         /// <summary>
         /// Clears the cache and resets its state to default values
         /// </summary>
-        public static void Clear() 
+        public static void Clear()
         {
             typeTable = new Hashtable(CAPACITY);
             usingTable = new Hashtable(CAPACITY);
@@ -130,11 +130,11 @@ namespace SharpLua
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public static Type FindType (string type) 
+        public static Type FindType (string type)
         {
             object o = typeTable[type.ToLower()];
 
-            if (o == null) 
+            if (o == null)
             {
                 o = SearchType(type);
                 typeTable[type.ToLower()] = o;
@@ -143,42 +143,46 @@ namespace SharpLua
             return (Type) o;
         }
 
-        public static void ImportNamespace (string name) 
+        /// <summary>
+        /// adds a namespace to the Type Cache (similar to using in C#)
+        /// </summary>
+        /// <param name="name"></param>
+        public static void ImportNamespace (string name)
         {
             usingTable[name] = name;
         }
 
-        private static Type SearchType (string typeName) 
+        private static Type SearchType (string typeName)
         {
             // I wonder whether there is a better way to do this, maybe using Assembly.GetAssembly() ?
             // needs further investigation
 
             // Look up the type in the current assembly
             Type type = Type.GetType(typeName, false, true);
-            if (type != null) 
+            if (type != null)
                 return type;
 
             // Look up the type in all loaded assemblies
-            foreach(Assembly assembly in  AssemblyCache.Instance.Assemblies) 
+            foreach(Assembly assembly in  AssemblyCache.Instance.Assemblies)
             {
                 type = assembly.GetType(typeName,false, true);
-                if (type != null) 
+                if (type != null)
                     return type;
             }
 
             // Try to use the using directives to guess the namespace ..
-            foreach (string name in usingTable.Values) 
+            foreach (string name in usingTable.Values)
             {
-                foreach(Assembly assembly in  AssemblyCache.Instance.Assemblies) 
+                foreach(Assembly assembly in  AssemblyCache.Instance.Assemblies)
                 {
                     type = assembly.GetType(string.Format("{0}.{1}",name, typeName),false, true);
-                    if (type != null) 
+                    if (type != null)
                         return type;
 
                 }
 
                 type = Type.GetType(string.Format("{0}.{1}",name, typeName),false, true);
-                if (type != null) 
+                if (type != null)
                     return type;
             }
             return null;

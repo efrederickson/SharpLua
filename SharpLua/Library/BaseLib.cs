@@ -39,8 +39,8 @@ namespace SharpLua.Library
             module.Register("xpcall", XPcall);
             module.Register("wait", Wait);
             module.Register("loadbin", LoadBin);
-            module.Register("saveenv", SaveEnvironment);
-            module.Register("loadenv", LoadEnvironment);
+            module.Register("ssave", SSave);
+            module.Register("sload", SLoad);
         }
 
         public static LuaValue Print(LuaValue[] values)
@@ -305,7 +305,7 @@ namespace SharpLua.Library
                 throw new Exception("Loaders table is empty!");
             // whether package was found/loaded
             LuaBoolean b = LuaBoolean.False;
-            LuaTable module = null;
+            LuaValue module = null;
             foreach (LuaValue key in t.Keys)
             {
                 LuaFunction f = t.GetValue(key) as LuaFunction;
@@ -315,7 +315,7 @@ namespace SharpLua.Library
                     b = lmv.Values[0] as LuaBoolean;
                     if (b.BoolValue == true)
                     {
-                        module = lmv.Values[1] as LuaTable;
+                        module = lmv.Values[1];
                         break;
                     }
                 }
@@ -380,18 +380,42 @@ namespace SharpLua.Library
             return c.Execute(LuaRuntime.GlobalEnvironment, out success);
         }
         
-        public static LuaValue SaveEnvironment(LuaValue[] args)
+        public static LuaValue SSave(LuaValue[] args)
         {
             string fn = (args[0] as LuaString).Text;
-            Serializer.Serialize(LuaRuntime.GlobalEnvironment, fn);
+            Serializer.Serialize(args[1], fn);
             return LuaNil.Nil;
         }
         
-        public static LuaValue LoadEnvironment(LuaValue[] args)
+        public static LuaValue SLoad(LuaValue[] args)
         {
             string fn = (args[0] as LuaString).Text;
-            LuaRuntime.GlobalEnvironment = Serializer.Deserialize(fn) as LuaTable;
-            return LuaNil.Nil;
+            // get the object
+            object o = Serializer.Deserialize(fn);
+            
+            // try to determine its type
+            if ((o as LuaTable) != null)
+                return o as LuaTable;
+            if ((o as LuaBoolean) != null)
+                return o as LuaBoolean;
+            if ((o as LuaClass) != null)
+                return o as LuaClass;
+            if ((o as LuaCoroutine) != null)
+                return o as LuaCoroutine;
+            if ((o as LuaFunction) != null)
+                return o as LuaFunction;
+            if ((o as LuaNil) != null)
+                return o as LuaNil;
+            if ((o as LuaNumber) != null)
+                return o as LuaNumber;
+            if ((o as LuaString) != null)
+                return o as LuaString;
+            if ((o as LuaUserdata) != null)
+                return o as LuaUserdata;
+            if ((o as LuaValue) != null) // what else could it be?
+                return o as LuaValue;
+            
+            return new LuaUserdata(o); // return as a Userdata
         }
     }
 }

@@ -31,6 +31,16 @@ namespace SharpLua.Library
             module.Register("import", Import);
             module.Register("getinfo", GetInfo);
             module.Register("dump", Dump);
+            LuaTable mt = new LuaTable();
+            mt.Register("__index", new LuaFunc((LuaValue[] args) =>
+                                               {
+                                                   return Create(args);
+                                               }));
+            mt.Register("__call", new LuaFunc((LuaValue[] args) =>
+                                               {
+                                                   return Create(args);
+                                               }));
+            module.MetaTable = mt;
         }
         
         public static LuaValue Reference(LuaValue[] args)

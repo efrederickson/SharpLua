@@ -7,8 +7,8 @@ namespace SharpLua.AST
     public partial class FunctionBody
     {
         public ParamList ParamList;
-
+        
         public Chunk Chunk;
-
+        
     }
 }

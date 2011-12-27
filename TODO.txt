@@ -7,6 +7,9 @@
 - Lists
 - new icon
 - fix class iterators
+- automatically save and load environments
+- serialize functions, userdata, etc.
+- an AST to #Lua converter
 
 STANDARD LUA FUNCTIONS
 - rawequal <v1>, <v2>

@@ -3,15 +3,20 @@
 -- this is because the environment is passed through a variable, not LuaRuntime.GlobalEnvironment.
 -- so to see this script actually work, copy/paste or type it into SharpLua.
 
--- the saving function is saveenv(filename)
-saveenv("environment.bin")
+-- the saving function is ssave(filename, object)
+ssave("environment.bin", _G)
 
 -- to prove it works, lets set a variable
 hello = function() end
 print(hello)
+-- and you can save any object
+ssave("hello", hello)
 
 -- load environment from file
-loadenv("environment.bin")
+_G = sload("environment.bin")
 
 -- look! the "hello" function is gone!
 print(hello)
+-- now load and run it from the file
+hello = sload("hello")
+hello()

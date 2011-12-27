@@ -20,6 +20,7 @@ namespace SharpLua
         /// </summary>
         public static string Prompt
         {get; set; }
+        
         /// <summary>
         /// The GlobalEnvironment used by #Lua when calling CreateGlobalEnvironment
         /// It also is used in many of the base #Lua functions
@@ -123,9 +124,10 @@ namespace SharpLua
             CoroutineLib.RegisterModule(global);
             PackageLib.RegisterModule(global);
             ClassLib.RegisterModule(global);
+            FileSystemLib.RegisterModule(global);
             
             global.SetNameValue("_WORKDIR", new LuaString(Application.StartupPath + "\\"));
-            global.SetNameValue("_VERSION", new LuaString("Sharp Lua 1.0"));
+            global.SetNameValue("_VERSION", new LuaString("Sharp Lua 1.1"));
             global.SetNameValue("_G", global);
             // set package.preload table
             LuaTable preload = (LuaTable) (global.GetValue("package") as LuaTable).GetValue("preload");
@@ -141,7 +143,9 @@ namespace SharpLua
             preload.SetNameValue("coroutine", (LuaTable) global.GetValue("coroutine"));
             preload.SetNameValue("package", (LuaTable) global.GetValue("package"));
             preload.SetNameValue("class", (LuaTable) global.GetValue("class"));
+            preload.SetNameValue("filesystem", (LuaTable) global.GetValue("filesystem"));
             
+            FileSystemLib.currentDir = global.GetValue("_WORKDIR").ToString();
             GlobalEnvironment = global;
             
             return global;
@@ -183,7 +187,7 @@ namespace SharpLua
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             GlobalEnvironment = LuaRuntime.CreateGlobalEnviroment();
-            
+            PrintBanner();
             // how to handle errors
             GlobalEnvironment.SetNameValue("DEBUG", LuaBoolean.True);
             //GlobalEnvironment.SetNameValue("DEBUG", LuaBoolean.False);
@@ -241,7 +245,6 @@ namespace SharpLua
             
             if (GoInteractive)
             {
-                PrintBanner();
                 while (true)
                 {
                     Console.Write(Prompt);

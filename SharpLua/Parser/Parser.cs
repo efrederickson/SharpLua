@@ -1291,7 +1291,7 @@ namespace SharpLua.Parser
             }
 
             int errorCount = Errors.Count;
-            ErrorStatck.Push(errorCount); errorCount = Errors.Count;
+            ErrorStack.Push(errorCount); errorCount = Errors.Count;
             BoolLiteral boolLiteral = new BoolLiteral();
 
             while (true)
@@ -1304,7 +1304,7 @@ namespace SharpLua.Parser
 
                 break;
             }
-            errorCount = ErrorStatck.Pop();
+            errorCount = ErrorStack.Pop();
             if (success) { ClearError(errorCount); }
             else { Error("Failed to parse Text of BoolLiteral."); }
             ParsingResults[reskey] = new Tuple<object, bool, int>(boolLiteral, success, position);
@@ -1741,7 +1741,7 @@ namespace SharpLua.Parser
 
             while (true)
             {
-                ErrorStatck.Push(errorCount); errorCount = Errors.Count;
+                ErrorStack.Push(errorCount); errorCount = Errors.Count;
                 while (true)
                 {
                     while (true)
@@ -1778,7 +1778,7 @@ namespace SharpLua.Parser
 
                     break;
                 }
-                errorCount = ErrorStatck.Pop();
+                errorCount = ErrorStack.Pop();
                 if (!success) { break; }
             }
             success = true;
@@ -2553,7 +2553,7 @@ namespace SharpLua.Parser
 
             while (true)
             {
-                ErrorStatck.Push(errorCount); errorCount = Errors.Count;
+                ErrorStack.Push(errorCount); errorCount = Errors.Count;
                 while (true)
                 {
                     ch = ParseLetter(out success);
@@ -2574,7 +2574,7 @@ namespace SharpLua.Parser
 
                     break;
                 }
-                errorCount = ErrorStatck.Pop();
+                errorCount = ErrorStack.Pop();
                 if (!success) { break; }
             }
             success = true;
@@ -2640,7 +2640,7 @@ namespace SharpLua.Parser
 
             while (true)
             {
-                ErrorStatck.Push(errorCount); errorCount = Errors.Count;
+                ErrorStack.Push(errorCount); errorCount = Errors.Count;
                 int seq_start_position2 = position;
                 while (true)
                 {
@@ -2662,7 +2662,7 @@ namespace SharpLua.Parser
 
                     break;
                 }
-                errorCount = ErrorStatck.Pop();
+                errorCount = ErrorStack.Pop();
                 if (!success) { break; }
 
                 counter = 0;
@@ -2745,7 +2745,7 @@ namespace SharpLua.Parser
 
             while (true)
             {
-                ErrorStatck.Push(errorCount); errorCount = Errors.Count;
+                ErrorStack.Push(errorCount); errorCount = Errors.Count;
                 while (true)
                 {
                     char ch = MatchTerminalSet("'\\", true, out success);
@@ -2766,7 +2766,7 @@ namespace SharpLua.Parser
 
                     break;
                 }
-                errorCount = ErrorStatck.Pop();
+                errorCount = ErrorStack.Pop();
                 if (!success) { break; }
             }
             success = true;
@@ -2790,7 +2790,7 @@ namespace SharpLua.Parser
 
             while (true)
             {
-                ErrorStatck.Push(errorCount); errorCount = Errors.Count;
+                ErrorStack.Push(errorCount); errorCount = Errors.Count;
                 while (true)
                 {
                     char ch = MatchTerminalSet("\"\\", true, out success);
@@ -2811,7 +2811,7 @@ namespace SharpLua.Parser
 
                     break;
                 }
-                errorCount = ErrorStatck.Pop();
+                errorCount = ErrorStack.Pop();
                 if (!success) { break; }
             }
             success = true;
@@ -3183,7 +3183,7 @@ namespace SharpLua.Parser
             int counter = 0;
             while (true)
             {
-                ErrorStatck.Push(errorCount); errorCount = Errors.Count;
+                ErrorStack.Push(errorCount); errorCount = Errors.Count;
                 while (true)
                 {
                     MatchTerminalSet(" \t\r\n", false, out success);
@@ -3194,7 +3194,7 @@ namespace SharpLua.Parser
 
                     break;
                 }
-                errorCount = ErrorStatck.Pop();
+                errorCount = ErrorStack.Pop();
                 if (!success) { break; }
                 counter++;
             }
@@ -3223,7 +3223,7 @@ namespace SharpLua.Parser
             int errorCount = Errors.Count;
             while (true)
             {
-                ErrorStatck.Push(errorCount); errorCount = Errors.Count;
+                ErrorStack.Push(errorCount); errorCount = Errors.Count;
                 while (true)
                 {
                     MatchTerminalSet(" \t\r\n", false, out success);
@@ -3234,7 +3234,7 @@ namespace SharpLua.Parser
 
                     break;
                 }
-                errorCount = ErrorStatck.Pop();
+                errorCount = ErrorStack.Pop();
                 if (!success) { break; }
             }
             success = true;
@@ -3252,7 +3252,7 @@ namespace SharpLua.Parser
                 return;
             }
 
-            ErrorStatck.Push(errorCount); errorCount = Errors.Count;
+            ErrorStack.Push(errorCount); errorCount = Errors.Count;
             while (true)
             {
                 ParseLongString(out success);
@@ -3268,7 +3268,7 @@ namespace SharpLua.Parser
                     }
                     success = true;
 
-                    ErrorStatck.Push(errorCount); errorCount = Errors.Count;
+                    ErrorStack.Push(errorCount); errorCount = Errors.Count;
                     while (true)
                     {
                         ParseEol(out success);
@@ -3279,7 +3279,7 @@ namespace SharpLua.Parser
 
                         break;
                     }
-                    errorCount = ErrorStatck.Pop();
+                    errorCount = ErrorStack.Pop();
                     if (!success)
                     {
                         Error("Failed to parse (Eol / Eof) of Comment.");
@@ -3291,7 +3291,7 @@ namespace SharpLua.Parser
 
                 break;
             }
-            errorCount = ErrorStatck.Pop();
+            errorCount = ErrorStack.Pop();
             if (!success)
             {
                 Error("Failed to parse (LongString / (-\"\r\n\")* (Eol / Eof)) of Comment.");

@@ -32,7 +32,7 @@ namespace SharpLua.Compiler
                 if (args.Length > 1)
                     _out = args[1];
                 else
-                    _out = Path.GetFileNameWithoutExtension(args[0]) + ".sluac";
+                    _out = Path.GetDirectoryName(args[0]) + "\\" + Path.GetFileNameWithoutExtension(args[0]) + ".sluac";
                 Serializer.Serialize(c, _out);
                 return 0;
             }

@@ -18,4 +18,6 @@ Features Lua doesn't have:
 - many more functions, such as
   - openfile         - open a lua file with an OpenFileDialog and run it
   - set              - set (table, key, value)
+  - ssave            - serialize an object to a file
+  - sload            - deserialize a file to an object
   - table.removeitem - removes an item from a table

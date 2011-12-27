@@ -16,7 +16,7 @@ using SharpLua.AST;
 namespace SharpLua
 {
     /// <summary>
-    /// Description of Serializer.
+    /// Serializes an object. The object must have the Serializable() attribute.
     /// </summary>
     public class Serializer
     {

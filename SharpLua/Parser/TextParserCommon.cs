@@ -17,7 +17,7 @@ namespace SharpLua.Parser
         ParserInput<char> Input;
 
         public List<Tuple<int, string>> Errors = new List<Tuple<int, string>>();
-        private Stack<int> ErrorStatck = new Stack<int>();
+        private Stack<int> ErrorStack = new Stack<int>();
     
         /// <summary>
         /// Memories parsing results, key is (PositionStart, Noterminal), value is (SyntacticElement, success, PostionAfter).

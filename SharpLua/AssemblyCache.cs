@@ -121,7 +121,6 @@ namespace SharpLua
             typeTable = new Hashtable(CAPACITY);
             usingTable = new Hashtable(CAPACITY);
             ImportNamespace("System");
-            ImportNamespace("LSharp");
         }
 
         /// <summary>

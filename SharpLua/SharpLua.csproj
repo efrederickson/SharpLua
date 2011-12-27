@@ -108,6 +108,7 @@
     <Compile Include="Library\ClassLib.cs" />
     <Compile Include="Library\ConsoleLib.cs" />
     <Compile Include="Library\CoroutineLib.cs" />
+    <Compile Include="Library\FileSystemLib.cs" />
     <Compile Include="Library\GarbageCollectorLib.cs" />
     <Compile Include="Library\ILuaLibrary.cs" />
     <Compile Include="Library\PackageLib.cs" />
@@ -196,6 +197,9 @@
     <None Include="..\TODO.txt">
       <Link>TODO.txt</Link>
     </None>
+    <None Include="init.slua">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="string.patterns.txt" />
     <None Include="..\CHANGELOG.txt" />
     <None Include="Test\Battle.slua">
@@ -204,7 +208,10 @@
     <None Include="Test\ClassesExample.slua">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Test\environments.slua">
+    <None Include="Test\LuaPad.slua">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test\serialization.slua">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Test\icon\add.png">

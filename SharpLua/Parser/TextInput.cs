@@ -13,7 +13,10 @@ namespace SharpLua.Parser
         public TextInput(string text)
         {
             InputText = text;
-
+            
+            if (InputText.StartsWith("#!"))
+                InputText = InputText.Substring(InputText.IndexOf("\n"));
+            
             LineBreaks = new List<int>();
             LineBreaks.Add(0);
             for (int index = 0; index < InputText.Length; index++)

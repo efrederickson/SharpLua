@@ -1,0 +1,6 @@
+﻿package.path = package.path .. ";C:\\users\\elijah.ffhs2\\appdata\\lua.5.1.4\\lua\\?.lua"
+package.path = package.path .. ";C:\\users\\elijah.ffhs2\\appdata\\lua.5.1.4\\?.lua"
+package.path = package.path .. ";C:\\users\\elijah.ffhs2\\appdata\\lua.5.1.4\\?.wlua"
+
+script.import"system.windows.forms"
+script.import"sharplua"

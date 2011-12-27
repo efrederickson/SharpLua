@@ -32,4 +32,6 @@ C:\Elijah - Libraries\SharpLua\bin\Debug\slua.pdb
 C:\Elijah - Libraries\SharpLua\SharpLua\obj\Debug\ResolveAssemblyReference.cache
 C:\Elijah - Libraries\SharpLua\SharpLua\obj\Debug\slua.exe
 C:\Elijah - Libraries\SharpLua\SharpLua\obj\Debug\slua.pdb
-C:\Elijah - Libraries\SharpLua\bin\Debug\Test\environments.slua
+C:\Elijah - Libraries\SharpLua\bin\Debug\Test\serialization.slua
+C:\Elijah - Libraries\SharpLua\bin\Debug\init.slua
+C:\Elijah - Libraries\SharpLua\bin\Debug\Test\LuaPad.slua

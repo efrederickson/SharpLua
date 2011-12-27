@@ -16,3 +16,12 @@ C:\Elijah - Libraries\SharpLua\SharpLuaAddIn\bin\Debug\SharpLuaAddIn.pdb
 C:\Elijah - Libraries\SharpLua\SharpLuaAddIn\obj\x86\Debug\ResolveAssemblyReference.cache
 C:\Elijah - Libraries\SharpLua\SharpLuaAddIn\obj\x86\Debug\SharpLuaAddIn.dll
 C:\Elijah - Libraries\SharpLua\SharpLuaAddIn\obj\x86\Debug\SharpLuaAddIn.pdb
+K:\SharpLua\SharpLuaAddIn\bin\Debug\LuaAddin.addin
+K:\SharpLua\SharpLuaAddIn\bin\Debug\Templates\Lua.xft
+K:\SharpLua\SharpLuaAddIn\bin\Debug\Templates\SharpLua.xft
+K:\SharpLua\SharpLuaAddIn\bin\Debug\Templates\SharpLuaClass.xft
+K:\SharpLua\SharpLuaAddIn\bin\Debug\SharpLuaAddIn.dll
+K:\SharpLua\SharpLuaAddIn\bin\Debug\SharpLuaAddIn.pdb
+K:\SharpLua\SharpLuaAddIn\obj\x86\Debug\ResolveAssemblyReference.cache
+K:\SharpLua\SharpLuaAddIn\obj\x86\Debug\SharpLuaAddIn.dll
+K:\SharpLua\SharpLuaAddIn\obj\x86\Debug\SharpLuaAddIn.pdb

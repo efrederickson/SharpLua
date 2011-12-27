@@ -14,3 +14,4 @@ C:\Elijah - Libraries\SharpLua\bin\Debug\luac.pdb
 C:\Elijah - Libraries\SharpLua\SharpLua.Compiler\obj\x86\Debug\ResolveAssemblyReference.cache
 C:\Elijah - Libraries\SharpLua\SharpLua.Compiler\obj\x86\Debug\luac.exe
 C:\Elijah - Libraries\SharpLua\SharpLua.Compiler\obj\x86\Debug\luac.pdb
+C:\Elijah - Libraries\SharpLua\bin\Debug\Test\environments.slua

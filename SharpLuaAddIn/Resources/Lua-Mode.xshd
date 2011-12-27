@@ -111,6 +111,8 @@
                 <Key word="rawget" />
                 <Key word="getmetatable" />
                 <Key word="setmetatable" />
+                <Key word="saveenv" />
+                <Key word="loadenv" />
             </KeyWords>
             
             <KeyWords name="Tables" bold="false" italic="false" color="DarkBlue">

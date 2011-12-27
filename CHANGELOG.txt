@@ -10,3 +10,4 @@ Version 1.1.*
 + combined class Lua and class LuaRuntime
 + added a SharpDevelop addin
 + Added a "compiler" which serializes the AST into a roughly 6x larger file
++ loading and saving environments

@@ -39,6 +39,8 @@ namespace SharpLua.Library
             module.Register("xpcall", XPcall);
             module.Register("wait", Wait);
             module.Register("loadbin", LoadBin);
+            module.Register("saveenv", SaveEnvironment);
+            module.Register("loadenv", LoadEnvironment);
         }
 
         public static LuaValue Print(LuaValue[] values)
@@ -376,6 +378,20 @@ namespace SharpLua.Library
             bool success;
             c.Enviroment = LuaRuntime.GlobalEnvironment;
             return c.Execute(LuaRuntime.GlobalEnvironment, out success);
+        }
+        
+        public static LuaValue SaveEnvironment(LuaValue[] args)
+        {
+            string fn = (args[0] as LuaString).Text;
+            Serializer.Serialize(LuaRuntime.GlobalEnvironment, fn);
+            return LuaNil.Nil;
+        }
+        
+        public static LuaValue LoadEnvironment(LuaValue[] args)
+        {
+            string fn = (args[0] as LuaString).Text;
+            LuaRuntime.GlobalEnvironment = Serializer.Deserialize(fn) as LuaTable;
+            return LuaNil.Nil;
         }
     }
 }

@@ -59,7 +59,7 @@ namespace SharpLua.Library
         public static LuaValue Running(LuaValue[] args)
         {
             if (LuaCoroutine.Running == null)
-                return LuaNil.Nil ;
+                return LuaNil.Nil;
             return LuaCoroutine.Running;
         }
         

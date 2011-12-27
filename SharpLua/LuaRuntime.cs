@@ -201,7 +201,7 @@ namespace SharpLua
                         GlobalEnvironment.SetNameValue("_WORKDIR", new LuaString(Path.GetDirectoryName(file)));
                         if (file.EndsWith(".out") || file.EndsWith(".luac") || file.EndsWith(".sluac"))
                         {
-                            Chunk c = Serializer.Deserialize(file);
+                            Chunk c = Serializer.Deserialize(file) as Chunk;
                             c.Enviroment = GlobalEnvironment;
                             bool isBreak;
                             c.Execute(GlobalEnvironment, out isBreak);

@@ -28,13 +28,13 @@ namespace SharpLua
             stream.Close();
         }
         
-        public static Chunk Deserialize(string filename)
+        public static object Deserialize(string filename)
         {
             IFormatter formatter = new BinaryFormatter();
             Stream stream = new FileStream(filename, FileMode.Open);
             object o = formatter.Deserialize(stream);
             stream.Close();
-            return (Chunk) o;
+            return o;
         }
     }
 }

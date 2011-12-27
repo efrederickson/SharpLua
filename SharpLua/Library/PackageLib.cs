@@ -112,7 +112,7 @@ namespace SharpLua.Library
                                                                              {
                                                                                  LuaTable m = new LuaTable();
                                                                                  bool isBreak;
-                                                                                 m.AddValue(Serializer.Deserialize(fn).Execute(LuaRuntime.GlobalEnvironment, out isBreak));
+                                                                                 m.AddValue((Serializer.Deserialize(fn) as AST.Chunk).Execute(LuaRuntime.GlobalEnvironment, out isBreak));
                                                                                  return new LuaMultiValue(new LuaValue[] {LuaBoolean.True, LuaRuntime.GlobalEnvironment.GetValue(Path.GetFileNameWithoutExtension(fn))});
                                                                              }
                                                                          }

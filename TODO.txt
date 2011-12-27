@@ -1,13 +1,12 @@
 ﻿TODO
 - Documentation/guides
-- Compiler
-- serializer
 - cryptography library (seperate project), use IExtendFramework 
 - compression library (separate project), using ICSharpCode.SharpZipLib
 - error: error level also
 - set "..." to command line args in _G
-- create examples (Tests)
 - Lists
+- new icon
+- fix class iterators
 
 STANDARD LUA FUNCTIONS
 - rawequal <v1>, <v2>

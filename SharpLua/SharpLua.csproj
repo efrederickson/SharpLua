@@ -204,6 +204,9 @@
     <None Include="Test\ClassesExample.slua">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Test\environments.slua">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Test\icon\add.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

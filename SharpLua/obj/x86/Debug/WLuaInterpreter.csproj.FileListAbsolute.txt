@@ -1,7 +1,0 @@
-C:\Users\elijah.FFHS2\Documents\Lua\LuaInterpreter\obj\x86\Debug\ResolveAssemblyReference.cache
-C:\Users\elijah.FFHS2\Documents\Lua\LuaInterpreter\bin\Debug\Test\Ledger.wlua
-C:\Users\elijah.FFHS2\Documents\Lua\LuaInterpreter\bin\Debug\Test\WinFormExample.wlua
-C:\Users\elijah.FFHS2\Documents\Lua\LuaInterpreter\bin\Debug\wlua.exe
-C:\Users\elijah.FFHS2\Documents\Lua\LuaInterpreter\bin\Debug\wlua.pdb
-C:\Users\elijah.FFHS2\Documents\Lua\LuaInterpreter\obj\x86\Debug\wlua.exe
-C:\Users\elijah.FFHS2\Documents\Lua\LuaInterpreter\obj\x86\Debug\wlua.pdb

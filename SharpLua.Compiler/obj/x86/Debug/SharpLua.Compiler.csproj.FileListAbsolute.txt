@@ -15,3 +15,20 @@ C:\Elijah - Libraries\SharpLua\SharpLua.Compiler\obj\x86\Debug\ResolveAssemblyRe
 C:\Elijah - Libraries\SharpLua\SharpLua.Compiler\obj\x86\Debug\luac.exe
 C:\Elijah - Libraries\SharpLua\SharpLua.Compiler\obj\x86\Debug\luac.pdb
 C:\Elijah - Libraries\SharpLua\bin\Debug\Test\environments.slua
+K:\SharpLua\bin\Debug\Test\Battle.slua
+K:\SharpLua\bin\Debug\Test\ClassesExample.slua
+K:\SharpLua\bin\Debug\Test\environments.slua
+K:\SharpLua\bin\Debug\Test\LedgerExample.slua
+K:\SharpLua\bin\Debug\Test\lock.slua
+K:\SharpLua\bin\Debug\Test\tablefunctions.slua
+K:\SharpLua\bin\Debug\Test\BasicTest.slua
+K:\SharpLua\bin\Debug\Test\WinFormExample.slua
+K:\SharpLua\bin\Debug\Test\icon\add.png
+K:\SharpLua\bin\Debug\Test\icon\open.png
+K:\SharpLua\bin\Debug\Test\icon\save.png
+K:\SharpLua\bin\Debug\luac.exe.config
+K:\SharpLua\bin\Debug\luac.exe
+K:\SharpLua\bin\Debug\luac.pdb
+K:\SharpLua\SharpLua.Compiler\obj\x86\Debug\ResolveAssemblyReference.cache
+K:\SharpLua\SharpLua.Compiler\obj\x86\Debug\luac.exe
+K:\SharpLua\SharpLua.Compiler\obj\x86\Debug\luac.pdb

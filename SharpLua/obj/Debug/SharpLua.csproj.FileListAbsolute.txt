@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 C:\Users\elijah.FFHS2\Documents\Lua\SharpLua\SharpLua\bin\Debug\Test\Ledger.wlua
 C:\Users\elijah.FFHS2\Documents\Lua\SharpLua\SharpLua\bin\Debug\Test\test.lua
 C:\Users\elijah.FFHS2\Documents\Lua\SharpLua\SharpLua\bin\Debug\Test\WinFormExample.wlua
@@ -36,21 +35,3 @@ C:\Elijah - Libraries\SharpLua\SharpLua\obj\Debug\slua.pdb
 C:\Elijah - Libraries\SharpLua\bin\Debug\Test\serialization.slua
 C:\Elijah - Libraries\SharpLua\bin\Debug\init.slua
 C:\Elijah - Libraries\SharpLua\bin\Debug\Test\LuaPad.slua
-=======
-K:\SharpLua\bin\Debug\Test\Battle.slua
-K:\SharpLua\bin\Debug\Test\ClassesExample.slua
-K:\SharpLua\bin\Debug\Test\LedgerExample.slua
-K:\SharpLua\bin\Debug\Test\lock.slua
-K:\SharpLua\bin\Debug\Test\tablefunctions.slua
-K:\SharpLua\bin\Debug\Test\BasicTest.slua
-K:\SharpLua\bin\Debug\Test\WinFormExample.slua
-K:\SharpLua\bin\Debug\Test\environments.slua
-K:\SharpLua\bin\Debug\Test\icon\add.png
-K:\SharpLua\bin\Debug\Test\icon\open.png
-K:\SharpLua\bin\Debug\Test\icon\save.png
-K:\SharpLua\bin\Debug\slua.exe
-K:\SharpLua\bin\Debug\slua.pdb
-K:\SharpLua\SharpLua\obj\Debug\ResolveAssemblyReference.cache
-K:\SharpLua\SharpLua\obj\Debug\slua.exe
-K:\SharpLua\SharpLua\obj\Debug\slua.pdb
->>>>>>> 21824adc031f8a151c0d3b9f6dfb6553e43d8d77

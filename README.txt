@@ -21,3 +21,6 @@ Features Lua doesn't have:
   - ssave            - serialize an object to a file
   - sload            - deserialize a file to an object
   - table.removeitem - removes an item from a table
+
+To compile CryptoLib, you will need to change the reference to IExtendFramework wherever you have one.
+You can get IExtendFramework at https://github.com/mlnlover11/IExtendFramework

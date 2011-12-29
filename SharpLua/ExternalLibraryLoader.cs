@@ -43,7 +43,7 @@ namespace SharpLua
                                 //Make sure the interface we want to use actually exists
                                 if ((typeInterface != null)) {
                                     try {
-                                        Library.ILuaLibrary lib= (Library.ILuaLibrary)Activator.CreateInstance(pluginAssembly.GetType(pluginType.ToString()));
+                                        Library.ILuaLibrary lib = (Library.ILuaLibrary)Activator.CreateInstance(pluginAssembly.GetType(pluginType.ToString()));
                                         //Call initialization for the plugin
                                         lib.RegisterModule(LuaRuntime.GlobalEnvironment);
                                         modules.Add(lib.ModuleName);

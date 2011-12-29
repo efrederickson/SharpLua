@@ -28,7 +28,7 @@ namespace SharpLua.Library
         {
             // cpath -> cspath?
             module.SetNameValue("cpath", new LuaString(".\\?;.\\?.dll;.\\?.exe"));
-            module.SetNameValue("path", new LuaString(".\\?;.\\?.lua;.\\?.slua;.\\?.wlua"));
+            module.SetNameValue("path", new LuaString(".\\?;.\\?.lua;.\\?.slua;.\\?.wlua;" + System.Environment.GetEnvironmentVariable("LUA_PATH")));
             module.SetNameValue("bpath", new LuaString(".\\?;.\\?.luac;.\\?.out;.\\?.sluac"));
             module.SetNameValue("loaded", new LuaTable());
             module.SetNameValue("preload", new LuaTable());

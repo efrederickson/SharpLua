@@ -5,5 +5,7 @@ package.path = package.path .. ";C:\\users\\elijah.ffhs2\\appdata\\lua.5.1.4\\?.
 
 script.import"system.windows.forms"
 script.import"sharplua"
+script.import"system.drawing"
+script.import"system.io"
 
 require"cryptolib"

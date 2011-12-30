@@ -31,15 +31,16 @@ namespace SharpLua.Library
             module.Register("import", Import);
             module.Register("getinfo", GetInfo);
             module.Register("dump", Dump);
+            module.Register("call", Call);
             LuaTable mt = new LuaTable();
             mt.Register("__index", new LuaFunc((LuaValue[] args) =>
                                                {
                                                    return Create(args);
                                                }));
             mt.Register("__call", new LuaFunc((LuaValue[] args) =>
-                                               {
-                                                   return Create(args);
-                                               }));
+                                              {
+                                                  return Create(args);
+                                              }));
             module.MetaTable = mt;
         }
         
@@ -152,7 +153,6 @@ namespace SharpLua.Library
             }
         }
         
-        
         private static void SetMemberValue(object control, Type type, string member, object value)
         {
             PropertyInfo propertyInfo = type.GetProperty(member);
@@ -185,7 +185,7 @@ namespace SharpLua.Library
                 }
             }
         }
-            
+        
         private static LuaValue GetMemberValue(object control, Type type, string member)
         {
             PropertyInfo propertyInfo = type.GetProperty(member);
@@ -371,6 +371,45 @@ namespace SharpLua.Library
         {
             Console.WriteLine(Inspector.Inspect(args[0].Value));
             return LuaNil.Nil;
+        }
+        
+        public static LuaValue Call(LuaValue[] args)
+        {
+            string method = args[0].ToString();
+            List<object> args2 = new List<object>();
+            for (int i = 1; i < args.Length; i++)
+                args2.Add(args[i].Value);
+            string n, m;
+            n = method.Substring(0, method.LastIndexOf("."));
+            m = method.Substring(method.LastIndexOf("."));
+            AssemblyCache.ImportNamespace(n);
+            Type t = AssemblyCache.FindType(n);
+            if (t == null)
+                throw new Exception("Cannot find type '" + n + "'!");
+            BindingFlags bindingFlags = BindingFlags.IgnoreCase
+                | BindingFlags.Public
+                | BindingFlags.NonPublic
+                | BindingFlags.Static
+                | BindingFlags.FlattenHierarchy;
+            
+            // Start by looking for a method call
+            MethodInfo m2 = t.GetMethod(m,
+                                        bindingFlags | BindingFlags.InvokeMethod
+                                       );
+            if (m2 != null)
+                return ToLuaValue(m2.Invoke(t, args2.ToArray()));
+
+            // Now loook for a property get
+            PropertyInfo p = t.GetProperty(m, bindingFlags | BindingFlags.GetProperty);
+            if (p != null)
+                return ToLuaValue(p.GetGetMethod().Invoke(t, args2.ToArray()));
+
+            // Now look for a field get
+            FieldInfo f = t.GetField(m, bindingFlags | BindingFlags.GetField);
+            if (f != null)
+                return ToLuaValue(f.GetValue(t));
+            
+            throw new Exception("Cannot find method '" + m + "' on class '" + n + "'!");
         }
     }
 }

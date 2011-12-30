@@ -1,14 +1,14 @@
 ﻿/*
  * Created by SharpDevelop.
  * User: elijah
- * Date: 12/26/2011
- * Time: 12:25 PM
+ * Date: 12/29/2011
+ * Time: 5:00 PM
  * 
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
+using System.CodeDom.Compiler;
 using System.IO;
-using SharpLua.AST;
 
 namespace SharpLua.Compiler
 {
@@ -16,33 +16,43 @@ namespace SharpLua.Compiler
     {
         public static int Main(string[] args)
         {
-            if (args.Length == 0)
+            string inFile, outFile;
+            Compiler.OutputType ot;
+            if (args.Length == 1)
             {
-                Console.WriteLine("Usage: luac <file> [outfile]");
-                Console.WriteLine("  <file> is the input file name");
-                Console.WriteLine("  [outfile] is an optional output file name");
-                return 1;
+                inFile = args[0];
+                outFile = Path.GetDirectoryName(inFile) + "\\" + Path.GetFileNameWithoutExtension(inFile) + ".exe";
+                ot = Compiler.OutputType.Exe;
+            }//TODO: check for -out:winexe|exe
+            if (args.Length == 2)
+            {
+                inFile = args[0];
+                outFile = args.Length > 1 ? args[1] : Path.GetDirectoryName(inFile) + "\\" + Path.GetFileNameWithoutExtension(inFile) + ".exe";
+                ot = Compiler.OutputType.Exe;
             }
-            Parser.Parser p = new SharpLua.Parser.Parser();
-            bool success;
-            Chunk c = p.ParseChunk(new Parser.TextInput(File.ReadAllText(args[0])), out success);
-            if (success)
+            if (args.Length == 3)
             {
-                string _out = "";
-                if (args.Length > 1)
-                    _out = args[1];
-                else
-                    _out = Path.GetDirectoryName(args[0]) + "\\" + Path.GetFileNameWithoutExtension(args[0]) + ".sluac";
-                Serializer.Serialize(c, _out);
-                return 0;
+                inFile = args[0];
+                outFile = args.Length > 1 ? args[1] : Path.GetDirectoryName(inFile) + "\\" + Path.GetFileNameWithoutExtension(inFile) + ".exe";
+                ot = Compiler.OutputType.Exe;
+            }
+            
+            Console.WriteLine("Compiling '" + inFile + "'...");
+            // compile
+            CompilerResults cr = Compiler.Compile(new string[] { inFile }, ot, outFile);
+            // display errors
+            if (cr.Errors.Count > 0)
+            {
+                foreach (CompilerError err in cr.Errors)
+                    Console.WriteLine("Compile Error: " + err);
+                return 1;
             }
             else
             {
-                Console.WriteLine("Parsing error(s)!");
-                foreach (Tuple<int, string> t in p.Errors)
-                    Console.WriteLine("Line " + t.Item1 + ": " + t.Item2);
+                Console.WriteLine("Compiled to '" + outFile + "'!");
             }
-            return 1;
+            // return
+            return 0;
         }
     }
 }

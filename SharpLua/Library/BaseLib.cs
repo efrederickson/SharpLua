@@ -232,18 +232,7 @@ namespace SharpLua.Library
         public static LuaValue LoadString(LuaValue[] values)
         {
             LuaString code = values[0] as LuaString;
-            LuaTable enviroment = LuaRuntime.GlobalEnvironment;
-            Chunk chunk = LuaRuntime.Parse(code.Text);
-
-            LuaFunction func = new LuaFunction(
-                (LuaValue[] args) =>
-                {
-                    chunk.Enviroment = enviroment;
-                    return chunk.Execute();
-                }
-               );
-
-            return func;
+            return LuaRuntime.Run(code.Text, LuaRuntime.GlobalEnvironment);
         }
 
         public static LuaValue UnPack(LuaValue[] values)

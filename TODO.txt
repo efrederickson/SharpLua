@@ -9,7 +9,7 @@
 - fix class iterators
 - automatically save and load environments
 - serialize functions, userdata, etc.
-- an AST to #Lua converter
+- Fix script.call
 
 STANDARD LUA FUNCTIONS
 - rawequal <v1>, <v2>

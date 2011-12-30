@@ -17,8 +17,12 @@ C:\Users\elijah.FFHS2\Documents\Lua\SharpLua\bin\Debug\slua.pdb
 C:\Users\elijah.FFHS2\Documents\Lua\SharpLua\SharpLua\obj\Debug\ResolveAssemblyReference.cache
 C:\Users\elijah.FFHS2\Documents\Lua\SharpLua\SharpLua\obj\Debug\slua.exe
 C:\Users\elijah.FFHS2\Documents\Lua\SharpLua\SharpLua\obj\Debug\slua.pdb
+C:\Elijah - Libraries\SharpLua\bin\Debug\init.slua
 C:\Elijah - Libraries\SharpLua\bin\Debug\Test\Battle.slua
 C:\Elijah - Libraries\SharpLua\bin\Debug\Test\ClassesExample.slua
+C:\Elijah - Libraries\SharpLua\bin\Debug\Test\HelloWorld.slua
+C:\Elijah - Libraries\SharpLua\bin\Debug\Test\LuaPad.slua
+C:\Elijah - Libraries\SharpLua\bin\Debug\Test\serialization.slua
 C:\Elijah - Libraries\SharpLua\bin\Debug\Test\LedgerExample.slua
 C:\Elijah - Libraries\SharpLua\bin\Debug\Test\lock.slua
 C:\Elijah - Libraries\SharpLua\bin\Debug\Test\tablefunctions.slua
@@ -32,6 +36,3 @@ C:\Elijah - Libraries\SharpLua\bin\Debug\slua.pdb
 C:\Elijah - Libraries\SharpLua\SharpLua\obj\Debug\ResolveAssemblyReference.cache
 C:\Elijah - Libraries\SharpLua\SharpLua\obj\Debug\slua.exe
 C:\Elijah - Libraries\SharpLua\SharpLua\obj\Debug\slua.pdb
-C:\Elijah - Libraries\SharpLua\bin\Debug\Test\serialization.slua
-C:\Elijah - Libraries\SharpLua\bin\Debug\init.slua
-C:\Elijah - Libraries\SharpLua\bin\Debug\Test\LuaPad.slua

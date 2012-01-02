@@ -1,7 +1,7 @@
 ﻿TODO
 - Documentation/guides
 - cryptography library (seperate project), use IExtendFramework 
-- compression library (separate project), using ICSharpCode.SharpZipLib
+- compression library (separate project), using IExtendFramework
 - error: error level also
 - set "..." to command line args in _G
 - Lists

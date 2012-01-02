@@ -34,8 +34,8 @@ namespace SharpLua.Compiler
             param.IncludeDebugInformation = true;
             param.GenerateExecutable=ot == OutputType.Dll ? false : true;
             param.OutputAssembly = outfile;
-            param.EmbeddedResources.Add("slua.exe");
-            param.ReferencedAssemblies.Add("slua.exe");
+            param.EmbeddedResources.Add("SharpLua.dll");
+            param.ReferencedAssemblies.Add("SharpLua.dll");
             string classname2 =(new System.Random(DateTime.Now.Millisecond)).Next().ToString();
             switch (ot)
             {
@@ -157,7 +157,7 @@ namespace SharpLua
     static System.Reflection.Assembly Resolver(object sender, ResolveEventArgs args)
     {
         Assembly a1 = Assembly.GetExecutingAssembly();
-        Stream s = a1.GetManifestResourceStream(" + "\"" + "slua.exe" + "\"" + @");
+        Stream s = a1.GetManifestResourceStream(" + "\"" + "SharpLua.dll" + "\"" + @");
         byte[] block = new byte[s.Length];
         s.Read(block, 0, block.Length);
         Assembly a2 = Assembly.Load(block);

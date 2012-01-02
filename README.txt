@@ -5,7 +5,7 @@ supports most lua functions.
 Created by mlnlover11 Productions
 Based off of the LuaInterpreter article on CodeProject.
 
-To use in your projects, just add a reference to this exe and use the 
+To use in your projects, just add a reference to the SharpLua.dll file and use the 
 SharpLua.LuaRuntime.Run(code[, environment]) or RunFile function.
 
 Features Lua doesn't have:
@@ -22,5 +22,14 @@ Features Lua doesn't have:
   - sload            - deserialize a file to an object
   - table.removeitem - removes an item from a table
 
-To compile CryptoLib, you will need to change the reference to IExtendFramework wherever you have one.
+Current projects:
+SharpLua              The SharpLua parser, interpreter, and REPL
+SharpLua.Serializer   Serializes a #Lua AST parsed from a source file
+SharpLua.Compiler     A simple compiler for #Lua, I used the L# compiler
+SharpLua.Interpreter  SharpLua's interpreter program
+SharpLuaAddIn         A SharpDevelop addin with syntax highlighting for #Lua
+CryptoLib             An experimental encryption lib for #Lua
+
+
+To compile CryptoLib, you will need to change the reference to IExtendFramework wherever you have an IExtendFramework dll
 You can get IExtendFramework at https://github.com/mlnlover11/IExtendFramework

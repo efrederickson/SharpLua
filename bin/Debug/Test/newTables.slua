@@ -1,0 +1,6 @@
+﻿-- a test for the new LuaTable table system
+t = { }
+for i=1,100 do t[i] = "" .. i end
+for k, v in pairs(t) do print(k, v) end
+for k, v in ipairs(t) do print(k, v) end
+-- if k == v then it passed.

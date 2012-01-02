@@ -17,3 +17,4 @@ C:\Elijah - Libraries\SharpLua\bin\Debug\CryptoLib.pdb
 C:\Elijah - Libraries\SharpLua\CryptoLib\obj\x86\Debug\CryptoLib.dll
 C:\Elijah - Libraries\SharpLua\CryptoLib\obj\x86\Debug\CryptoLib.pdb
 C:\Elijah - Libraries\SharpLua\bin\Debug\Test\HelloWorld.slua
+C:\Elijah - Libraries\SharpLua\bin\Debug\Test\newTables.slua

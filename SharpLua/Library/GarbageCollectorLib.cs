@@ -80,7 +80,7 @@ namespace SharpLua.Library
                 }
             }
             // scan child tables + child tables
-            foreach (LuaValue val in t.ListValues)
+            foreach (LuaValue val in t.Values)
             {
                 if ((val == LuaNil.Nil) || val == null)
                 {

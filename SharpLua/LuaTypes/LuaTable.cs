@@ -8,9 +8,7 @@ namespace SharpLua.LuaTypes
     [Serializable()]
     public class LuaTable : LuaValue
     {
-        private List<LuaValue> list;
-
-        private Dictionary<LuaValue, LuaValue> dict;
+        private Dictionary<LuaValue, LuaValue> table = new Dictionary<LuaValue, LuaValue>();
 
         public LuaTable() { }
 
@@ -35,14 +33,7 @@ namespace SharpLua.LuaTypes
         {
             get
             {
-                if (this.list == null)
-                {
-                    return 0;
-                }
-                else
-                {
-                    return this.list.Count;
-                }
+                return this.Count;
             }
         }
 
@@ -50,13 +41,13 @@ namespace SharpLua.LuaTypes
         {
             get
             {
-                if (this.dict == null)
+                if (this.table == null)
                 {
                     return 0;
                 }
                 else
                 {
-                    return this.dict.Count;
+                    return this.table.Count;
                 }
             }
         }
@@ -74,27 +65,24 @@ namespace SharpLua.LuaTypes
 
             return "Table " + this.GetHashCode();
         }
-
-        public IEnumerable<LuaValue> ListValues
+        
+        public IEnumerable<LuaValue> Values
         {
-            get { return this.list; }
+            //get { return this.list; }
+            get
+            {
+                foreach (LuaValue v in table.Values)
+                    yield return v;
+            }
         }
-
+        
         public IEnumerable<LuaValue> Keys
         {
             get
             {
-                if (this.Length > 0)
-                {
-                    for (int index = 1; index <= this.list.Count; index++)
-                    {
-                        yield return new LuaNumber(index);
-                    }
-                }
-
                 if (this.Count > 0)
                 {
-                    foreach (LuaValue key in this.dict.Keys)
+                    foreach (LuaValue key in this.table.Keys)
                     {
                         yield return key;
                     }
@@ -104,24 +92,22 @@ namespace SharpLua.LuaTypes
 
         public IEnumerable<KeyValuePair<LuaValue, LuaValue>> KeyValuePairs
         {
-            get { return this.dict; }
+            get { return this.table; }
         }
 
         public bool ContainsKey(LuaValue key)
         {
-            if(this.dict != null){
-                if(this.dict.ContainsKey(key)){
+            if(this.table != null){
+                if(this.table.ContainsKey(key)){
                     return true;
                 }
             }
-
-            if (this.list != null)
+            if (key as LuaNumber != null)
             {
-                LuaNumber index = key as LuaNumber;
-                if (index != null && index.Number == (int)index.Number)
-                {
-                    return index.Number >= 1 && index.Number <= this.list.Count;
-                }
+                double val = (key as LuaNumber).Number;
+                foreach (LuaValue key2 in table.Keys)
+                    if (((key2 as LuaNumber != null) && ((key2 as LuaNumber).Number == val)))
+                        return true;
             }
 
             return false;
@@ -129,19 +115,19 @@ namespace SharpLua.LuaTypes
 
         public void AddValue(LuaValue value)
         {
-            if (this.list == null)
-            {
-                this.list = new List<LuaValue>();
-            }
-
-            this.list.Add(value);
+            // adds 1, because Lua index starts at 1.
+            // and 1 item == count = 1 == index = 1
+            // BUT, GetValue removes 1 from index, so its back to original C# index
+            // so: count = 34 == index == 34 (- 1) == table[34], C#: table[33]
+            this.table.Add(new LuaNumber(table.Count + 1), value);
         }
 
         public void InsertValue(int index, LuaValue value)
         {
             if (index > 0 && index <= this.Length + 1)
             {
-                this.list.Insert(index - 1, value);
+                //this.table.Insert(index - 1, value);
+                AddValue(value);
             }
             else
             {
@@ -151,58 +137,76 @@ namespace SharpLua.LuaTypes
 
         public bool Remove(LuaValue item)
         {
-            return this.list.Remove(item);
+            return this.table.Remove(item);
         }
 
         public void RemoveAt(int index)
         {
-            this.list.RemoveAt(index - 1);
+            foreach (LuaValue val in table.Keys)
+            {
+                if ((val as LuaNumber) != null)
+                {
+                    int n = int.Parse(val.Value.ToString());
+                    if (n == (index - 1))
+                    {
+                        table.Remove(val);
+                        return;
+                    }
+                }
+            }
+            //this.table.RemoveAt(index - 1);
         }
 
         public void Sort()
-        {
-            this.list.Sort((a, b) =>
-            {
-                LuaNumber n = a as LuaNumber;
-                LuaNumber m = b as LuaNumber;
-                if (n != null && m != null)
-                {
-                    return n.Number.CompareTo(m.Number);
-                }
+        {/*
+            this.table.Sort((a, b) =>
+                           {
+                               LuaNumber n = a as LuaNumber;
+                               LuaNumber m = b as LuaNumber;
+                               if (n != null && m != null)
+                               {
+                                   return n.Number.CompareTo(m.Number);
+                               }
 
-                LuaString s = a as LuaString;
-                LuaString t = b as LuaString;
-                if (s != null && t != null)
-                {
-                    return s.Text.CompareTo(t.Text);
-                }
+                               LuaString s = a as LuaString;
+                               LuaString t = b as LuaString;
+                               if (s != null && t != null)
+                               {
+                                   return s.Text.CompareTo(t.Text);
+                               }
 
-                return 0;
-            });
+                               return 0;
+                           });
+             */
         }
 
         public void Sort(LuaFunction compare)
-        {
+        {/*
             this.list.Sort((a, b) =>
-                {
-                    LuaValue result = compare.Invoke(new LuaValue[] { a, b });
-                    LuaBoolean boolValue = result as LuaBoolean;
-                    if (boolValue != null && boolValue.BoolValue == true)
-                    {
-                        return 1;
-                    }
-                    else
-                    {
-                        return -1;
-                    }
-                });
+                           {
+                               LuaValue result = compare.Invoke(new LuaValue[] { a, b });
+                               LuaBoolean boolValue = result as LuaBoolean;
+                               if (boolValue != null && boolValue.BoolValue == true)
+                               {
+                                   return 1;
+                               }
+                               else
+                               {
+                                   return -1;
+                               }
+                           });*/
         }
 
         public LuaValue GetValue(int index)
         {
             if (index > 0 && index <= this.Length)
             {
-                return this.list[index - 1];
+                foreach (LuaValue v in table.Keys)
+                {
+                    if (((v as LuaNumber) != null) && (int.Parse((v as LuaNumber).Number.ToString()) == index))
+                        return table[v];
+                }
+                //return this.table[index - 1];
             }
 
             return LuaNil.Nil;
@@ -223,15 +227,15 @@ namespace SharpLua.LuaTypes
             }
             else
             {
-                return this.dict[key];
+                return this.table[key];
             }
         }
 
         public LuaValue GetKey(string key)
         {
-            if (this.dict == null) return LuaNil.Nil;
+            if (this.table == null) return LuaNil.Nil;
 
-            foreach (LuaValue value in this.dict.Keys)
+            foreach (LuaValue value in this.table.Keys)
             {
                 LuaString str = value as LuaString;
 
@@ -262,7 +266,7 @@ namespace SharpLua.LuaTypes
 
             if (key != LuaNil.Nil)
             {
-                this.dict.Remove(key);
+                this.table.Remove(key);
             }
         }
 
@@ -282,8 +286,16 @@ namespace SharpLua.LuaTypes
 
                 if (index > 0 && index <= this.Length)
                 {
-                    this.list[index - 1] = value;
-                    return;
+                    foreach (LuaValue v in table.Keys)
+                    {
+                        if (((v as LuaNumber) != null) && (int.Parse((v as LuaNumber).Number.ToString()) == index))
+                        {
+                            table[v] = value;
+                            return;
+                        }
+                    }
+                    //this.list[index - 1] = value;
+                    //return;
                 }
             }
 
@@ -293,19 +305,19 @@ namespace SharpLua.LuaTypes
                 return;
             }
 
-            if (this.dict == null)
+            if (this.table == null)
             {
-                this.dict = new Dictionary<LuaValue, LuaValue>();
+                this.table = new Dictionary<LuaValue, LuaValue>();
             }
 
-            this.dict[key] = value;
+            this.table[key] = value;
         }
 
         public void RemoveKey(LuaValue key)
         {
-            if (key != LuaNil.Nil && this.dict != null && this.dict.ContainsKey(key))
+            if (key != LuaNil.Nil && this.table != null && this.table.ContainsKey(key))
             {
-                this.dict.Remove(key);
+                this.table.Remove(key);
             }
         }
 
@@ -318,19 +330,25 @@ namespace SharpLua.LuaTypes
             else
             {
                 LuaNumber number = key as LuaNumber;
-
+                
                 if (number != null && number.Number == (int)number.Number)
                 {
                     int index = (int)number.Number;
-
+                    //index--; //Convert to C# index
+                    
                     if (index > 0 && index <= this.Length)
                     {
-                        return this.list[index - 1];
+                        foreach (LuaValue v in table.Keys)
+                        {
+                            if (((v as LuaNumber) != null) && (int.Parse((v as LuaNumber).Number.ToString()) == index))
+                                return table[v];
+                        }
+                        //return this.list[index - 1];
                     }
                 }
-                else if (this.dict != null && this.dict.ContainsKey(key))
+                else if (this.table != null && this.table.ContainsKey(key))
                 {
-                    return this.dict[key];
+                    return this.table[key];
                 }
                 else if (this.MetaTable != null)
                 {
@@ -393,9 +411,9 @@ namespace SharpLua.LuaTypes
 
         public LuaValue RawGetValue(LuaValue key)
         {
-            if (this.dict != null && this.dict.ContainsKey(key))
+            if (this.table != null && this.table.ContainsKey(key))
             {
-                return this.dict[key];
+                return this.table[key];
             }
 
             return LuaNil.Nil;
@@ -410,12 +428,12 @@ namespace SharpLua.LuaTypes
                 key = new LuaString(name);
             }
 
-            if (this.dict == null)
+            if (this.table == null)
             {
-                this.dict = new Dictionary<LuaValue, LuaValue>();
+                this.table = new Dictionary<LuaValue, LuaValue>();
             }
 
-            this.dict[key] = value;
+            this.table[key] = value;
         }
     }
 }

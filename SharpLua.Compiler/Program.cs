@@ -16,27 +16,45 @@ namespace SharpLua.Compiler
     {
         public static int Main(string[] args)
         {
-            string inFile, outFile;
-            Compiler.OutputType ot;
-            if (args.Length == 1)
+            string inFile = null, outFile = null;
+            Compiler.OutputType ot = Compiler.OutputType.Exe;
+            if (args.Length > 1)
+            {
+                foreach (string a in args)
+                {
+                    if (a.ToLower().StartsWith("-ot:"))
+                    {
+                        string b = a.Substring("-ot:".Length);
+                        if (b.ToLower() == "winexe")
+                            ot = Compiler.OutputType.WinFormsExe;
+                        else
+                            ot = Compiler.OutputType.Exe;
+                    }
+                    if (a.ToLower().StartsWith("-out:"))
+                    {
+                        string b = a.Substring("-out:".Length);
+                        outFile = b;
+                    }
+                    else
+                    {
+                        inFile = a;
+                    }
+                }
+                if (inFile == null)
+                {
+                    Console.WriteLine("Error: Input file not specified!");
+                    return 1;
+                }
+                if (outFile == null)
+                    outFile = Path.GetDirectoryName(inFile) + "\\" + Path.GetFileNameWithoutExtension(inFile) + ".exe";
+                
+            }
+            else
             {
                 inFile = args[0];
                 outFile = Path.GetDirectoryName(inFile) + "\\" + Path.GetFileNameWithoutExtension(inFile) + ".exe";
                 ot = Compiler.OutputType.Exe;
-            }//TODO: check for -out:winexe|exe
-            if (args.Length == 2)
-            {
-                inFile = args[0];
-                outFile = args.Length > 1 ? args[1] : Path.GetDirectoryName(inFile) + "\\" + Path.GetFileNameWithoutExtension(inFile) + ".exe";
-                ot = Compiler.OutputType.Exe;
             }
-            if (args.Length == 3)
-            {
-                inFile = args[0];
-                outFile = args.Length > 1 ? args[1] : Path.GetDirectoryName(inFile) + "\\" + Path.GetFileNameWithoutExtension(inFile) + ".exe";
-                ot = Compiler.OutputType.Exe;
-            }
-            
             Console.WriteLine("Compiling '" + inFile + "'...");
             // compile
             CompilerResults cr = Compiler.Compile(new string[] { inFile }, ot, outFile);

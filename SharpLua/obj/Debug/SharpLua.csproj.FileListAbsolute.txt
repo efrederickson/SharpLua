@@ -22,6 +22,7 @@ C:\Elijah - Libraries\SharpLua\bin\Debug\Test\Battle.slua
 C:\Elijah - Libraries\SharpLua\bin\Debug\Test\ClassesExample.slua
 C:\Elijah - Libraries\SharpLua\bin\Debug\Test\HelloWorld.slua
 C:\Elijah - Libraries\SharpLua\bin\Debug\Test\LuaPad.slua
+C:\Elijah - Libraries\SharpLua\bin\Debug\Test\newTables.slua
 C:\Elijah - Libraries\SharpLua\bin\Debug\Test\serialization.slua
 C:\Elijah - Libraries\SharpLua\bin\Debug\Test\LedgerExample.slua
 C:\Elijah - Libraries\SharpLua\bin\Debug\Test\lock.slua
@@ -31,9 +32,8 @@ C:\Elijah - Libraries\SharpLua\bin\Debug\Test\WinFormExample.slua
 C:\Elijah - Libraries\SharpLua\bin\Debug\Test\icon\add.png
 C:\Elijah - Libraries\SharpLua\bin\Debug\Test\icon\open.png
 C:\Elijah - Libraries\SharpLua\bin\Debug\Test\icon\save.png
-C:\Elijah - Libraries\SharpLua\SharpLua\obj\Debug\ResolveAssemblyReference.cache
 C:\Elijah - Libraries\SharpLua\bin\Debug\SharpLua.dll
 C:\Elijah - Libraries\SharpLua\bin\Debug\SharpLua.pdb
+C:\Elijah - Libraries\SharpLua\SharpLua\obj\Debug\ResolveAssemblyReference.cache
 C:\Elijah - Libraries\SharpLua\SharpLua\obj\Debug\SharpLua.dll
 C:\Elijah - Libraries\SharpLua\SharpLua\obj\Debug\SharpLua.pdb
-C:\Elijah - Libraries\SharpLua\bin\Debug\Test\newTables.slua

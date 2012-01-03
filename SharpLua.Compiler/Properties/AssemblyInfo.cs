@@ -12,9 +12,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("SharpLua.Compiler")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("mlnlover11 Productions")]
 [assembly: AssemblyProduct("SharpLua.Compiler")]
-[assembly: AssemblyCopyright("Copyright 2011")]
+[assembly: AssemblyCopyright("Copyright (C) 2011-2012 mlnlover11 Productions")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

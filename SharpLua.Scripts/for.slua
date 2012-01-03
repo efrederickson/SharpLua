@@ -1,0 +1,19 @@
+﻿-- for L00PZ
+
+-- basic for loop
+for i = 1, 100, 1 do 
+    print("Pass " .. i)
+end
+
+-- create and fill table
+t = { }
+print"Creating sample table"
+for i = 1, 50 do
+    t[i] = "Round " .. i .. "::" .. math.random(0, 999999999)
+end
+
+-- print table contents
+print"Created sample table, printing it"
+for k, v in pairs(t) do
+    print(t, k, v)
+end

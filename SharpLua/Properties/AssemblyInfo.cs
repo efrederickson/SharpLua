@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("SharpLua")]
-[assembly: AssemblyDescription("A Lua for .NET")]
+[assembly: AssemblyDescription("A Lua for .NET Framework")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("mlnlover11 Productions")]
 [assembly: AssemblyProduct("SharpLua")]
-[assembly: AssemblyCopyright("Copyright © 2011 mlnlover11 Productions")]
+[assembly: AssemblyCopyright("Copyright © 2011-2012 mlnlover11 Productions")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

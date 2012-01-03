@@ -1,0 +1,18 @@
+﻿-- function samples
+
+f = function(arg1, ...)
+    print(arg1, arg)
+end
+
+f("a", "b", "c")
+
+t = { }
+function t:die(...)
+t.dead = true
+end
+
+t:die()
+print(t.dead)
+t.c = class()
+t.c.__index = t
+--print(t.c.t.c.t.c.t.c.Name)

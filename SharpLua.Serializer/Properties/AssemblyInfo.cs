@@ -9,12 +9,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("SharpLua.Compiler")]
+[assembly: AssemblyTitle("SharpLua.Serializer")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("SharpLua.Compiler")]
-[assembly: AssemblyCopyright("Copyright 2011")]
+[assembly: AssemblyCompany("mlnlover11 Productions")]
+[assembly: AssemblyProduct("SharpLua.Serializer")]
+[assembly: AssemblyCopyright("Copyright (C) 2011-2012 mlnlover11 Productions")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

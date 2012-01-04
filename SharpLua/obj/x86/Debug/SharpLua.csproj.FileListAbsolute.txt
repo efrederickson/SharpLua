@@ -11,8 +11,10 @@ C:\Elijah - Libraries\SharpLua\SharpLua\bin\Debug\Test\serialization.slua
 C:\Elijah - Libraries\SharpLua\SharpLua\bin\Debug\Test\icon\add.png
 C:\Elijah - Libraries\SharpLua\SharpLua\bin\Debug\Test\icon\open.png
 C:\Elijah - Libraries\SharpLua\SharpLua\bin\Debug\Test\icon\save.png
-C:\Elijah - Libraries\SharpLua\SharpLua\bin\Debug\slua.exe
-C:\Elijah - Libraries\SharpLua\SharpLua\bin\Debug\slua.pdb
 C:\Elijah - Libraries\SharpLua\SharpLua\obj\x86\Debug\ResolveAssemblyReference.cache
-C:\Elijah - Libraries\SharpLua\SharpLua\obj\x86\Debug\slua.exe
-C:\Elijah - Libraries\SharpLua\SharpLua\obj\x86\Debug\slua.pdb
+C:\Elijah - Libraries\SharpLua\SharpLua\bin\Debug\Test\HelloWorld.slua
+C:\Elijah - Libraries\SharpLua\SharpLua\bin\Debug\Test\newTables.slua
+C:\Elijah - Libraries\SharpLua\SharpLua\bin\Debug\SharpLua.dll
+C:\Elijah - Libraries\SharpLua\SharpLua\bin\Debug\SharpLua.pdb
+C:\Elijah - Libraries\SharpLua\SharpLua\obj\x86\Debug\SharpLua.dll
+C:\Elijah - Libraries\SharpLua\SharpLua\obj\x86\Debug\SharpLua.pdb

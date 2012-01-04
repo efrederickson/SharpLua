@@ -13,7 +13,8 @@ namespace SharpLua.AST
     {
         public override LuaValue Evaluate(LuaValue baseValue, LuaTable enviroment)
         {
-            LuaValue value = LuaValue.GetKeyValue(baseValue, new LuaString(this.Method));
+            LuaValue value = null;
+		try {LuaValue.GetKeyValue(baseValue, new LuaString(this.Method)); } catch (Exception) { }
             LuaFunction function = value as LuaFunction;
 
             if (function != null)

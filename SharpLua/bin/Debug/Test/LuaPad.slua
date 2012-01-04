@@ -1,5 +1,5 @@
-﻿-- LuaPad is an advanced example to show the power of #Lua and .NET together.
--- 
+﻿-- LuaPad is a more advanced example to show the power of #Lua and .NET together.
+-- It is a #Lua text editor that can also compile and run #Lua code/files
 
 -- import namespace, so less typing later...
 script.import"system.windows.forms"
@@ -48,6 +48,14 @@ base.menu = WinForms.ToolStrip{
     },
     WinForms.ToolStripbutton{ Name = "saveButton", Text = "&Save", Icon = "icon\\save.png", Click = function(sender, e)
                                                                                                         -- write the file
+                                                                                                        if base.Filename == "" then
+                                                                                                            ofd = script.create"savefiledialog"
+                                                                                                            if ofd.ShowDialog() == "OK" then
+                                                                                                                base.Filename = ofd.Filename
+                                                                                                            else
+                                                                                                                return nil
+                                                                                                            end
+                                                                                                        end
                                                                                                         filesystem.write(base.Filename, base.text.Text)
                                                                                                     end
     },
@@ -61,6 +69,11 @@ base.menu = WinForms.ToolStrip{
                                                                               p.Filename = "luac.exe"
                                                                               p.Start()
                                                                           end
+    }, 
+    WinForms.ToolStripButton{ Name="runButton", Text= "&Run", Click = function(sender, e)
+                                                                              -- run using lua
+                                                                              loadstring(base.text.Text)
+                                                                          end
     }
 }
 base.Form.Controls.Add(base.menu)
@@ -71,7 +84,7 @@ function Open(filename)
     t = f:read("*a")
     f:close()
     base.text.Text = t
-    base.Form.Text = filename .. title
+    base.Form.Text = filename .. " - " ..title
     base.Filename = filename
 end
 

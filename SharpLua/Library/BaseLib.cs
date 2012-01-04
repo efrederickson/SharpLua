@@ -41,6 +41,7 @@ namespace SharpLua.Library
             module.Register("loadbin", LoadBin);
             module.Register("ssave", SSave);
             module.Register("sload", SLoad);
+            module.Register("createauserdata", (LuaValue[] args) => { return new LuaUserdata(null); });
         }
 
         public static LuaValue Print(LuaValue[] values)

@@ -193,6 +193,8 @@ namespace SharpLua
             //GlobalEnvironment.SetNameValue("DEBUG", LuaBoolean.False);
             
             Prompt = "> ";
+            // load startup scripts
+            LoadFiles();
             
             // check command line args
             if (args.Length > 0)
@@ -239,9 +241,6 @@ namespace SharpLua
             
             if (args.Length == 0)
                 GoInteractive = true;
-            
-            // load startup scripts
-            LoadFiles();
             
             if (GoInteractive)
             {

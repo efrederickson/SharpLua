@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-
+using SharpLua.Library;
 using SharpLua.LuaTypes;
 
 namespace SharpLua.AST
@@ -56,6 +56,22 @@ namespace SharpLua.AST
                 if (c.Self.MetaTable == null)
                     c.GenerateMetaTable();
                 return (c.Self.MetaTable.GetValue("__call") as LuaFunction).Invoke(args.ToArray());
+            }
+            else if ((baseValue as LuaUserdata) != null)
+            {
+                List<LuaValue> args = this.Args.ArgList.ConvertAll(arg => arg.Evaluate(enviroment));
+                LuaUserdata u = baseValue as LuaUserdata;
+                if (u.MetaTable != null)
+                {
+                    if (u.MetaTable.GetValue("__call") != null)
+                    {
+                        return ScriptLib.ToLuaValue((u.MetaTable.GetValue("__call") as LuaFunction).Invoke(args.ToArray()));
+                    }
+                    else
+                        throw new NotImplementedException();
+                }
+                else
+                    throw new NotImplementedException();
             }
             else
             {

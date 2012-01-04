@@ -277,7 +277,7 @@ namespace SharpLua.Library
             return LuaNil.Nil;
         }
         
-        private static LuaValue ToLuaValue(object value)
+        public static LuaValue ToLuaValue(object value)
         {
             if (value is int || value is double)
             {

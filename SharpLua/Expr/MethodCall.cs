@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Reflection;
 using System.Text;
-
+using SharpLua.Library;
 using SharpLua.LuaTypes;
 
 namespace SharpLua.AST
@@ -44,6 +46,25 @@ namespace SharpLua.AST
                 if (c.Self.MetaTable == null)
                     c.GenerateMetaTable();
                 return (c.Self.MetaTable.GetValue("__call") as LuaFunction).Invoke(args.ToArray());
+            }
+            else if ((baseValue as LuaUserdata) != null)
+            {
+                List<LuaValue> args = this.Args.ArgList.ConvertAll(arg => arg.Evaluate(enviroment));
+                LuaUserdata obj = baseValue as LuaUserdata;
+                object o = obj.Value;
+                if (obj.MetaTable != null)
+                {
+                    if (obj.MetaTable.GetValue(this.Method) != null)
+                    {
+                        LuaValue o2 = obj.MetaTable.GetValue(this.Method);
+                        if ((o2 as LuaFunction) != null)
+                            return (o2 as LuaFunction).Invoke(args.ToArray());
+                        else if ((o2 as LuaTable) != null)
+                            throw new NotImplementedException(); // TODO
+                    }
+                }
+                return ScriptLib.ToLuaValue(o.GetType().GetMethod(this.Method, BindingFlags.IgnoreCase | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).Invoke(o, BindingFlags.IgnoreCase | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null, args.ToArray(), CultureInfo.CurrentCulture));
+                
             }
             else
             {

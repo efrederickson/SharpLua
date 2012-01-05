@@ -64,7 +64,7 @@ namespace SharpLua.AST
                             throw new NotImplementedException(); // TODO
                     }
                 }
-                return ScriptLib.ToLuaValue(o.GetType().GetMethod(this.Method, BindingFlags.IgnoreCase | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).Invoke(o, BindingFlags.IgnoreCase | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null, args.ToArray(), CultureInfo.CurrentCulture));
+                return ObjectToLua.ToLuaValue(o.GetType().GetMethod(this.Method, BindingFlags.IgnoreCase | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).Invoke(o, BindingFlags.IgnoreCase | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null, args.ToArray(), CultureInfo.CurrentCulture));
             }
             else
             {

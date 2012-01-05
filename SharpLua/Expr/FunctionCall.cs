@@ -65,7 +65,7 @@ namespace SharpLua.AST
                 {
                     if (u.MetaTable.GetValue("__call") != null)
                     {
-                        return ScriptLib.ToLuaValue((u.MetaTable.GetValue("__call") as LuaFunction).Invoke(args.ToArray()));
+                        return ObjectToLua.ToLuaValue((u.MetaTable.GetValue("__call") as LuaFunction).Invoke(args.ToArray()));
                     }
                     else
                         throw new NotImplementedException();

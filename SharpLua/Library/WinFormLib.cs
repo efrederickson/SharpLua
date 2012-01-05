@@ -10,6 +10,10 @@ using SharpLua.LuaTypes;
 
 namespace SharpLua.Library
 {
+    /// <summary>
+    /// A Lua library to create System.Windows.Forms objects
+    /// The Object-to-Lua conversion is left here because its slightly different.
+    /// </summary>
     public static class WinFormLib
     {
         static LuaTable currentModule;

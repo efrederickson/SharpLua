@@ -134,6 +134,7 @@
     <Compile Include="LuaTypes\LuaNil.cs" />
     <Compile Include="LuaTypes\LuaValue.cs" />
     <Compile Include="LuaTypes\LuaMultiValue.cs" />
+    <Compile Include="ObjectToLua.cs" />
     <Compile Include="Parser\Parser.cs" />
     <Compile Include="Parser\ParserInput.cs" />
     <Compile Include="Parser\Syntax\Access.cs" />

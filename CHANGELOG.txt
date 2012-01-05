@@ -11,3 +11,6 @@ Version 1.1.*
 + added a SharpDevelop addin
 + Added a "compiler" which serializes the AST into a roughly 6x larger file
 + added a full object serializer/deserializer
++ moved stuff around
++ added a compiler to create standalone Exe files
++ added C# and VB.NET example projects

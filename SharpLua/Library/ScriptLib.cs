@@ -83,8 +83,7 @@ namespace SharpLua.Library
             }
             
             // create object.
-            LuaUserdata obj = new LuaUserdata(Activator.CreateInstance(t, _args.ToArray()));
-            return ObjectToLua.ToLuaValue(obj);
+            return ObjectToLua.ToLuaValue(Activator.CreateInstance(t, _args.ToArray()));
         }
         
         public static LuaValue Import(LuaValue[] args)

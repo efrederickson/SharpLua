@@ -171,6 +171,7 @@ namespace SharpLua
         
         public static LuaValue ToLuaValue(object value)
         {
+            Console.WriteLine("objToLua->" + value.GetType().ToString());
             if (value is int || value is double)
             {
                 return new LuaNumber(Convert.ToDouble(value));

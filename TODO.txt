@@ -12,11 +12,4 @@
 - Fix script.call
 
 STANDARD LUA FUNCTIONS
-- rawequal <v1>, <v2>
-- string.dump <func>
-- string.gsub <s>, <pattern>, <repl> [, n]
-- string.match
 - io.lines <file>  (file line iterator)
-- io.popen <program> [, mode]
-- io.type <obj>    (valid file handle)
-- file.setvbuf <mode> [, size]   (mode = "no"/no buffering, "full"/full buffering, "line"/line buffering

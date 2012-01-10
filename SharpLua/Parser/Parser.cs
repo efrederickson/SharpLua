@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
-
 using SharpLua.AST;
 
 namespace SharpLua.Parser
@@ -118,7 +118,7 @@ namespace SharpLua.Parser
 
             statement = ParseExprStmt(out success);
             if (success) { ClearError(errorCount); ParsingResults[reskey] = new Tuple<object, bool, int>(statement, success, position);return statement; }
-
+            
             return statement;
         }
 

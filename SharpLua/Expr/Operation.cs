@@ -78,6 +78,9 @@ namespace SharpLua.AST
                     {
                         return new LuaNumber(str.Text.Length);
                     }
+                    if ((rightValue.MetaTable.GetValue("__len") != null) && ((rightValue.MetaTable.GetValue("__len") as LuaFunction) != null))
+                        return (rightValue.MetaTable.GetValue("__len") as LuaFunction).Invoke(new LuaValue[] { });
+                    
                     break;
                 case "not":
                     var rightBool = rightValue as LuaBoolean;
@@ -322,24 +325,30 @@ namespace SharpLua.AST
         private static LuaFunction GetMetaFunction(string name, LuaValue leftValue, LuaValue rightValue)
         {
             LuaTable left = leftValue as LuaTable;
-
+            
             if (left != null)
             {
                 LuaFunction func = left.GetValue(name) as LuaFunction;
-
+                
                 if (func != null)
                 {
                     return func;
                 }
             }
-
+            LuaFunction f = leftValue.MetaTable.GetValue(name) as LuaFunction;
+            if (f != null)
+                return f;
+            
             LuaTable right = rightValue as LuaTable;
-
+            
             if (right != null)
             {
                 return right.GetValue(name) as LuaFunction;
             }
-
+            f = rightValue.MetaTable.GetValue(name) as LuaFunction;
+            if (f != null)
+                return f;
+            
             return null;
         }
     }

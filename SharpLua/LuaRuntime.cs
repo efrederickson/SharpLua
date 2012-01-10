@@ -177,11 +177,10 @@ namespace SharpLua
         }
         
         /// <summary>
-        /// SharpLua's entry point, and a REPL function
+        /// A REPL (Read, Eval, Print, Loop function)
         /// </summary>
         /// <param name="args">Application startup args</param>
-        [STAThread]
-        public static void Main(string[] args)
+        public static void REPL(string[] args)
         {
             // Create global variables
             Application.EnableVisualStyles();
@@ -210,7 +209,7 @@ namespace SharpLua
                             Chunk c = Serializer.Deserialize(file) as Chunk;
                             c.Enviroment = GlobalEnvironment;
                             bool isBreak;
-                            c.Execute(GlobalEnvironment, out isBreak);
+                            c.Execute(GlobalEnvironment, out isBreak).ToString();
                         }
                         else
                         {
@@ -257,7 +256,11 @@ namespace SharpLua
                     {
                         try
                         {
-                            LuaRuntime.Run(line, GlobalEnvironment);
+                            LuaValue v = LuaRuntime.Run(line, GlobalEnvironment);
+                            if (v == null)
+                                Console.WriteLine("=> nil");
+                            else
+                                Console.WriteLine("=> " + v.ToString());
                         }
                         catch (Exception error)
                         {
@@ -265,6 +268,7 @@ namespace SharpLua
                                 Console.WriteLine(error.ToString());
                             else
                                 Console.WriteLine("Error: " + error.Message);
+                            GlobalEnvironment.SetNameValue("LASTERROR", ObjectToLua.ToLuaValue(error));
                         }
                     }
                 }

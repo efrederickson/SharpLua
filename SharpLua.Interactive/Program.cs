@@ -14,7 +14,7 @@ namespace SharpLua.Interactive
     {
         public static void Main(string[] args)
         {
-            SharpLua.LuaRuntime.Main(args);
+            SharpLua.LuaRuntime.REPL(args);
         }
     }
 }

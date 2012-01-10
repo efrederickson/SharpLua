@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-
+using System.Text.RegularExpressions;
 using SharpLua.LuaTypes;
 
 namespace SharpLua.Library
@@ -28,6 +28,9 @@ namespace SharpLua.Library
             module.Register("rep", Rep);
             module.Register("reverse", Reverse);
             module.Register("find", Find);
+            module.Register("gmatch", GMatch);
+            module.Register("match", Match);
+            module.Register("gsub", GSub);
         }
 
         public static LuaValue Byte(LuaValue[] values)
@@ -150,9 +153,63 @@ namespace SharpLua.Library
             }
             else
             {
-                //TODO: format->regex
-                return LuaNil.Nil;
+                // TODO: return index also
+                return GetMatches(new LuaValue[] { new LuaString(s.Substring(init)), new LuaString(format) }).GetValue(0);
             }
+        }
+        
+        /// <summary>
+        /// The string.gmatch function, credit to Arjen Douma
+        /// </summary>
+        /// <param name="args">the args</param>
+        /// <returns>An iterator for use in for loops (for-in)</returns>
+        public static LuaValue GMatch(LuaValue[] args)
+        {
+            LuaFunction f = new LuaFunction(BaseLib.Next);
+            return new LuaMultiValue(new LuaValue[] { f, GetMatches(args), LuaNil.Nil });
+        }
+        
+        private static LuaTable GetMatches(LuaValue[] args)
+        {
+            LuaTable t = new LuaTable();
+
+            string s = (args[0] as LuaString).Text;
+            string format = (args[1] as LuaString).Text;
+
+            Regex re = new Regex(format);
+            Match m = re.Match(s);
+
+            while (m.Success)
+            {
+                for (int i = 0; i < m.Groups.Count; i++)
+                {
+                    Group g = m.Groups[i];
+                    CaptureCollection cc = g.Captures;
+                    for (int j = 0; j < cc.Count; j++)
+                    {
+                        Capture c = cc[j];
+                        t.AddValue(new LuaString(c.Value));
+                    }
+                }
+                m = m.NextMatch();
+            }
+            return t;
+        }
+        
+        public static LuaValue Match(LuaValue[] args)
+        {
+            string s = args[0].ToString();
+            string format = args[1].ToString();
+            int init = 0;
+            if (args.Length > 2)
+                init = (int) (args[3] as LuaNumber).Number;
+            return GetMatches(new LuaValue[] { new LuaString(s.Substring(init)), new LuaString(format) });
+        }
+        
+        public static LuaValue GSub(LuaValue[] args)
+        {
+            // string.gsub (s, pattern, repl [, n])
+            throw new NotImplementedException();
         }
     }
 }

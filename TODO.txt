@@ -14,8 +14,6 @@
 STANDARD LUA FUNCTIONS
 - rawequal <v1>, <v2>
 - string.dump <func>
-- string.find <s, pattern [, init [, plain]]
-- string.gmatch <s>, <pattern>    returns iterator getting capture (regex?)
 - string.gsub <s>, <pattern>, <repl> [, n]
 - string.match
 - io.lines <file>  (file line iterator)

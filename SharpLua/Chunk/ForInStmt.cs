@@ -42,7 +42,7 @@ namespace SharpLua.AST
 
                     for (int i = 0; i < Math.Min(this.NameList.Count, neatValues.Length); i++)
                     {
-                        table.SetNameValue(this.NameList[i], neatValues[i]);
+                        table.SetNameValue(this.NameList[i], neatValues[i + 1]);
                     }
                 }
                 else

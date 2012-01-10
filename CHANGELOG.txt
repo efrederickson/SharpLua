@@ -14,3 +14,4 @@ Version 1.1.*
 + moved stuff around
 + added a compiler to create standalone Exe files
 + added C# and VB.NET example projects
++ String Regex pattern matching

@@ -64,44 +64,36 @@ namespace CryptoLib
             string _in = args[1].ToString();
             if (encType == "aes")
             {
-                IExtendFramework.Encryption.AESProvider aes = new IExtendFramework.Encryption.AESProvider(key, iv);
-                return new LuaString(aes.Encrypt(_in));
+                return new LuaString(AESProvider.Encrypt(_in));
             }
             else if (encType == "ascii")
             {
-                ASCIIProvider asc = new ASCIIProvider();
                 // encrypt with first byte of key
-                return new LuaString(asc.Encrypt(_in, int.Parse(key[0].ToString())));
+                return new LuaString(ASCIIProvider.Encrypt(_in, int.Parse(key[0].ToString())));
             }
             if (encType == "des")
             {
-                IExtendFramework.Encryption.DESProvider des = new IExtendFramework.Encryption.DESProvider(key, iv);
-                return new LuaString(des.Encrypt(_in));
+                return new LuaString(DESProvider.Encrypt(_in));
             }
             if (encType == "rc2")
             {
-                IExtendFramework.Encryption.RC2Provider rc2 = new IExtendFramework.Encryption.RC2Provider(key, iv);
-                return new LuaString(rc2.Encrypt(_in));
+                return new LuaString(RC2Provider.Encrypt(_in));
             }
             if (encType == "rijndael")
             {
-                IExtendFramework.Encryption.RijndaelProvider rijndael = new IExtendFramework.Encryption.RijndaelProvider(key, iv);
-                return new LuaString(rijndael.Encrypt(_in));
+                return new LuaString(RijndaelProvider.Encrypt(_in));
             }
             if (encType == "rsa")
             {
-                IExtendFramework.Encryption.RSAProvider RSA = new IExtendFramework.Encryption.RSAProvider();
-                return new LuaString(RSA.Encrypt(_in));
+                return new LuaString(RSAProvider.Encrypt(_in));
             }
             if (encType == "tripledes")
             {
-                IExtendFramework.Encryption.TripleDESProvider tdes = new IExtendFramework.Encryption.TripleDESProvider(key, iv);
-                return new LuaString(tdes.Encrypt(_in));
+                return new LuaString(TripleDESProvider.Encrypt(_in));
             }
             if (encType == "xor")
             {
-                IExtendFramework.Encryption.XorProvider xor = new IExtendFramework.Encryption.XorProvider();
-                return new LuaString(xor.Encrypt(_in, int.Parse(key[0].ToString())));
+                return new LuaString(XorProvider.Encrypt(_in, int.Parse(key[0].ToString())));
             }
             throw new Exception("Unsuported encryption '" + encType + "'!");
         }
@@ -112,44 +104,36 @@ namespace CryptoLib
             string _in = args[1].ToString();
             if (decType == "aes")
             {
-                AESProvider aes = new AESProvider(key, iv);
-                return new LuaString(aes.Decrypt(_in));
+                return new LuaString(AESProvider.Decrypt(_in));
             }
             else if (decType == "ascii")
             {
-                ASCIIProvider asc = new ASCIIProvider();
                 // Decrypt with first byte of key
-                return new LuaString(asc.Decrypt(_in, int.Parse(key[0].ToString())));
+                return new LuaString(ASCIIProvider.Decrypt(_in, int.Parse(key[0].ToString())));
             }
             if (decType == "des")
             {
-                DESProvider des = new DESProvider(key, iv);
-                return new LuaString(des.Decrypt(_in));
+                return new LuaString(DESProvider.Decrypt(_in));
             }
             if (decType == "rc2")
             {
-                RC2Provider rc2 = new RC2Provider(key, iv);
-                return new LuaString(rc2.Decrypt(_in));
+                return new LuaString(RC2Provider.Decrypt(_in));
             }
             if (decType == "rijndael")
             {
-                RijndaelProvider rijndael = new RijndaelProvider(key, iv);
-                return new LuaString(rijndael.Decrypt(_in));
+                return new LuaString(RijndaelProvider.Decrypt(_in));
             }
             if (decType == "rsa")
             {
-                RSAProvider RSA = new RSAProvider();
-                return new LuaString(RSA.Decrypt(_in));
+                return new LuaString(RSAProvider.Decrypt(_in));
             }
             if (decType == "tripledes")
             {
-                TripleDESProvider tdes = new TripleDESProvider(key, iv);
-                return new LuaString(tdes.Decrypt(_in));
+                return new LuaString(TripleDESProvider.Decrypt(_in));
             }
             if (decType == "xor")
             {
-                XorProvider xor = new XorProvider();
-                return new LuaString(xor.Decrypt(_in, int.Parse(key[0].ToString())));
+                return new LuaString(XorProvider.Decrypt(_in, int.Parse(key[0].ToString())));
             }
             throw new Exception("Unsuported Decryption '" + decType + "'!");
         }

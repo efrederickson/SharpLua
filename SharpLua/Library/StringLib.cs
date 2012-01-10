@@ -172,13 +172,13 @@ namespace SharpLua.Library
         private static LuaTable GetMatches(LuaValue[] args)
         {
             LuaTable t = new LuaTable();
-
+            
             string s = (args[0] as LuaString).Text;
             string format = (args[1] as LuaString).Text;
-
+            
             Regex re = new Regex(format);
             Match m = re.Match(s);
-
+            
             while (m.Success)
             {
                 for (int i = 0; i < m.Groups.Count; i++)
@@ -208,8 +208,44 @@ namespace SharpLua.Library
         
         public static LuaValue GSub(LuaValue[] args)
         {
+            int totalReplaces = 0;
             // string.gsub (s, pattern, repl [, n])
-            throw new NotImplementedException();
+            string s = args[0].ToString();
+            string format = args[1].ToString();
+            LuaValue r = args[2];
+            int n = -1;
+            if (args.Length > 3)
+                n = int.Parse(args[4].ToString());
+            
+            Regex re = new Regex(format);
+            Match m = re.Match(s);
+            
+            // a lot of wierd random things occur here...
+            while (m.Success)
+            {
+                for (int i = 0; i < m.Groups.Count; i++)
+                {
+                    Group g = m.Groups[i];
+                    CaptureCollection cc = g.Captures;
+                    for (int j = 0; j < cc.Count; j++)
+                    {
+                        Capture c = cc[j];
+                        if (r is LuaString)
+                            s = s.Substring(0, c.Index) + (r as LuaString).Text + s.Substring(c.Length);
+                        if (r is LuaFunction)
+                            s = s.Substring(0, c.Index) + (r as LuaFunction).Invoke(new LuaValue[] { new LuaString(c.Value) }).ToString() + s.Substring(c.Length);
+                        if (r is LuaTable)
+                            s = s.Substring(0, c.Index) + ((r as LuaTable).GetValue(c.Value) == null ? s.Substring(c.Index, c.Length) : (r as LuaTable).GetValue(c.Value).ToString()) + s.Substring(c.Length);
+                        totalReplaces++;
+                    }
+                }
+                m = m.NextMatch();
+            }
+            // TODO: return Multi Value
+            LuaTable t = new LuaTable();
+            t.SetNameValue("replaces", new LuaNumber(totalReplaces));
+            t.SetNameValue("string", new LuaString(s));
+            return t;
         }
     }
 }

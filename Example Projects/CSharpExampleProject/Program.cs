@@ -62,6 +62,10 @@ namespace CSharpExampleProject
             LuaRuntime.Run("c = class()", t);
             Console.WriteLine(LuaRuntime.Run("return c", t));
             
+            // You can also call functions defined in #Lua
+            LuaFunction f = LuaRuntime.Run("return function() print\"a function says hai\" end", t) as LuaFunction;
+            f.Invoke(new LuaValue[] { });
+            
             // Let you see the output
             Console.Write("Press any key to continue . . . ");
             Console.ReadKey(true);

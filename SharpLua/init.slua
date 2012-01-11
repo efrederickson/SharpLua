@@ -9,3 +9,9 @@ script.import"system.drawing"
 script.import"system.io"
 
 require"cryptolib"
+
+-- test
+script.reference"CSharpexampleproject"
+c=script.create"csharpexampleproject.test2"
+w = nil
+for o in c.Values do w = o end

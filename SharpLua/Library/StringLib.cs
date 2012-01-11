@@ -166,7 +166,8 @@ namespace SharpLua.Library
         public static LuaValue GMatch(LuaValue[] args)
         {
             LuaFunction f = new LuaFunction(BaseLib.Next);
-            return new LuaMultiValue(new LuaValue[] { f, GetMatches(args), LuaNil.Nil });
+            LuaTable t = GetMatches(args);
+            return new LuaMultiValue(new LuaValue[] { f, t, LuaNil.Nil});
         }
         
         private static LuaTable GetMatches(LuaValue[] args)

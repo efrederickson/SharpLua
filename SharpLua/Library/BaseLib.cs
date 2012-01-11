@@ -176,6 +176,8 @@ namespace SharpLua.Library
         {
             bool condition = values[0].GetBooleanValue();
             LuaString message = values.Length > 1 ? values[1] as LuaString : null;
+            if (condition)
+                return LuaBoolean.True;
             if (message != null)
             {
                 throw new LuaError(message.Text);

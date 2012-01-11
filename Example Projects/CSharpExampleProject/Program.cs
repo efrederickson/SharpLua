@@ -7,6 +7,7 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
+using System.Collections.Generic;
 using SharpLua;
 using SharpLua.LuaTypes;
 
@@ -78,6 +79,18 @@ namespace CSharpExampleProject
         public string TestFunc()
         {
             return "Testing...";
+        }
+    }
+    
+    public class Test2
+    {
+        public List<string> Values;
+        
+        public Test2()
+        {
+            Values = new List<string>();
+            for (int i = 0; i < 600; i++)
+                Values.Add(i.ToString());
         }
     }
 }

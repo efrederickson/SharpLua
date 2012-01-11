@@ -22,7 +22,12 @@ namespace SharpLua.AST
         {
             LuaValue[] values = this.ExprList.ConvertAll(expr => expr.Evaluate(enviroment)).ToArray();
             LuaValue[] neatValues = LuaMultiValue.UnWrapLuaValues(values);
-
+            
+            if (neatValues.Length < 3) //probably LuaUserdata. Literal will also fail...
+            {
+                return ExecuteAlternative(enviroment, out isBreak);
+            }
+            
             LuaFunction func = neatValues[0] as LuaFunction;
             LuaValue state = neatValues[1];
             LuaValue loopVar = neatValues[2];
@@ -42,7 +47,7 @@ namespace SharpLua.AST
 
                     for (int i = 0; i < Math.Min(this.NameList.Count, neatValues.Length); i++)
                     {
-                        table.SetNameValue(this.NameList[i], neatValues[i + 1]);
+                        table.SetNameValue(this.NameList[i], neatValues[i]);
                     }
                 }
                 else
@@ -64,6 +69,41 @@ namespace SharpLua.AST
                 }
             }
 
+            isBreak = false;
+            return null;
+        }
+        
+        private LuaValue ExecuteAlternative(LuaTable enviroment, out bool isBreak)
+        {
+            LuaValue[] values = this.ExprList.ConvertAll(expr => expr.Evaluate(enviroment)).ToArray();
+            LuaValue[] neatValues = LuaMultiValue.UnWrapLuaValues(values);
+
+            LuaValue state = neatValues[0];
+            Console.WriteLine(state.Value.GetType().ToString());
+            if ((state.Value as System.Collections.IEnumerable) != null)
+            {
+                var table = new LuaTable(enviroment);
+                this.Body.Enviroment = table;
+                System.Collections.IEnumerable ie = (System.Collections.IEnumerable)state.Value;
+                foreach (object obj in ie)
+                {
+                    for (int i = 0; i < this.NameList.Count; i++)
+                    {
+                        table.SetNameValue(this.NameList[i], ObjectToLua.ToLuaValue(obj));
+                    }
+
+                    var returnValue = this.Body.Execute(out isBreak);
+                    if (returnValue != null || isBreak == true)
+                    {
+                        isBreak = false;
+                        return returnValue;
+                    }
+                }
+            }
+            else
+            {
+                throw new Exception();
+            }
             isBreak = false;
             return null;
         }

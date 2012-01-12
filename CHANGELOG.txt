@@ -15,3 +15,5 @@ Version 1.1.*
 + added a compiler to create standalone Exe files
 + added C# and VB.NET example projects
 + String Regex pattern matching
++ return internal assembly version for in the Banner
++ directly enumerate .NET arrays (For <obj> in <.NET array> do print(<obj>) end

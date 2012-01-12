@@ -21,6 +21,25 @@ namespace SharpLua.LuaTypes
             this.Object = obj;
             this.MetaTable = metatable;
         }
+        /// <summary>
+        /// Added by Arjen...initialize .NET object as LuaUserData using reflection
+        /// </summary>
+        /// <param name="obj">.NET object</param>
+        /// <param name="init">True if object should reflect in LUA else empty metatable</param>
+        public LuaUserdata(object obj, bool init)
+        {
+            if (init)
+            {
+                MetaTable = SharpLua.ObjectToLua.GetControlMetaTable();
+                this.Object = obj;
+            }
+            else
+            {
+                MetaTable = new LuaTable();
+                this.Object = obj;
+            }
+        }
+
 
         public override object Value
         {

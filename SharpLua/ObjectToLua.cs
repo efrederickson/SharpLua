@@ -188,7 +188,7 @@ namespace SharpLua
         }
 
         static LuaTable controlMetaTable;
-        private static LuaTable GetControlMetaTable()
+        public static LuaTable GetControlMetaTable()
         {
             if (controlMetaTable == null)
             {

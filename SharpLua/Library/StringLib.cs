@@ -158,17 +158,55 @@ namespace SharpLua.Library
             }
         }
         
-        /// <summary>
-        /// The string.gmatch function, credit to Arjen Douma
-        /// </summary>
-        /// <param name="args">the args</param>
-        /// <returns>An iterator for use in for loops (for-in)</returns>
+        private static LuaValue GetGMatches(LuaValue[] args)
+        {
+            List<LuaString> l = new List<LuaString>();
+
+            string s = (args[0] as LuaString).Text;
+            string format = (args[1] as LuaString).Text;
+
+            Regex re = new Regex(format);
+            Match m = re.Match(s);
+
+            while (m.Success)
+            {
+                for (int i = 0; i < m.Groups.Count; i++)
+                {
+                    Group g = m.Groups[i];
+                    CaptureCollection cc = g.Captures;
+                    for (int j = 0; j < cc.Count; j++)
+                    {
+                        Capture c = cc[j];
+                        l.Add(new LuaString(c.Value));
+                    }
+                }
+                m = m.NextMatch();
+            }            
+            return new LuaMultiValue (l.ToArray());
+        }
+        
+        public static LuaValue NextGMatch(LuaValue[] values)
+        {
+            LuaMultiValue table = values[0] as LuaMultiValue;
+            LuaValue loopVar = values[1];
+            LuaValue result = LuaNil.Nil;
+
+            int idx = (loopVar == LuaNil.Nil ? 0 : Convert.ToInt32(loopVar.MetaTable.GetValue("__gmatch_index").Value));
+
+            if (idx < table.Values.Length)
+            {
+                result = table.Values[idx];
+                result.MetaTable.SetNameValue("__gmatch_index", new LuaNumber(idx + 1));
+            }
+            return result;
+        }
+
         public static LuaValue GMatch(LuaValue[] args)
         {
-            LuaFunction f = new LuaFunction(BaseLib.Next);
-            LuaTable t = GetMatches(args);
-            return new LuaMultiValue(new LuaValue[] { f, t, LuaNil.Nil});
+            LuaFunction f = new LuaFunction(NextGMatch);
+            return new LuaMultiValue(new LuaValue[] { f, GetGMatches(args), LuaNil.Nil });
         }
+
         
         private static LuaTable GetMatches(LuaValue[] args)
         {

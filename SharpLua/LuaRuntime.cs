@@ -321,7 +321,7 @@ namespace SharpLua
         /// </summary>
         public static void PrintBanner()
         {
-            Console.WriteLine("SharpLua " + Application.ProductVersion + ", Copyright (C) 2011-2012 mlnlover11 Productions");
+            Console.WriteLine("SharpLua " + AssemblyVersion.Version + ", Copyright (C) 2011-2012 mlnlover11 Productions");
             //Console.WriteLine(Prompt);
         }
         

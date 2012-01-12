@@ -74,12 +74,13 @@ namespace SharpLua.AST
         }
         private LuaValue ExecuteAlternative(LuaTable enviroment, out bool isBreak)
         {
+            LuaValue returnValue;
             LuaValue[] values = this.ExprList.ConvertAll(expr => expr.Evaluate(enviroment)).ToArray();
             LuaValue[] neatValues = LuaMultiValue.UnWrapLuaValues(values);
             
             LuaValue state = neatValues[0];
             
-            var table = new LuaTable(enviroment);
+            LuaTable table = new LuaTable(enviroment);
             this.Body.Enviroment = table;
             System.Collections.IDictionary dict = state.Value as System.Collections.IDictionary;
             if (dict != null)
@@ -93,7 +94,7 @@ namespace SharpLua.AST
                     table.SetNameValue(this.NameList[0], ObjectToLua.ToLuaValue(key));
                     table.SetNameValue(this.NameList[1], ObjectToLua.ToLuaValue(dict[key]));
                     
-                    var returnValue = this.Body.Execute(out isBreak);
+                    returnValue = this.Body.Execute(out isBreak);
                     if (returnValue != null || isBreak == true)
                     {
                         isBreak = false;
@@ -101,9 +102,9 @@ namespace SharpLua.AST
                     }
                 }
             }
-            else
+            System.Collections.IEnumerable ie = state.Value as System.Collections.IEnumerable;
+            if (ie != null)
             {
-                System.Collections.IEnumerable ie = (System.Collections.IEnumerable)state.Value;
                 foreach (object obj in ie)
                 {
                     for (int i = 0; i < this.NameList.Count; i++)
@@ -111,7 +112,7 @@ namespace SharpLua.AST
                         table.SetNameValue(this.NameList[i], ObjectToLua.ToLuaValue(obj));
                     }
                     
-                    var returnValue = this.Body.Execute(out isBreak);
+                    returnValue = this.Body.Execute(out isBreak);
                     if (returnValue != null || isBreak == true)
                     {
                         isBreak = false;
@@ -119,9 +120,23 @@ namespace SharpLua.AST
                     }
                 }
             }
+            // its some other value...
+            for (int i = 0; i < this.NameList.Count; i++)
+            {
+                table.SetNameValue(this.NameList[i], ObjectToLua.ToLuaValue(state.Value));
+            }
+            
+            returnValue = this.Body.Execute(out isBreak);
+            if (returnValue != null || isBreak == true)
+            {
+                isBreak = false;
+                return returnValue;
+            }
+            
             isBreak = false;
             return null;
         }
-
+        
     }
+    
 }

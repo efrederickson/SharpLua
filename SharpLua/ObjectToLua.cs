@@ -236,6 +236,15 @@ namespace SharpLua
             LuaTable ret = new LuaTable();
             
             // check if Dictionary...
+            System.Collections.IDictionary dict = o as System.Collections.IDictionary;
+            if (dict != null)
+            {
+                foreach (object obj in dict.Keys)
+                {
+                    ret.SetKeyValue(ToLuaValue(obj), ToLuaValue(dict[obj]));
+                }
+                return ret;
+            }
             
             System.Collections.IEnumerable ie = (o as System.Collections.IEnumerable);
             if (ie != null)

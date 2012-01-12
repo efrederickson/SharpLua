@@ -86,50 +86,25 @@ namespace SharpLua
                 object value = propertyInfo.GetValue(control, null);
                 return ToLuaValue(value);
             }
-            else
+            FieldInfo fi = type.GetField(member);
+            if (fi != null)
             {
-                return new LuaFunction((args) =>
-                                       {
-                                           MemberInfo[] members = type.GetMember(member);
-                                           //, BindingFlags.IgnoreCase);
-                                           
-                                           if (members.Length == 0)
-                                           {
-                                               throw new InvalidOperationException(string.Format("Function '{0}' is not defined in '{1}'", member, type.FullName));
-                                           }
-                                           
-                                           foreach (MemberInfo memberInfo in members)
-                                           {
-                                               MethodInfo methodInfo = memberInfo as MethodInfo;
-                                               if (methodInfo != null)
-                                               {
-                                                   try
-                                                   {
-                                                       List<object> args2 = new List<object>();
-                                                       foreach (LuaValue v in args)
-                                                           args2.Add(v.Value);
-                                                       object result = methodInfo.Invoke(control, args2.ToArray());
-                                                       return ToLuaValue(result);
-                                                   }
-                                                   catch (TargetParameterCountException)
-                                                   {
-                                                   }
-                                                   catch (ArgumentException)
-                                                   {
-                                                   }
-                                                   catch (MethodAccessException)
-                                                   {
-                                                   }
-                                                   catch (InvalidOperationException)
-                                                   {
-                                                   }
-                                               }
-                                           }
-                                           return LuaNil.Nil;
-                                       });
-                
-                throw new Exception(string.Format("Cannot get {0} from {1}", member, control));
+                return ToLuaValue(fi.GetValue(control));
             }
+            MethodInfo mi = type.GetMethod(member);
+            if (mi != null)
+            {
+                return new LuaFunction((LuaValue[] args) =>
+                                       {
+                                           List<object> args2 = new List<object>();
+                                           foreach (LuaValue v in args)
+                                               args2.Add(v.Value);
+                                           object result = mi.Invoke(control, args2.ToArray());
+                                           return ToLuaValue(result);
+                                       });
+            }
+            
+            throw new Exception(string.Format("Cannot get {0} from {1}", member, control));
         }
         
         private static LuaValue GetIndexerValue(object control, Type type, double index)
@@ -168,7 +143,7 @@ namespace SharpLua
 
             return LuaNil.Nil;
         }
-        
+
         public static LuaValue ToLuaValue(object value)
         {
             if (value is int || value is double)
@@ -211,7 +186,7 @@ namespace SharpLua
                 return data;
             }
         }
-        
+
         static LuaTable controlMetaTable;
         private static LuaTable GetControlMetaTable()
         {
@@ -253,6 +228,25 @@ namespace SharpLua
 
             return controlMetaTable;
         }
-        
+
+        public static LuaTable ToLuaTable(object o)
+        {
+            LuaTable ret = new LuaTable();
+            
+            System.Collections.IEnumerable ie = (o as System.Collections.IEnumerable);
+            if (ie != null)
+            {
+                foreach (object obj in ie)
+                {
+                    ret.AddValue(ToLuaValue(obj));
+                }
+                return ret;
+            }
+            // check if Dictionary
+            // check if <type>...
+            // not an array
+            ret.AddValue(ToLuaValue(o));
+            return ret;
+        }
     }
 }

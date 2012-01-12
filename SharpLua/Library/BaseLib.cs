@@ -42,6 +42,7 @@ namespace SharpLua.Library
             module.Register("ssave", SSave);
             module.Register("sload", SLoad);
             module.Register("createauserdata", (LuaValue[] args) => { return new LuaUserdata(null); });
+            module.Register("iarray", IterateDotNetList);
         }
 
         public static LuaValue Print(LuaValue[] values)
@@ -385,29 +386,14 @@ namespace SharpLua.Library
             // get the object
             object o = Serializer.Deserialize(fn);
             
-            // try to determine its type
-            if ((o as LuaTable) != null)
-                return o as LuaTable;
-            if ((o as LuaBoolean) != null)
-                return o as LuaBoolean;
-            if ((o as LuaClass) != null)
-                return o as LuaClass;
-            if ((o as LuaCoroutine) != null)
-                return o as LuaCoroutine;
-            if ((o as LuaFunction) != null)
-                return o as LuaFunction;
-            if ((o as LuaNil) != null)
-                return o as LuaNil;
-            if ((o as LuaNumber) != null)
-                return o as LuaNumber;
-            if ((o as LuaString) != null)
-                return o as LuaString;
-            if ((o as LuaUserdata) != null)
-                return o as LuaUserdata;
-            if ((o as LuaValue) != null) // what else could it be?
-                return o as LuaValue;
-            
-            return new LuaUserdata(o); // return as a Userdata
+            return ObjectToLua.ToLuaValue(o);
+        }
+        
+        public static LuaValue IterateDotNetList(LuaValue[] args)
+        {
+            LuaTable t = ObjectToLua.ToLuaTable(args[0].Value);
+            // use some other function...
+            return Pairs(new LuaValue[] { t });
         }
     }
 }

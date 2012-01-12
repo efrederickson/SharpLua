@@ -13,5 +13,4 @@ require"cryptolib"
 -- test
 script.reference"CSharpexampleproject"
 c=script.create"csharpexampleproject.test2"
-w = nil
-for o in c.Values do w = o end
+for k, v in iarray(c.Values) do print(k, v) end

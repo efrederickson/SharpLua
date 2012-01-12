@@ -49,15 +49,12 @@ namespace CSharpExampleProject
             
             // the reason for this is because script.create returns an advanced Userdata with
             // metatables that check any indexing or setting and map them to the .NET object
-            // if it doesn't find it, it does nothing
-            LuaRuntime.Run("obj2.ThisValueDoesntExistInDotNet = \"hey\"", t);
-            // but when trying to get, it appears to be a function -- the result of the metatable indexing system.
+            // if it doesn't find it, it throws an error
+            //LuaRuntime.Run("obj2.ThisValueDoesntExistInDotNet = \"hey\"", t);
             // the same value was printed twice, with different functions each time, proving its not actually there:
-            Console.WriteLine(LuaRuntime.Run("return \"Sample attemption at creating an object: \" .. tostring(obj2.ThisValueDoesntExistInDotNet)", t));
+            //Console.WriteLine(LuaRuntime.Run("return \"Sample attemption at creating an object: \" .. tostring(obj2.ThisValueDoesntExistInDotNet)", t));
             // Console.WriteLine was used to show that you can print the returned value of executed code
-            LuaRuntime.Run("print(obj2.ThisValueDoesntExistInDotNet)", t);
-            // and you cant call them, though they appear to be functions:
-            LuaRuntime.Run("pcall(obj2.ThisValueDoesntExistInDotNet, print(\"Error calling non-existant function \\\"ThisValueDoesntExistInDotNet\\\"\"))", t);
+            //LuaRuntime.Run("print(obj2.ThisValueDoesntExistInDotNet)", t);
             
             // Lua can also create "classes"
             LuaRuntime.Run("c = class()", t);
@@ -89,8 +86,16 @@ namespace CSharpExampleProject
         public Test2()
         {
             Values = new List<string>();
-            for (int i = 0; i < 600; i++)
+            for (int i = 1; i <= 60; i++)
                 Values.Add(i.ToString());
+        }
+        
+        public string this[int index]
+        {
+            get
+            {
+                return Values[index];
+            }
         }
     }
 }

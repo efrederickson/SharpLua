@@ -231,7 +231,11 @@ namespace SharpLua
 
         public static LuaTable ToLuaTable(object o)
         {
+            Console.WriteLine(o.GetType().ToString());
+            
             LuaTable ret = new LuaTable();
+            
+            // check if Dictionary...
             
             System.Collections.IEnumerable ie = (o as System.Collections.IEnumerable);
             if (ie != null)
@@ -242,9 +246,9 @@ namespace SharpLua
                 }
                 return ret;
             }
-            // check if Dictionary
+            
             // check if <type>...
-            // not an array
+            // not an array type
             ret.AddValue(ToLuaValue(o));
             return ret;
         }

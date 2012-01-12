@@ -82,12 +82,17 @@ namespace CSharpExampleProject
     public class Test2
     {
         public List<string> Values;
+        public Dictionary<string, int> Dict;
         
         public Test2()
         {
             Values = new List<string>();
+            Dict = new Dictionary<string, int>();
             for (int i = 1; i <= 60; i++)
+            {
                 Values.Add(i.ToString());
+                Dict.Add(i.ToString() + "...", i);
+            }
         }
         
         public string this[int index]

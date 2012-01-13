@@ -149,10 +149,10 @@ namespace SharpLua.LuaTypes
         
         public LuaValue GetChildClasses(LuaValue[] args)
         {
-            LuaTable t = new LuaTable();
+            List<LuaClass> c = new List<LuaClass>();
             foreach (LuaClass p in ChildClasses)
-                t.AddValue(p);
-            return t;
+                c.Add(p);
+            return new LuaMultiValue(c.ToArray());
         }
 
         public LuaValue CallParentMethod(LuaValue[] args)

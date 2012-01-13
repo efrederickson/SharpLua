@@ -1,12 +1,10 @@
 ﻿TODO
-- Documentation/guides
-- cryptography library (seperate project), use IExtendFramework 
+- Documentation
 - compression library (separate project), using IExtendFramework
 - error: error level also
 - set "..." to command line args in _G
 - Lists
 - new icon
-- fix class iterators
 - automatically save and load environments
 - serialize functions, userdata, etc.
 - Fix script.call

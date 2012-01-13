@@ -79,17 +79,25 @@ function lock(obj, password)
 end
 
 function unlock(obj, password)
-    if getmetatable(obj).lockinfo == nil then error("object isn't locked!") end
-    if getmetatable(obj).lockinfo.locked == false then error("object isn't locked!") end
-    if getmetatable(obj).lockinfo.__password == password then
-        -- remove password also
-        if type(obj) == "class" then
+    if type(obj) == "class" then
+        if rawget(obj, "lockinfo") == nil then error("object isn't locked!") end
+        if rawget(obj, "lockinfo").locked == false then error("object isn't locked!") end
+        if rawget(obj, "lockinfo").__password == password then
+            -- remove password also
             rawset(obj, "lockinfo", { locked = false, __password = "" })
-        else
-            setmetatable(obj, { lockinfo = {locked = false, __password = "" }})
+         else
+             error("incorrect password!")
         end
     else
-        error("incorrect password!")
+        
+        if getmetatable(obj).lockinfo == nil then error("object isn't locked!") end
+        if getmetatable(obj).lockinfo.locked == false then error("object isn't locked!") end
+        if getmetatable(obj).lockinfo.__password == password then
+            -- remove password also
+            setmetatable(obj, { lockinfo = { locked = false, __password = "" }})
+         else
+             error("incorrect password!")
+        end
     end
     return obj
 end

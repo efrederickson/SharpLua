@@ -40,6 +40,7 @@ namespace SharpLua.Library
             mod.Register("CreateStaticClass", CreateStaticClass);
             mod.Register("CreateClass", CreateClass);
             mod.Register("IterateChildClasses", IterateChildClasses);
+            mod.Register("IterateParentClasses", IterateParentClasses);
             LuaTable mt = new LuaTable();
             mt.Register("__call", new LuaFunc((LuaValue[] args) =>
                                               {
@@ -121,37 +122,36 @@ namespace SharpLua.Library
             return _class;
         }
         
-        #region ITERATORS ** FIX **
-        
+        #region ITERATORS
         public static LuaValue IterateChildClasses(LuaValue[] args)
         {
             LuaClass _class = args[0] as LuaClass;
-            LuaFunction f = new LuaFunction(BaseLib.Next);
+            LuaFunction f = new LuaFunction(NextClassIterator);
             return new LuaMultiValue(new LuaValue[] { f, _class.GetChildClasses(new LuaValue[] {}), LuaNil.Nil });
         }
         
-        /*
-            // parent/super class iterat||
-            // iterates over all the parent classes of 'class'
-            // (classes which 'class' inherits from
-            // e.g.
-            // for obj in lclass:IterateParentClasses(classA) do
-            //  print(tostring(obj))
-            // end
-            function lclass:IterateParentClasses(_class)
-            if not lclass:IsClass(_class) then
-            error("item 'class' isn't a valid class!", 2)
-            end
-            local current = 0
-            local count = #_class.__super
-            return function()
-            current = current + 1
-            if current <= count then
-            return _class.__super[current]
-            end
-            end
-            end
-         */
+        public static LuaValue IterateParentClasses(LuaValue[] args)
+        {
+            LuaClass _class = args[0] as LuaClass;
+            LuaFunction f = new LuaFunction(NextClassIterator);
+            return new LuaMultiValue(new LuaValue[] { f, _class.GetParentClasses(new LuaValue[] {}), LuaNil.Nil });
+        }
+        
+        public static LuaValue NextClassIterator(LuaValue[] args)
+        {
+            LuaMultiValue multi = args[0] as LuaMultiValue;
+            LuaValue loopVar = args[1];
+            LuaValue result = LuaNil.Nil;
+
+            int idx = (loopVar == LuaNil.Nil ? 0 : Convert.ToInt32(loopVar.MetaTable.GetValue("__class_iterator_index").Value));
+
+            if (idx < multi.Values.Length)
+            {
+                result = multi.Values[idx];
+                result.MetaTable.SetNameValue("__class_iterator_index", new LuaNumber(idx + 1));
+            }
+            return result;
+        }
         #endregion
         
         public static LuaValue CreateFinalClass(LuaValue[] args)
@@ -172,7 +172,7 @@ namespace SharpLua.Library
         public static LuaValue CreateClass(LuaValue[] args)
         {
             LuaTable from = new LuaTable();
-            if (args[0].GetTypeCode() == "table" && ((IsClass(new LuaValue[] {args[0]}) as LuaBoolean).BoolValue == false) && ((args[0] as LuaTable).GetValue("CreateClass") == null))
+            if (args[0].GetTypeCode() == "table" && ((IsClass(new LuaValue[] {args[0]}) as LuaBoolean).BoolValue == false))
                 from = args[0] as LuaTable;
             LuaClass nClass = new LuaClass("CLASS_" + classCount++, false, false);
             List<LuaClass> Parents = new List<LuaClass>();

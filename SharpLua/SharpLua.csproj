@@ -60,10 +60,9 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Numerics" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyCache.cs" />
@@ -110,7 +109,6 @@
     <Compile Include="Library\ConsoleLib.cs" />
     <Compile Include="Library\CoroutineLib.cs" />
     <Compile Include="Library\FileSystemLib.cs" />
-    <Compile Include="Library\GarbageCollectorLib.cs" />
     <Compile Include="Library\ILuaLibrary.cs" />
     <Compile Include="Library\PackageLib.cs" />
     <Compile Include="Library\BaseLib.cs" />

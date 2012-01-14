@@ -15,7 +15,7 @@ namespace SharpLua.LuaTypes
         }
 
         public double Number { get; set; }
-
+        
         public override object Value
         {
             get { return this.Number; }

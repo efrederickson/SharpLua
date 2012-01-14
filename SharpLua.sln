@@ -2,6 +2,14 @@
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 # SharpDevelop 4.2.0.8342-alpha
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sample Projects", "Sample Projects", "{2EE1AFC5-E8E6-4B07-ADB3-EF71A204BE18}"
+	ProjectSection(SolutionItems) = postProject
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpExampleProject", "Example Projects\CSharpExampleProject\CSharpExampleProject.csproj", "{42F70066-1EBA-48AD-BD36-EBB844DC1753}"
+EndProject
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "VBNetExampleProject", "Example Projects\CSharpExampleProject.ConvertedToVBNet\VBNetExampleProject.vbproj", "{4ACE6EE9-6D4F-4F03-AA8E-1459D3E35D16}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpLua", "SharpLua\SharpLua.csproj", "{9B6F4AAC-1B76-4CB6-B7CE-EFBBB0C7F5C0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpLuaAddIn", "SharpLuaAddIn\SharpLuaAddIn.csproj", "{30C23BA2-6437-42AB-A1D0-C3CDCCCEEA6E}"
@@ -15,14 +23,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpLua.Interactive", "SharpLua.Interactive\SharpLua.Interactive.csproj", "{B948BBD7-BC7D-41E5-BB6C-E00412AE22D4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpLua.Scripts", "SharpLua.Scripts\SharpLua.Scripts.csproj", "{7D212EEB-E156-448D-8109-77FA17E59DFB}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sample Projects", "Sample Projects", "{2EE1AFC5-E8E6-4B07-ADB3-EF71A204BE18}"
-	ProjectSection(SolutionItems) = postProject
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpExampleProject", "Example Projects\CSharpExampleProject\CSharpExampleProject.csproj", "{42F70066-1EBA-48AD-BD36-EBB844DC1753}"
-EndProject
-Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "VBNetExampleProject", "Example Projects\CSharpExampleProject.ConvertedToVBNet\VBNetExampleProject.vbproj", "{4ACE6EE9-6D4F-4F03-AA8E-1459D3E35D16}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

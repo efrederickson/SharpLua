@@ -120,7 +120,6 @@ namespace SharpLua
             ScriptLib.RegisterModule(global);
             WinFormLib.RegisterModule(global);
             ConsoleLib.RegisterModule(global);
-            GarbageCollectorLib.RegisterModule(global);
             CoroutineLib.RegisterModule(global);
             PackageLib.RegisterModule(global);
             ClassLib.RegisterModule(global);

@@ -8,6 +8,7 @@ Based off of the LuaInterpreter article on CodeProject.
 To use in your projects, just add a reference to the SharpLua.dll file and use the 
 SharpLua.LuaRuntime.Run(code[, environment]) or RunFile function.
 
+There is no garbage collecter because .NET has a built-in garbage collecter and when an object is set to nil, its removed.
 Features Lua doesn't have:
 - built-in table copying and printing
 - metatable access for all Lua objects

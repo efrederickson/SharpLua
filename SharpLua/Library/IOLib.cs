@@ -26,6 +26,7 @@ namespace SharpLua.Library
             module.Register("flush", Flush);
             module.Register("tmpfile", TmpFile);
             module.Register("close", Close);
+            module.Register("lines", Lines);
         }
 
         private static TextReader DefaultInput = Console.In;
@@ -149,5 +150,46 @@ namespace SharpLua.Library
 
             return null;
         }
+        private static LuaValue GetLines(LuaValue[] args)
+        {
+            List<LuaString> l = new List<LuaString>();
+            TextReader tr = null;
+            if (args.Length > 0)
+                tr = new StreamReader((args[0] as LuaString).Text);
+            else
+                tr = Input(null).Value as TextReader;
+
+            string line = tr.ReadLine();
+            while (line != null)
+            {
+                l.Add(new LuaString(line));
+                line = tr.ReadLine();
+            }
+            tr.Close();
+            return new LuaMultiValue(l.ToArray());
+        }
+
+        private static LuaValue NextLine(LuaValue[] values)
+        {
+            LuaMultiValue table = values[0] as LuaMultiValue;
+            LuaValue loopVar = values[1];
+            LuaValue result = LuaNil.Nil;
+
+            int idx = (loopVar == LuaNil.Nil ? 0 : Convert.ToInt32(loopVar.MetaTable.GetValue("__lines_index").Value));
+
+            if (idx < table.Values.Length)
+            {
+                result = table.Values[idx];
+                result.MetaTable.SetNameValue("__lines_index", new LuaNumber(idx + 1));
+            }
+            return result;
+        }
+
+        public static LuaValue Lines(LuaValue[] args)
+        {
+            LuaFunction f = new LuaFunction(NextLine);
+            return new LuaMultiValue(new LuaValue[] { f, GetLines(args), LuaNil.Nil });
+        }
+
     }
 }

@@ -436,19 +436,19 @@ namespace SharpLua.LuaTypes
             this.table[key] = value;
         }
         
-        public string this[LuaValue key]
+        public LuaValue this[LuaValue key]
         {
             get
             {
-                return table[key];
+                return GetValue(key);
             }
             set
             {
-                table[key] = value;
+                SetKeyValue(key, value);
             }
         }
         
-        public string this[int index]
+        public LuaValue this[int index]
         {
             get
             {

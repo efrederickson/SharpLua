@@ -6,8 +6,5 @@
 - Lists
 - new icon
 - automatically save and load environments
-- serialize functions, userdata, etc.
+- serialize functions, userdata, etc. May need to create a new serializer.
 - Fix script.call
-
-STANDARD LUA FUNCTIONS
-- io.lines <file>  (file line iterator)

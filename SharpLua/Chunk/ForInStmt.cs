@@ -83,6 +83,7 @@ namespace SharpLua.AST
             LuaTable table = new LuaTable(enviroment);
             this.Body.Enviroment = table;
             System.Collections.IDictionary dict = state.Value as System.Collections.IDictionary;
+            System.Collections.IEnumerable ie = state.Value as System.Collections.IEnumerable;
             if (dict != null)
             {
                 foreach (object key in dict.Keys)
@@ -102,8 +103,7 @@ namespace SharpLua.AST
                     }
                 }
             }
-            System.Collections.IEnumerable ie = state.Value as System.Collections.IEnumerable;
-            if (ie != null)
+            else if (ie != null)
             {
                 foreach (object obj in ie)
                 {
@@ -120,23 +120,27 @@ namespace SharpLua.AST
                     }
                 }
             }
-            // its some other value...
-            for (int i = 0; i < this.NameList.Count; i++)
+            else
             {
-                table.SetNameValue(this.NameList[i], ObjectToLua.ToLuaValue(state.Value));
-            }
-            
-            returnValue = this.Body.Execute(out isBreak);
-            if (returnValue != null || isBreak == true)
-            {
+                // its some other value...
+                for (int i = 0; i < this.NameList.Count; i++)
+                {
+                    table.SetNameValue(this.NameList[i], ObjectToLua.ToLuaValue(state.Value));
+                }
+                
+                returnValue = this.Body.Execute(out isBreak);
+                if (returnValue != null || isBreak == true)
+                {
+                    isBreak = false;
+                    return returnValue;
+                }
+                
                 isBreak = false;
-                return returnValue;
+                return null;
             }
-            
             isBreak = false;
             return null;
         }
-        
     }
     
 }

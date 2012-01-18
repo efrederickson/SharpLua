@@ -14,6 +14,10 @@ namespace SharpLua.Parser
         {
             InputText = text;
             
+            // if its a linux Lua file, it probably starts with something like this
+            // #!/usr/local/lua
+            // or something of that matter.
+            // this removes that line.
             if (InputText.StartsWith("#!"))
                 InputText = InputText.Substring(InputText.IndexOf("\n"));
             

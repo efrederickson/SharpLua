@@ -79,7 +79,8 @@ namespace SharpLua.Parser
 
             int errorCount = Errors.Count;
             Statement statement = null;
-
+            
+            
             statement = ParseAssignment(out success);
             if (success) { ClearError(errorCount); ParsingResults[reskey] = new Tuple<object, bool, int>(statement, success, position);return statement; }
 
@@ -1157,7 +1158,8 @@ namespace SharpLua.Parser
             else
             {
                 position = start_position;
-                ParsingResults[reskey] = new Tuple<object, bool, int>(list_Expr, success, position);return list_Expr;
+                ParsingResults[reskey] = new Tuple<object, bool, int>(list_Expr, success, position);
+                return list_Expr;
             }
 
             while (true)

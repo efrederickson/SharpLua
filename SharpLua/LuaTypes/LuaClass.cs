@@ -210,12 +210,23 @@ namespace SharpLua.LuaTypes
             string func = args[0].Value.ToString();
             List<LuaValue> args2 = new List<LuaValue>();
             if ((args[1] as LuaUserdata) != null)
+            {
                 foreach (LuaValue a in ((args[1] as LuaUserdata).Value as LuaValue[]))
                     args2.Add(a);
-                else
-                    foreach (LuaValue a in args)
-                        args2.Add(a);
+            }
+            else
+            {
+                foreach (LuaValue a in args)
+                    args2.Add(a);
+            }
+            try
+            {
             args2.RemoveAt(0);
+            }
+            catch
+            {
+                
+            }
             LuaFunction f = ClassLib.FindMethod(new LuaValue[] {new LuaString(func), this}) as LuaFunction;
             if ((f == null))
                 f = InternalCallParentMethod(func) as LuaFunction;

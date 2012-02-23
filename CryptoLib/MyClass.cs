@@ -69,7 +69,7 @@ namespace CryptoLib
             else if (encType == "ascii")
             {
                 // encrypt with first byte of key
-                return new LuaString(ASCIIProvider.Encrypt(_in, int.Parse(key[0].ToString())));
+                return new LuaString(ASCIIProvider.Encrypt(_in));
             }
             if (encType == "des")
             {
@@ -93,7 +93,7 @@ namespace CryptoLib
             }
             if (encType == "xor")
             {
-                return new LuaString(XorProvider.Encrypt(_in, int.Parse(key[0].ToString())));
+                return new LuaString(XorProvider.Encrypt(_in));
             }
             throw new Exception("Unsuported encryption '" + encType + "'!");
         }
@@ -109,7 +109,7 @@ namespace CryptoLib
             else if (decType == "ascii")
             {
                 // Decrypt with first byte of key
-                return new LuaString(ASCIIProvider.Decrypt(_in, int.Parse(key[0].ToString())));
+                return new LuaString(ASCIIProvider.Decrypt(_in));
             }
             if (decType == "des")
             {
@@ -133,7 +133,7 @@ namespace CryptoLib
             }
             if (decType == "xor")
             {
-                return new LuaString(XorProvider.Decrypt(_in, int.Parse(key[0].ToString())));
+                return new LuaString(XorProvider.Decrypt(_in));
             }
             throw new Exception("Unsuported Decryption '" + decType + "'!");
         }

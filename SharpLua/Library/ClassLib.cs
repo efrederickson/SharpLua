@@ -172,8 +172,9 @@ namespace SharpLua.Library
         public static LuaValue CreateClass(LuaValue[] args)
         {
             LuaTable from = new LuaTable();
-            if (args[0].GetTypeCode() == "table" && ((IsClass(new LuaValue[] {args[0]}) as LuaBoolean).BoolValue == false))
-                from = args[0] as LuaTable;
+            if (args.Length > 0)
+                if (args[0].GetTypeCode() == "table" && ((IsClass(new LuaValue[] {args[0]}) as LuaBoolean).BoolValue == false))
+                    from = args[0] as LuaTable;
             LuaClass nClass = new LuaClass("CLASS_" + classCount++, false, false);
             List<LuaClass> Parents = new List<LuaClass>();
             for (int i = 0; i < args.Length; i++)

@@ -1,9 +1,9 @@
-C:\Elijah - Libraries\SharpLua\SharpLua.Compiler\obj\x86\Debug\ResolveAssemblyReference.cache
 C:\Elijah - Libraries\SharpLua\bin\Debug\init.slua
 C:\Elijah - Libraries\SharpLua\bin\Debug\Test\Battle.slua
 C:\Elijah - Libraries\SharpLua\bin\Debug\Test\ClassesExample.slua
 C:\Elijah - Libraries\SharpLua\bin\Debug\Test\HelloWorld.slua
 C:\Elijah - Libraries\SharpLua\bin\Debug\Test\LuaPad.slua
+C:\Elijah - Libraries\SharpLua\bin\Debug\Test\newTables.slua
 C:\Elijah - Libraries\SharpLua\bin\Debug\Test\serialization.slua
 C:\Elijah - Libraries\SharpLua\bin\Debug\Test\LedgerExample.slua
 C:\Elijah - Libraries\SharpLua\bin\Debug\Test\lock.slua
@@ -16,6 +16,6 @@ C:\Elijah - Libraries\SharpLua\bin\Debug\Test\icon\save.png
 C:\Elijah - Libraries\SharpLua\bin\Debug\slc.exe.config
 C:\Elijah - Libraries\SharpLua\bin\Debug\slc.exe
 C:\Elijah - Libraries\SharpLua\bin\Debug\slc.pdb
+C:\Elijah - Libraries\SharpLua\SharpLua.Compiler\obj\x86\Debug\ResolveAssemblyReference.cache
 C:\Elijah - Libraries\SharpLua\SharpLua.Compiler\obj\x86\Debug\slc.exe
 C:\Elijah - Libraries\SharpLua\SharpLua.Compiler\obj\x86\Debug\slc.pdb
-C:\Elijah - Libraries\SharpLua\bin\Debug\Test\newTables.slua

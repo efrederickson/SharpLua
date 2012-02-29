@@ -24,12 +24,15 @@ Features Lua doesn't have:
   - table.removeitem - removes an item from a table
 
 Current projects:
-SharpLua              The SharpLua parser and interpreter
-SharpLua.Serializer   Serializes a #Lua AST parsed from a source file
-SharpLua.Compiler     A simple compiler for #Lua, I used the L# compiler
-SharpLua.Interpreter  SharpLua's interpreter program
-SharpLuaAddIn         A SharpDevelop addin with syntax highlighting for #Lua
-CryptoLib             An experimental encryption lib for #Lua
+SharpLua                The SharpLua parser and interpreter
+SharpLua.Serializer     Serializes a #Lua AST parsed from a source file
+SharpLua.Compiler       A simple compiler for #Lua, I used the L# compiler
+SharpLua.Interactive    SharpLua's interpreter program
+SharpLua.Scripts        Some example scripts
+SharpLua.Web            A WebHandler for #Lua
+SharpLua.Web.TestPages  Test web pages in #Lua
+SharpLuaAddIn           A SharpDevelop addin with syntax highlighting for #Lua
+CryptoLib               An experimental encryption lib for #Lua
 
 
 To compile CryptoLib, you will need to change the reference to IExtendFramework to wherever you have an IExtendFramework dll

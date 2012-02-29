@@ -9,17 +9,24 @@ cd net40
 
 :: copy binaries
 copy /Y ..\..\..\..\bin\debug\SharpLua.dll .
-::copy /Y ..\..\..\..\bin\debug\*.exe .
-
-:: remove example projects
-::del csharpexampleproject.exe
-::del vbnetexampleproject.exe
-::del iextendframework.dll
-::del cryptolib.dll
-::del sharplua.scripts.dll
 
 :: create NuGet package
 cd ..\..
-nuget pack
+nuget pack SharpLua.nuspec
 
 move *.nupkg ..
+cd ..
+del Package\lib\net40\SharpLua.dll
+
+cd Package\lib\net40
+
+:: copy binaries
+copy /Y ..\..\..\..\bin\debug\SharpLua.Web.dll .
+
+:: create NuGet package
+cd ..\..
+nuget pack SharpLua.Web.nuspec
+
+move *.nupkg ..
+cd ..
+del Package\lib\net40\SharpLua.Web.dll

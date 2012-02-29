@@ -1,0 +1,19 @@
+-- page that gets data dumped from form.slua
+
+web.response.Write("Your data: <br /><br />")
+
+for q in web.response.QueryString do
+ web.response.Write(q)
+ web.response.Write(":")
+ web.response.Write(web.request.QueryString.Item(q))
+ web.response.Write("<br />")
+end
+
+web.response.Write("Values posted:<br />")
+
+for q in web.response.Form do
+ web.response.Write(q)
+ web.response.Write(":")
+ web.response.Write(web.request.Form.Item(q))
+ web.response.Write("<br />")
+end

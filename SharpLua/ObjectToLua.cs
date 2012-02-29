@@ -146,7 +146,7 @@ namespace SharpLua
 
         public static LuaValue ToLuaValue(object value)
         {
-            if ((value as  LuaValue) != null)
+            if ((value as LuaValue) != null)
                 return value as LuaValue;
             if (value is int || value is double)
             {
@@ -233,8 +233,6 @@ namespace SharpLua
 
         public static LuaTable ToLuaTable(object o)
         {
-            Console.WriteLine(o.GetType().ToString());
-            
             LuaTable ret = new LuaTable();
             
             // check if Dictionary...

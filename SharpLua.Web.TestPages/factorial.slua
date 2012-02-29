@@ -1,0 +1,16 @@
+-- A web page which allows the user to enter a number
+-- then computes and displays its factorial.
+
+function factorial(n)
+ if n == 1 then return 1 end
+ return n * factorial(n - 1)
+end
+web.response.Write([[
+<h1> Factorial in #Lua </h1>
+<form  method='get'>
+<p>Please enter a number <input type='text' name='number'>
+<input type='submit' value='Submit'>
+</form>]])
+
+num-string = web.request.QueryString("number")
+web.response.Write(tostring(factorial(n)))

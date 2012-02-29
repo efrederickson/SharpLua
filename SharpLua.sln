@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-# SharpDevelop 4.2.0.8342-alpha
+# SharpDevelop 4.2.0.8485-alpha
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sample Projects", "Sample Projects", "{2EE1AFC5-E8E6-4B07-ADB3-EF71A204BE18}"
 	ProjectSection(SolutionItems) = postProject
 	EndProjectSection
@@ -25,6 +25,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpLua.Scripts", "SharpLua.Scripts\SharpLua.Scripts.csproj", "{7D212EEB-E156-448D-8109-77FA17E59DFB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpLua.Launcher", "SharpLua.Launcher\SharpLua.Launcher.csproj", "{D18334FA-6CE5-4314-98C1-F39FD411F2A8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpLua.Web", "SharpLua.Web\SharpLua.Web.csproj", "{B1F2AFFF-54E8-43E3-B8AF-CACC02240289}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpLua.Web.TestPages", "SharpLua.Web.TestPages\SharpLua.Web.TestPages.csproj", "{3DFABD0B-14C1-4B70-8CDE-5EFB245804C6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -114,6 +118,22 @@ Global
 		{D18334FA-6CE5-4314-98C1-F39FD411F2A8}.Release|x86.ActiveCfg = Release|x86
 		{D18334FA-6CE5-4314-98C1-F39FD411F2A8}.Release|Any CPU.Build.0 = Release|x86
 		{D18334FA-6CE5-4314-98C1-F39FD411F2A8}.Release|Any CPU.ActiveCfg = Release|x86
+		{B1F2AFFF-54E8-43E3-B8AF-CACC02240289}.Debug|x86.Build.0 = Debug|x86
+		{B1F2AFFF-54E8-43E3-B8AF-CACC02240289}.Debug|x86.ActiveCfg = Debug|x86
+		{B1F2AFFF-54E8-43E3-B8AF-CACC02240289}.Debug|Any CPU.Build.0 = Debug|x86
+		{B1F2AFFF-54E8-43E3-B8AF-CACC02240289}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{B1F2AFFF-54E8-43E3-B8AF-CACC02240289}.Release|x86.Build.0 = Release|x86
+		{B1F2AFFF-54E8-43E3-B8AF-CACC02240289}.Release|x86.ActiveCfg = Release|x86
+		{B1F2AFFF-54E8-43E3-B8AF-CACC02240289}.Release|Any CPU.Build.0 = Release|x86
+		{B1F2AFFF-54E8-43E3-B8AF-CACC02240289}.Release|Any CPU.ActiveCfg = Release|x86
+		{3DFABD0B-14C1-4B70-8CDE-5EFB245804C6}.Debug|x86.Build.0 = Debug|x86
+		{3DFABD0B-14C1-4B70-8CDE-5EFB245804C6}.Debug|x86.ActiveCfg = Debug|x86
+		{3DFABD0B-14C1-4B70-8CDE-5EFB245804C6}.Debug|Any CPU.Build.0 = Debug|x86
+		{3DFABD0B-14C1-4B70-8CDE-5EFB245804C6}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{3DFABD0B-14C1-4B70-8CDE-5EFB245804C6}.Release|x86.Build.0 = Release|x86
+		{3DFABD0B-14C1-4B70-8CDE-5EFB245804C6}.Release|x86.ActiveCfg = Release|x86
+		{3DFABD0B-14C1-4B70-8CDE-5EFB245804C6}.Release|Any CPU.Build.0 = Release|x86
+		{3DFABD0B-14C1-4B70-8CDE-5EFB245804C6}.Release|Any CPU.ActiveCfg = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -11,7 +11,7 @@ using SharpLua.LuaTypes;
 namespace SharpLua
 {
     /// <summary>
-    /// A Lua Runtime for running files, strings, and has a REPL (Main)
+    /// A Lua Runtime for running files, strings, and has a REPL
     /// </summary>
     public class LuaRuntime
     {

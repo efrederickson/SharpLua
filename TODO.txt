@@ -8,3 +8,4 @@
 - automatically save and load environments
 - serialize functions, userdata, etc. May need to create a new serializer.
 - Fix script.call
+- test SharpLua.Web.TestPages (yes, they are untested. i dont have access to c:\inetpub for some reason...)

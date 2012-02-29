@@ -1,0 +1,13 @@
+-- example to use forms in #Lua
+
+web.response.Write("<h1>Example Web HTTP FORM Posting</h1><br />Enter your data<br /><br />")
+
+web.response.Write([[
+<h2>Please Type your name</h2>
+<p> When you press submit you'll be sent to example1.
+<form action='dump.slua?test=yes' method='post'>
+<p>Whats your name? <input type='text' name='name'>
+<p>Telephone? <input type='text' name='phone'>
+<input type='submit' value='Submit'>
+</form>
+]])

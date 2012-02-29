@@ -1,0 +1,19 @@
+-- load an RSS feed
+
+-- load the xml dll
+script.reference("System.Xml")
+
+-- my website feed ;)
+feed= "http://elijah.awesome99.org/index.php/tools/blocks/page_list/blog_rss?bID=30&cID=71&arHandle=Main"
+
+-- create an XmlDocument & load feed
+news = script.create"System.Xml.XmlDocument"
+new.Load(feed)
+web.response.Write("<h1>RSS Feed:</h1><br />")
+
+-- print contents to screen
+for node in new.SelectNodes("/rss/channel/item/title") do
+ web.response.Write("<p>")
+ web.response.Write(node.InnerText)
+ web.response.Write("</p>")
+end

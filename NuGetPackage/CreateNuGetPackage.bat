@@ -30,3 +30,7 @@ nuget pack SharpLua.Web.nuspec
 move *.nupkg ..
 cd ..
 del Package\lib\net40\SharpLua.Web.dll
+
+
+for %%f in (*.nupkg) do nuget push "%%f"
+del *.nupkg

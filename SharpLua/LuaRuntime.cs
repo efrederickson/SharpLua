@@ -96,7 +96,8 @@ namespace SharpLua
             }
             else
             {
-                throw new ArgumentException("Code has syntax errors:\r\n" + parser.GetErrorMessages());
+                Parser.ParserException ex = new SharpLua.Parser.ParserException(parser.Errors, "Code has syntax errors:\r\n" + parser.GetErrorMessages());
+                throw ex;
             }
         }
         
@@ -105,48 +106,93 @@ namespace SharpLua
         /// some default values set.
         /// </summary>
         /// <returns></returns>
-        public static LuaTable CreateGlobalEnviroment()
+        public static LuaTable CreateGlobalEnviroment(bool createBaseLib = true,
+                                                      bool createStringLib = true,
+                                                      bool createTableLib = true,
+                                                      bool createOSLib = true,
+                                                      bool createIOLib = true,
+                                                      bool createFileLib = true,
+                                                      bool createMathLib = true,
+                                                      bool createScriptLib = true,
+                                                      bool createWinFormsLib = true,
+                                                      bool createConsoleLib = true,
+                                                      bool createCoroutineLib = true,
+                                                      bool createPackageLib = true,
+                                                      bool createClassLib = true,
+                                                      bool createFileSystemLib = true)
         {
             LuaTable global = new LuaTable();
             
-            // Register Lua Module
-            BaseLib.RegisterFunctions(global);
-            StringLib.RegisterModule(global);
-            TableLib.RegisterModule(global);
-            IOLib.RegisterModule(global);
-            FileLib.RegisterModule(global);
-            MathLib.RegisterModule(global);
-            OSLib.RegisterModule(global);
-            ScriptLib.RegisterModule(global);
-            WinFormLib.RegisterModule(global);
-            ConsoleLib.RegisterModule(global);
-            CoroutineLib.RegisterModule(global);
-            PackageLib.RegisterModule(global);
-            ClassLib.RegisterModule(global);
-            FileSystemLib.RegisterModule(global);
+            // Register Lua Modules
+            
+            if (createBaseLib)
+                BaseLib.RegisterFunctions(global);
+            if (createStringLib)
+                StringLib.RegisterModule(global);
+            if (createTableLib)
+                TableLib.RegisterModule(global);
+            if (createIOLib)
+                IOLib.RegisterModule(global);
+            if (createFileLib)
+                FileLib.RegisterModule(global);
+            if (createMathLib)
+                MathLib.RegisterModule(global);
+            if (createOSLib)
+                OSLib.RegisterModule(global);
+            if (createScriptLib)
+                ScriptLib.RegisterModule(global);
+            if (createWinFormsLib)
+                WinFormLib.RegisterModule(global);
+            if (createConsoleLib)
+                ConsoleLib.RegisterModule(global);
+            if (createCoroutineLib)
+                CoroutineLib.RegisterModule(global);
+            if (createPackageLib)
+                PackageLib.RegisterModule(global);
+            if (createClassLib)
+                ClassLib.RegisterModule(global);
+            if (createFileSystemLib)
+                FileSystemLib.RegisterModule(global);
             
             global.SetNameValue("_WORKDIR", new LuaString(Application.StartupPath + "\\"));
             global.SetNameValue("_VERSION", new LuaString("Sharp Lua 1.1"));
             global.SetNameValue("_G", global);
-            // set package.preload table
-            LuaTable preload = (LuaTable) (global.GetValue("package") as LuaTable).GetValue("preload");
-            preload.SetNameValue("string", (LuaTable) global.GetValue("string"));
-            preload.SetNameValue("table", (LuaTable) global.GetValue("table"));
-            preload.SetNameValue("io", (LuaTable) global.GetValue("io"));
-            preload.SetNameValue("file", (LuaTable) global.GetValue("file"));
-            preload.SetNameValue("math", (LuaTable) global.GetValue("math"));
-            preload.SetNameValue("os", (LuaTable) global.GetValue("os"));
-            preload.SetNameValue("script", (LuaTable) global.GetValue("script"));
-            preload.SetNameValue("WinForms", (LuaTable) global.GetValue("WinForms"));
-            preload.SetNameValue("console", (LuaTable) global.GetValue("console"));
-            preload.SetNameValue("coroutine", (LuaTable) global.GetValue("coroutine"));
-            preload.SetNameValue("package", (LuaTable) global.GetValue("package"));
-            preload.SetNameValue("class", (LuaTable) global.GetValue("class"));
-            preload.SetNameValue("filesystem", (LuaTable) global.GetValue("filesystem"));
             
-            FileSystemLib.currentDir = global.GetValue("_WORKDIR").ToString();
+            if (createPackageLib)
+            {
+                // set package.preload table
+                LuaTable preload = (LuaTable) (global.GetValue("package") as LuaTable).GetValue("preload");
+                if (createStringLib)
+                    preload.SetNameValue("string", (LuaTable) global.GetValue("string"));
+                if (createTableLib)
+                    preload.SetNameValue("table", (LuaTable) global.GetValue("table"));
+                if (createIOLib)
+                    preload.SetNameValue("io", (LuaTable) global.GetValue("io"));
+                if (createFileLib)
+                    preload.SetNameValue("file", (LuaTable) global.GetValue("file"));
+                if (createMathLib)
+                    preload.SetNameValue("math", (LuaTable) global.GetValue("math"));
+                if (createOSLib)
+                    preload.SetNameValue("os", (LuaTable) global.GetValue("os"));
+                if (createScriptLib)
+                    preload.SetNameValue("script", (LuaTable) global.GetValue("script"));
+                if (createWinFormsLib)
+                    preload.SetNameValue("WinForms", (LuaTable) global.GetValue("WinForms"));
+                if (createConsoleLib)
+                    preload.SetNameValue("console", (LuaTable) global.GetValue("console"));
+                if (createCoroutineLib)
+                    preload.SetNameValue("coroutine", (LuaTable) global.GetValue("coroutine"));
+                if (createPackageLib) // wait a second...
+                    preload.SetNameValue("package", (LuaTable) global.GetValue("package"));
+                if (createClassLib)
+                    preload.SetNameValue("class", (LuaTable) global.GetValue("class"));
+                if (createFileSystemLib)
+                    preload.SetNameValue("filesystem", (LuaTable) global.GetValue("filesystem"));
+            }
+            if (createFileSystemLib)
+                FileSystemLib.currentDir = global.GetValue("_WORKDIR").ToString();
+            
             GlobalEnvironment = global;
-            
             return global;
         }
         
@@ -170,7 +216,7 @@ namespace SharpLua
             if (File.Exists(spath + ".exe"))
                 return spath + ".exe";
             
-            // TODO: .so, .c, .cs, .luac
+            // TODO: .cs, .luac; possibly C
             
             return spath; // let the caller handle the invalid filename
         }
@@ -187,8 +233,11 @@ namespace SharpLua
             GlobalEnvironment = LuaRuntime.CreateGlobalEnviroment();
             PrintBanner();
             // how to handle errors
+            #if DEBUG
             GlobalEnvironment.SetNameValue("DEBUG", LuaBoolean.True);
-            //GlobalEnvironment.SetNameValue("DEBUG", LuaBoolean.False);
+            #else
+            GlobalEnvironment.SetNameValue("DEBUG", LuaBoolean.False);
+            #endif
             
             Prompt = "> ";
             // load startup scripts
@@ -255,11 +304,24 @@ namespace SharpLua
                     {
                         try
                         {
-                            LuaValue v = LuaRuntime.Run(line, GlobalEnvironment);
+                            LuaValue v = Run(line, GlobalEnvironment);
                             if (v == null)
-                                Console.WriteLine("=> nil");
+                                Console.WriteLine("=> [no returned value]");
                             else
                                 Console.WriteLine("=> " + v.ToString());
+                        }
+                        catch (Parser.ParserException error)
+                        {
+                            // create spacing
+                            StringBuilder sb = new StringBuilder();
+                            for (int i = 0; i < Prompt.Length; i++)
+                                sb.Append(" ");
+                            for (int i = 0; i < error.FirstErrorIndex; i++)
+                                sb.Append(" ");
+                            
+                            Console.WriteLine(sb.ToString() + "^");
+                            Console.WriteLine("Error: " + error.Message);
+                            GlobalEnvironment.SetNameValue("LASTERROR", ObjectToLua.ToLuaValue(error));
                         }
                         catch (Exception error)
                         {

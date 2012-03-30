@@ -46,6 +46,12 @@
     <Optimize>True</Optimize>
     <DefineConstants>TRACE=1</DefineConstants>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="ICSharpCode.SharpDevelop">
       <HintPath>..\..\..\..\..\Elijah - Libraries\SharpDevelop\bin\ICSharpCode.SharpDevelop.dll</HintPath>
@@ -94,9 +100,7 @@
     <EmbeddedResource Include="Resources\Lua-Mode.xshd" />
     <EmbeddedResource Include="Resources\Pad.xfrm" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Src" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Import Include="System" />
     <Import Include="System.Collections" />

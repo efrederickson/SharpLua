@@ -3,7 +3,7 @@ It can run lua files, create .NET objects and call methods on them, and
 supports most lua functions.
 
 Created by mlnlover11 Productions
-Based off of the LuaInterpreter article on CodeProject.
+Based off of the LuaInterpreter article on CodeProject (http://www.codeproject.com/Articles/228212/Lua-Interpreter)
 
 To use in your projects, just add a reference to the SharpLua.dll file and use the 
 SharpLua.LuaRuntime.Run(code[, environment]) or RunFile function.

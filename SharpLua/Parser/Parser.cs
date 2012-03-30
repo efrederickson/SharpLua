@@ -15,7 +15,7 @@ namespace SharpLua.Parser
             if (this.Position < input.Length)
             {
                 success = false;
-                Error("Failed to parse remained input.");
+                Error("Failed to parse remaining input.");
             }
             return chunk;
         }
@@ -1330,7 +1330,7 @@ namespace SharpLua.Parser
             numberLiteral.HexicalText = ParseHexicalNumber(out success);
             if (success) { ClearError(errorCount); ParsingResults[reskey] = new Tuple<object, bool, int>(numberLiteral, success, position);return numberLiteral; }
 
-            numberLiteral.Text = ParseFoatNumber(out success);
+            numberLiteral.Text = ParseFloatNumber(out success);
             if (success) { ClearError(errorCount); ParsingResults[reskey] = new Tuple<object, bool, int>(numberLiteral, success, position);return numberLiteral; }
 
             return numberLiteral;
@@ -1478,7 +1478,7 @@ namespace SharpLua.Parser
                 int seq_start_position1 = position;
                 functionBody.ParamList = ParseParamList(out success);
                 if (!success) { break; }
-
+                
                 ParseSpOpt(out success);
                 break;
             }
@@ -2585,9 +2585,9 @@ namespace SharpLua.Parser
             return text.ToString();
         }
 
-        private string ParseFoatNumber(out bool success)
+        private string ParseFloatNumber(out bool success)
         {
-            var reskey = new Tuple<int, string>(position, "FoatNumber");
+            var reskey = new Tuple<int, string>(position, "FloatNumber");
             if (ParsingResults.ContainsKey(reskey))
             {
                 var parsingResult = ParsingResults[reskey];
@@ -2633,7 +2633,7 @@ namespace SharpLua.Parser
                 if (counter > 0) { success = true; }
                 if (!success)
                 {
-                    Error("Failed to parse (Digit)+ of FoatNumber.");
+                    Error("Failed to parse (Digit)+ of FloatNumber.");
                     position = seq_start_position1;
                 }
                 break;
@@ -2678,7 +2678,7 @@ namespace SharpLua.Parser
                 if (counter > 0) { success = true; }
                 if (!success)
                 {
-                    Error("Failed to parse (Digit)+ of FoatNumber.");
+                    Error("Failed to parse (Digit)+ of FloatNumber.");
                     position = seq_start_position2;
                 }
                 break;
@@ -3230,7 +3230,7 @@ namespace SharpLua.Parser
                 {
                     MatchTerminalSet(" \t\r\n", false, out success);
                     if (success) { ClearError(errorCount); break; }
-
+                    
                     ParseComment(out success);
                     if (success) { ClearError(errorCount); break; }
 

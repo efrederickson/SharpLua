@@ -6,7 +6,6 @@ Version 1.1.*
 + Added Built-in classes
 + More advanced .NET interop
 + coroutine library
-+ basic gc library
 + combined class Lua and class LuaRuntime
 + added a SharpDevelop addin
 + Added a "compiler" which serializes the AST into a roughly 6x larger file

@@ -12,5 +12,5 @@ web.response.Write([[
 <input type='submit' value='Submit'>
 </form>]])
 
-num-string = web.request.QueryString("number")
+n = web.request.QueryString("number")
 web.response.Write(tostring(factorial(n)))

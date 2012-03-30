@@ -9,7 +9,7 @@ namespace SharpLua.Web
     /// <summary>
     /// An HttpHandler that lets you use #Lua in Web apps
     /// </summary>
-    public class SharpHttpHandler : IHttpHandler, IRequiresSessionState
+    public class SharpLuaHttpHandler : IHttpHandler, IRequiresSessionState
     {
         /// <summary>
         /// This handler is reusable

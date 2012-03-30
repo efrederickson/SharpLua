@@ -1,15 +1,18 @@
 <?xml version="1.0"?>
 <package >
   <metadata>
-    <id>SharpLua</id>
-    <version>1.0.4</version>
+    <id>SharpLua.Web</id>
+    <version>1.0.1</version>
     <authors>mlnlover11</authors>
     <owners>mlnlover11</owners>
     <projectUrl>https://github.com/mlnlover11/SharpLua</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>Lua implementation in C#</description>
-    <releaseNotes>Minor updates</releaseNotes>
+    <description>Web handler for SharpLua</description>
+    <releaseNotes>Fixed dependency</releaseNotes>
     <copyright>Copyright 2012 mlnlover11 Productions</copyright>
     <tags>Lua</tags>
+    <dependencies>
+      <dependency id="SharpLua" />
+    </dependencies>
   </metadata>
 </package>

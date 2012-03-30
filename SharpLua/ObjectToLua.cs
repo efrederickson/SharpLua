@@ -91,11 +91,21 @@ namespace SharpLua
             {
                 return ToLuaValue(fi.GetValue(control));
             }
-            MethodInfo mi = type.GetMethod(member);
+            MethodInfo[] miarr = type.GetMethods();
+            MethodInfo mi = null;
+            foreach (MethodInfo m in miarr)
+                if (m.Name == member)
+                    mi = m;
             if (mi != null)
             {
                 return new LuaFunction((LuaValue[] args) =>
                                        {
+                                           mi = null;
+                                           foreach (MethodInfo m in miarr)
+                                               if (m.Name == member)
+                                                   if (mi.GetGenericArguments().Length == args.Length)
+                                                    mi = m;
+
                                            List<object> args2 = new List<object>();
                                            foreach (LuaValue v in args)
                                                args2.Add(v.Value);

@@ -54,17 +54,14 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="ICSharpCode.SharpDevelop">
-      <HintPath>..\..\..\..\..\Elijah - Libraries\SharpDevelop\bin\ICSharpCode.SharpDevelop.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>..\..\SharpDevelop\bin\ICSharpCode.SharpDevelop.dll</HintPath>
     </Reference>
     <Reference Include="ICSharpCode.SharpDevelop.Dom">
-      <HintPath>..\..\..\..\..\Elijah - Libraries\SharpDevelop\bin\ICSharpCode.SharpDevelop.Dom.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>..\..\SharpDevelop\bin\ICSharpCode.SharpDevelop.Dom.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="SharpDevelop">
-      <HintPath>..\..\..\..\..\Elijah - Libraries\SharpDevelop\bin\SharpDevelop.exe</HintPath>
-      <Private>False</Private>
+      <HintPath>..\..\SharpDevelop\bin\SharpDevelop.exe</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">

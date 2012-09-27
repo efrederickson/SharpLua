@@ -1,4 +1,7 @@
-﻿SharpLua is a version of Lua for .NET.
+﻿NOTICE: SharpLua 2 is in the works and will be released to this repo soon.
+It is a port of C Lua 5.1.5 to C#, and it will evolve from there to be awesome! So stay tuned :D
+
+SharpLua is an implementation of Lua for .NET
 It can run lua files, create .NET objects and call methods on them, and 
 supports most lua functions.
 

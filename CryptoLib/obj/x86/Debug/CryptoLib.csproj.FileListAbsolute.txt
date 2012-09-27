@@ -18,3 +18,23 @@ C:\Elijah - Libraries\SharpLua\bin\Debug\CryptoLib.pdb
 C:\Elijah - Libraries\SharpLua\CryptoLib\obj\x86\Debug\ResolveAssemblyReference.cache
 C:\Elijah - Libraries\SharpLua\CryptoLib\obj\x86\Debug\CryptoLib.dll
 C:\Elijah - Libraries\SharpLua\CryptoLib\obj\x86\Debug\CryptoLib.pdb
+W:\Code\SharpLua\bin\Debug\init.slua
+W:\Code\SharpLua\bin\Debug\Test\Battle.slua
+W:\Code\SharpLua\bin\Debug\Test\ClassesExample.slua
+W:\Code\SharpLua\bin\Debug\Test\HelloWorld.slua
+W:\Code\SharpLua\bin\Debug\Test\LuaPad.slua
+W:\Code\SharpLua\bin\Debug\Test\newTables.slua
+W:\Code\SharpLua\bin\Debug\Test\serialization.slua
+W:\Code\SharpLua\bin\Debug\Test\LedgerExample.slua
+W:\Code\SharpLua\bin\Debug\Test\lock.slua
+W:\Code\SharpLua\bin\Debug\Test\tablefunctions.slua
+W:\Code\SharpLua\bin\Debug\Test\BasicTest.slua
+W:\Code\SharpLua\bin\Debug\Test\WinFormExample.slua
+W:\Code\SharpLua\bin\Debug\Test\icon\add.png
+W:\Code\SharpLua\bin\Debug\Test\icon\open.png
+W:\Code\SharpLua\bin\Debug\Test\icon\save.png
+W:\Code\SharpLua\bin\Debug\CryptoLib.dll
+W:\Code\SharpLua\bin\Debug\CryptoLib.pdb
+W:\Code\SharpLua\CryptoLib\obj\x86\Debug\CryptoLib.csprojResolveAssemblyReference.cache
+W:\Code\SharpLua\CryptoLib\obj\x86\Debug\CryptoLib.dll
+W:\Code\SharpLua\CryptoLib\obj\x86\Debug\CryptoLib.pdb

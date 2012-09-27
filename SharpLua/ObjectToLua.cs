@@ -16,11 +16,11 @@ using SharpLua.LuaTypes;
 namespace SharpLua
 {
     /// <summary>
-    /// Converts the object to the Lua equivalent (Credit to Arjen Douma for the idea of having it static)
+    /// Converts the object to the Lua equivalent (Credit to Arjen Douma)
     /// </summary>
     public class ObjectToLua
     {
-        
+
         private static void SetPropertyValue(object obj, object value, PropertyInfo propertyInfo)
         {
             if (propertyInfo.PropertyType.FullName == "System.Int32")
@@ -44,7 +44,7 @@ namespace SharpLua
                 propertyInfo.SetValue(obj, value, null);
             }
         }
-        
+
         private static void SetMemberValue(object control, Type type, string member, object value)
         {
             PropertyInfo propertyInfo = type.GetProperty(member);
@@ -77,7 +77,7 @@ namespace SharpLua
                 }
             }
         }
-        
+
         private static LuaValue GetMemberValue(object control, Type type, string member)
         {
             PropertyInfo propertyInfo = type.GetProperty(member);
@@ -104,7 +104,7 @@ namespace SharpLua
                                            foreach (MethodInfo m in miarr)
                                                if (m.Name == member)
                                                    if (mi.GetGenericArguments().Length == args.Length)
-                                                    mi = m;
+                                                       mi = m;
 
                                            List<object> args2 = new List<object>();
                                            foreach (LuaValue v in args)
@@ -113,10 +113,10 @@ namespace SharpLua
                                            return ToLuaValue(result);
                                        });
             }
-            
+
             throw new Exception(string.Format("Cannot get {0} from {1}", member, control));
         }
-        
+
         private static LuaValue GetIndexerValue(object control, Type type, double index)
         {
             MemberInfo[] members = type.GetMember("Item");
@@ -244,7 +244,7 @@ namespace SharpLua
         public static LuaTable ToLuaTable(object o)
         {
             LuaTable ret = new LuaTable();
-            
+
             // check if Dictionary...
             System.Collections.IDictionary dict = o as System.Collections.IDictionary;
             if (dict != null)
@@ -255,7 +255,7 @@ namespace SharpLua
                 }
                 return ret;
             }
-            
+
             System.Collections.IEnumerable ie = (o as System.Collections.IEnumerable);
             if (ie != null)
             {
@@ -265,7 +265,7 @@ namespace SharpLua
                 }
                 return ret;
             }
-            
+
             // check if <type>...
             // not an array type
             ret.AddValue(ToLuaValue(o));

@@ -1,0 +1,7 @@
+E:\SharpLua\SharpLua.Compiler\obj\Debug\ResolveAssemblyReference.cache
+E:\SharpLua\SharpLua.Compiler\bin\Debug\SharpLua.Compiler.exe
+E:\SharpLua\SharpLua.Compiler\bin\Debug\SharpLua.Compiler.pdb
+E:\SharpLua\SharpLua.Compiler\bin\Debug\SharpLua.dll
+E:\SharpLua\SharpLua.Compiler\bin\Debug\SharpLua.pdb
+E:\SharpLua\SharpLua.Compiler\obj\Debug\SharpLua.Compiler.exe
+E:\SharpLua\SharpLua.Compiler\obj\Debug\SharpLua.Compiler.pdb

@@ -1,0 +1,15 @@
+W:\Code\SharpLua\SharpLua.InterfacingTests\bin\Debug\test.lua
+W:\Code\SharpLua\SharpLua.InterfacingTests\bin\Debug\SharpLua.InterfacingTests.exe
+W:\Code\SharpLua\SharpLua.InterfacingTests\bin\Debug\SharpLua.InterfacingTests.pdb
+W:\Code\SharpLua\SharpLua.InterfacingTests\bin\Debug\SharpLua.dll
+W:\Code\SharpLua\SharpLua.InterfacingTests\bin\Debug\SharpLua.pdb
+W:\Code\SharpLua\SharpLua.InterfacingTests\obj\Debug\SharpLua.InterfacingTests.exe
+W:\Code\SharpLua\SharpLua.InterfacingTests\obj\Debug\SharpLua.InterfacingTests.pdb
+E:\SharpLua\SharpLua.InterfacingTests\bin\Debug\test.lua
+E:\SharpLua\SharpLua.InterfacingTests\bin\Debug\SharpLua.InterfacingTests.exe
+E:\SharpLua\SharpLua.InterfacingTests\bin\Debug\SharpLua.InterfacingTests.pdb
+E:\SharpLua\SharpLua.InterfacingTests\bin\Debug\SharpLua.dll
+E:\SharpLua\SharpLua.InterfacingTests\bin\Debug\SharpLua.pdb
+E:\SharpLua\SharpLua.InterfacingTests\obj\Debug\ResolveAssemblyReference.cache
+E:\SharpLua\SharpLua.InterfacingTests\obj\Debug\SharpLua.InterfacingTests.exe
+E:\SharpLua\SharpLua.InterfacingTests\obj\Debug\SharpLua.InterfacingTests.pdb

@@ -1,0 +1,260 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{9B6F4AAC-1B76-4CB6-B7CE-EFBBB0C7F5C0}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SharpLua</RootNamespace>
+    <AssemblyName>SharpLua</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <FileAlignment>512</FileAlignment>
+    <OutputPath>..\bin\Debug</OutputPath>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <NoStdLib>False</NoStdLib>
+    <DebugType>PdbOnly</DebugType>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <DebugSymbols>false</DebugSymbols>
+    <SignAssembly>False</SignAssembly>
+    <DelaySign>False</DelaySign>
+    <ApplicationIcon>#Lua.ico</ApplicationIcon>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <OutputPath>bin\Debug\</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <DebugType>pdbonly</DebugType>
+    <OutputPath>bin\Release\</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <Optimize>true</Optimize>
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <Optimize>False</Optimize>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>4194304</BaseAddress>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="Microsoft.CSharp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyCache.cs" />
+    <Compile Include="Chunk\Assignment.cs" />
+    <Compile Include="Chunk\BreakStmt.cs" />
+    <Compile Include="Chunk\Chunk.cs" />
+    <Compile Include="Chunk\DoStmt.cs" />
+    <Compile Include="Chunk\ExprStmt.cs" />
+    <Compile Include="Chunk\ForInStmt.cs" />
+    <Compile Include="Chunk\ForStmt.cs" />
+    <Compile Include="Chunk\Function.cs" />
+    <Compile Include="Chunk\IfStmt.cs" />
+    <Compile Include="Chunk\LocalFunc.cs" />
+    <Compile Include="Chunk\LocalVar.cs" />
+    <Compile Include="Chunk\RepeatStmt.cs" />
+    <Compile Include="Chunk\ReturnStmt.cs" />
+    <Compile Include="Chunk\Statement.cs" />
+    <Compile Include="Chunk\WhileStmt.cs" />
+    <Compile Include="Expr\Access.cs" />
+    <Compile Include="Expr\BaseExpr.cs" />
+    <Compile Include="Expr\BoolLiteral.cs" />
+    <Compile Include="Expr\Expr.cs" />
+    <Compile Include="Expr\FunctionBody.cs" />
+    <Compile Include="Expr\FunctionCall.cs" />
+    <Compile Include="Expr\FunctionValue.cs" />
+    <Compile Include="Expr\GroupExpr.cs" />
+    <Compile Include="Expr\KeyAccess.cs" />
+    <Compile Include="Expr\MethodCall.cs" />
+    <Compile Include="Expr\NameAccess.cs" />
+    <Compile Include="Expr\NilLiteral.cs" />
+    <Compile Include="Expr\NumberLiteral.cs" />
+    <Compile Include="Expr\Operation.cs" />
+    <Compile Include="Expr\OperatorExpr.cs" />
+    <Compile Include="Expr\OperTable.cs" />
+    <Compile Include="Expr\PrimaryExpr.cs" />
+    <Compile Include="Expr\StringLiteral.cs" />
+    <Compile Include="Expr\TableConstructor.cs" />
+    <Compile Include="Expr\Term.cs" />
+    <Compile Include="Expr\VariableArg.cs" />
+    <Compile Include="Expr\VarName.cs" />
+    <Compile Include="ExternalLibraryLoader.cs" />
+    <Compile Include="Inspector.cs" />
+    <Compile Include="Library\ClassLib.cs" />
+    <Compile Include="Library\ConsoleLib.cs" />
+    <Compile Include="Library\CoroutineLib.cs" />
+    <Compile Include="Library\FileSystemLib.cs" />
+    <Compile Include="Library\ILuaLibrary.cs" />
+    <Compile Include="Library\PackageLib.cs" />
+    <Compile Include="Library\BaseLib.cs" />
+    <Compile Include="Library\ScriptLib.cs" />
+    <Compile Include="Library\WinFormLib.cs" />
+    <Compile Include="Library\TableLib.cs" />
+    <Compile Include="Library\StringLib.cs" />
+    <Compile Include="Library\OSLib.cs" />
+    <Compile Include="Library\MathLib.cs" />
+    <Compile Include="Library\FileLib.cs" />
+    <Compile Include="Library\IOLib.cs" />
+    <Compile Include="LuaRuntime.cs" />
+    <Compile Include="LuaTypes\LuaClass.cs" />
+    <Compile Include="LuaTypes\LuaCoroutine.cs" />
+    <Compile Include="LuaTypes\LuaError.cs" />
+    <Compile Include="LuaTypes\LuaUserdata.cs" />
+    <Compile Include="LuaTypes\LuaBoolean.cs" />
+    <Compile Include="LuaTypes\LuaFunction.cs" />
+    <Compile Include="LuaTypes\LuaTable.cs" />
+    <Compile Include="LuaTypes\LuaString.cs" />
+    <Compile Include="LuaTypes\LuaNumber.cs" />
+    <Compile Include="LuaTypes\LuaNil.cs" />
+    <Compile Include="LuaTypes\LuaValue.cs" />
+    <Compile Include="LuaTypes\LuaMultiValue.cs" />
+    <Compile Include="ObjectToLua.cs" />
+    <Compile Include="Parser\Parser.cs" />
+    <Compile Include="Parser\ParserException.cs" />
+    <Compile Include="Parser\ParserInput.cs" />
+    <Compile Include="Parser\Syntax\Access.cs" />
+    <Compile Include="Parser\Syntax\Args.cs" />
+    <Compile Include="Parser\Syntax\Assignment.cs" />
+    <Compile Include="Parser\Syntax\BaseExpr.cs" />
+    <Compile Include="Parser\Syntax\BoolLiteral.cs" />
+    <Compile Include="Parser\Syntax\BreakStmt.cs" />
+    <Compile Include="Parser\Syntax\Chunk.cs" />
+    <Compile Include="Parser\Syntax\DoStmt.cs" />
+    <Compile Include="Parser\Syntax\ElseifBlock.cs" />
+    <Compile Include="Parser\Syntax\Expr.cs" />
+    <Compile Include="Parser\Syntax\ExprStmt.cs" />
+    <Compile Include="Parser\Syntax\Field.cs" />
+    <Compile Include="Parser\Syntax\ForInStmt.cs" />
+    <Compile Include="Parser\Syntax\ForStmt.cs" />
+    <Compile Include="Parser\Syntax\Function.cs" />
+    <Compile Include="Parser\Syntax\FunctionBody.cs" />
+    <Compile Include="Parser\Syntax\FunctionCall.cs" />
+    <Compile Include="Parser\Syntax\FunctionName.cs" />
+    <Compile Include="Parser\Syntax\FunctionValue.cs" />
+    <Compile Include="Parser\Syntax\GroupExpr.cs" />
+    <Compile Include="Parser\Syntax\IfStmt.cs" />
+    <Compile Include="Parser\Syntax\ItemValue.cs" />
+    <Compile Include="Parser\Syntax\KeyAccess.cs" />
+    <Compile Include="Parser\Syntax\KeyValue.cs" />
+    <Compile Include="Parser\Syntax\LocalFunc.cs" />
+    <Compile Include="Parser\Syntax\LocalVar.cs" />
+    <Compile Include="Parser\Syntax\MethodCall.cs" />
+    <Compile Include="Parser\Syntax\NameAccess.cs" />
+    <Compile Include="Parser\Syntax\NameValue.cs" />
+    <Compile Include="Parser\Syntax\NilLiteral.cs" />
+    <Compile Include="Parser\Syntax\NumberLiteral.cs" />
+    <Compile Include="Parser\Syntax\OperatorExpr.cs" />
+    <Compile Include="Parser\Syntax\ParamList.cs" />
+    <Compile Include="Parser\Syntax\PrimaryExpr.cs" />
+    <Compile Include="Parser\Syntax\RepeatStmt.cs" />
+    <Compile Include="Parser\Syntax\ReturnStmt.cs" />
+    <Compile Include="Parser\Syntax\Statement.cs" />
+    <Compile Include="Parser\Syntax\StringLiteral.cs" />
+    <Compile Include="Parser\Syntax\TableConstructor.cs" />
+    <Compile Include="Parser\Syntax\Term.cs" />
+    <Compile Include="Parser\Syntax\Var.cs" />
+    <Compile Include="Parser\Syntax\VariableArg.cs" />
+    <Compile Include="Parser\Syntax\VarName.cs" />
+    <Compile Include="Parser\Syntax\WhileStmt.cs" />
+    <Compile Include="Parser\TextInput.cs" />
+    <Compile Include="Parser\TextParserCommon.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Serializer.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Lua.Grammar.txt" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <None Include="#Lua.ico" />
+    <None Include="..\README.txt" />
+    <None Include="..\TODO.txt">
+      <Link>TODO.txt</Link>
+    </None>
+    <None Include="init.slua">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="string.patterns.txt" />
+    <None Include="..\CHANGELOG.txt" />
+    <None Include="Test\Battle.slua">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test\ClassesExample.slua">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test\HelloWorld.slua">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test\LuaPad.slua">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test\newTables.slua">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test\serialization.slua">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test\icon\add.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Test\icon\open.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Test\icon\save.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Test\LedgerExample.slua">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test\tablefunctions.slua">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test\BasicTest.slua">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test\WinFormExample.slua">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

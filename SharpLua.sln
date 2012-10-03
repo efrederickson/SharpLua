@@ -37,8 +37,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpLua.InterfacingTests",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpLua.Compiler", "SharpLua.Compiler\SharpLua.Compiler.csproj", "{7C1D0B1F-8C51-4D0D-95D4-780596506291}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpLua.RefactorizationModule", "SharpLua.RefactorizationModule\SharpLua.RefactorizationModule.csproj", "{8BDC9859-461F-4A0F-9977-3E82D90C49AC}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

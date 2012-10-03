@@ -1,2 +1,0 @@
--- init
-require"LParser.init"

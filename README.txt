@@ -1,5 +1,5 @@
-﻿SharpLua 2.0 is a combination of a port of Lua 5.1.5 and various interface thingies.
-Why did I start with a Lua 5.1.5 C port? because... You Can't Get More Accurate Than The Original (TM)
+﻿SharpLua 2.0 is a combination of a port of Lua 5.1.5, various interfaces, but will be eventually replaced by new, better, code.
+Why did I start with a Lua 5.1.5 C port? because... You Can't Get More Accurate Than The Original (TM), and the C api allows easier porting of C libs.
 
 
 SharpLua is an implementation of Lua for .NET
@@ -37,7 +37,6 @@ TODO
 - Documentation
 - Simple library extension
 - compression library (separate project), using IExtendFramework
-- error: error level also
 - set "..." to command line args in _G
 - Lists
 - new icon

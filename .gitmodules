@@ -1,3 +1,0 @@
-[submodule "SharpLua.RefactorizationModule/LParser"]
-	path = SharpLua.RefactorizationModule/LParser
-	url = https://github.com/mlnlover11/LuaMinify.git

@@ -383,6 +383,10 @@ namespace SharpLua
                     case TMS.TM_MOD: setnvalue(ra, luai_nummod(nb, nc)); break;
                     case TMS.TM_POW: setnvalue(ra, luai_numpow(nb, nc)); break;
                     case TMS.TM_UNM: setnvalue(ra, luai_numunm(nb)); break;
+                    case TMS.TM_RSHIFT: setnvalue(ra, luai_numrshift(nb, nc)); break;
+                    case TMS.TM_LSHIFT: setnvalue(ra, luai_numlshift(nb, nc)); break;
+                    case TMS.TM_BITAND: setnvalue(ra, luai_numbitand(nb, nc)); break;
+                    case TMS.TM_BITOR: setnvalue(ra, luai_numbitor(nb, nc)); break;
                     default: lua_assert(false); break;
                 }
             }

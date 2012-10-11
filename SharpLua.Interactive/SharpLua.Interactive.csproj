@@ -47,10 +47,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SharpLua.RefactorizationModule\SharpLua.RefactorizationModule.csproj">
-      <Project>{8bdc9859-461f-4a0f-9977-3e82d90c49ac}</Project>
-      <Name>SharpLua.RefactorizationModule</Name>
-    </ProjectReference>
     <ProjectReference Include="..\SharpLua\SharpLua.csproj">
       <Project>{90a9c907-11ad-4754-8b70-51ccb3a6c98a}</Project>
       <Name>SharpLua</Name>

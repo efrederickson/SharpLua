@@ -796,7 +796,8 @@ namespace SharpLua
         public static LuaState luaL_newstate()
         {
             LuaState L = lua_newstate(l_alloc, null);
-            if (L != null) lua_atpanic(L, panic);
+            if (L != null) 
+                lua_atpanic(L, panic);
             return L;
         }
     }

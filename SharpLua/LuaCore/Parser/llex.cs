@@ -96,8 +96,9 @@ namespace SharpLua
             "end", "false", "for", "function", "if",
             "in", "local", "nil", "not", "or", "repeat",
             "return", "then", "true", "until", "while",
-            "..", "...", "==", ">=", "<=", "~=",
-            "<number>", "<name>", "<string>", "<eof>"
+            "..", "...", "==", ">=", "<=", "~=", 
+            "<number>", "<name>", "<string>", "<eof>",
+            ">>", "<<", "&", "|",
         };
 
 
@@ -438,7 +439,8 @@ namespace SharpLua
                     case '-':
                         {
                             next(ls);
-                            if (ls.current != '-') return '-';
+                            if (ls.current != '-')
+                                return '-';
                             /* else is a comment */
                             next(ls);
                             if (ls.current == '[')
@@ -482,6 +484,8 @@ namespace SharpLua
                         }
                     case '<':
                         {
+                            // either <, <=, or <<
+
                             next(ls);
                             if (ls.current == '=')
                             {
@@ -501,6 +505,8 @@ namespace SharpLua
                         }
                     case '>':
                         {
+                            // either >, >=, or >>
+
                             next(ls);
                             if (ls.current == '=')
                             {
@@ -555,6 +561,10 @@ namespace SharpLua
                         return (int)RESERVED.TK_BITAND;
                     case '|':
                         next(ls);
+                        if (char.IsLetter((char)ls.current) || ls.current == '_')
+                        {
+                            //expr(ls)
+                        }
                         return (int)RESERVED.TK_BITOR;
                     default:
                         {

@@ -59,9 +59,13 @@ namespace SharpLua
                 return spath;
             if (File.Exists(spath + ".lua")) // lua
                 return spath + ".lua";
-            /*if (File.Exists(spath + ".slua")) // sLua (SharpLua)
+            if (File.Exists(spath + ".slua")) // sLua (SharpLua)
                 return spath + ".slua";
-            if (File.Exists(spath + ".dll"))
+            if (File.Exists(spath + ".sluac")) // sLuac (SharpLua compiled)
+                return spath + ".sluac";
+            if (File.Exists(spath + ".luac")) // Luac (Lua compiled)
+                return spath + ".luac";
+            /*if (File.Exists(spath + ".dll"))
                 return spath + ".dll";
             if (File.Exists(spath + ".exe"))
                 return spath + ".exe";
@@ -107,6 +111,15 @@ namespace SharpLua
         public static LuaInterface GetLua()
         {
             return _interface;
+        }
+
+        public static void SetLua(LuaInterface i)
+        {
+            _interface = i;
+        }
+        public static void SetLua(Lua.LuaState lua)
+        {
+            _interface = new LuaInterface(lua);
         }
     }
 }

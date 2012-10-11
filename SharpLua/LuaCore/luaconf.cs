@@ -1175,6 +1175,8 @@ namespace SharpLua
 
             public static implicit operator String(CharPtr chrptr)
             {
+                if (chrptr == null)
+                    return "";
                 return chrptr.ToString();
             }
         }

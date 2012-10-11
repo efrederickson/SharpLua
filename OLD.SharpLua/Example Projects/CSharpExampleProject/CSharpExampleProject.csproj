@@ -61,7 +61,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\SharpLua\SharpLua.csproj">
       <Project>{9B6F4AAC-1B76-4CB6-B7CE-EFBBB0C7F5C0}</Project>
-      <Name>SharpLua</Name>
+      <Name>SharpLua %28Old\SharpLua%29</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />

@@ -99,7 +99,7 @@ namespace SharpLua
             }
 
             public Proto f;  /* current function header */
-            public Table h;  /* table to find (and reuse) elements in `k' */
+            public Table h;  /* table to find (and reuse) elements in 'k' */
             public FuncState prev;  /* enclosing function */
             public LexState ls;  /* lexical state */
             public LuaState L;  /* copy of the Lua state */
@@ -1040,8 +1040,8 @@ namespace SharpLua
             new priority_(3, 3),				/* order */
 
             new priority_(2, 2),
-            new priority_(1, 1)					/* logical (and/or) */
-                , new priority_(0, 0), // OP_NOBINOPR
+            new priority_(1, 1),				/* logical (and/or) */
+            new priority_(0, 0),               // OP_NOBINOPR
             new priority_(7, 7),               // >> (right shift)
             new priority_(7, 7),               // << (left shift)
             new priority_(7, 7),               // &  (bitwise and)

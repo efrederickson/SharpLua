@@ -22,209 +22,11 @@ namespace SharpLua
      * */
     public class LuaInterface : IDisposable
     {
-        static string init_luanet =
-        @"local metatable = {}
-        local rawget = rawget
-        local import_type = luanet.import_type
-        local load_assembly = luanet.load_assembly
-        luanet.error, luanet.type = error, type
-        -- Lookup a .NET identifier component.
-        function metatable:__index(key) -- key is e.g. 'Form'
-            -- Get the fully-qualified name, e.g. 'System.Windows.Forms.Form'
-            local fqn = rawget(self,'.fqn')
-            fqn = ((fqn and fqn .. '.') or '') .. key
-
-            -- Try to find either a luanet function or a CLR type
-            local obj = rawget(luanet,key) or import_type(fqn)
-
-            -- If key is neither a luanet function or a CLR type, then it is simply
-            -- an identifier component.
-            if obj == nil then
-                -- It might be an assembly, so we load it too.
-                pcall(load_assembly,fqn)
-                obj = { ['.fqn'] = fqn }
-                setmetatable(obj, metatable)
-            end
-
-            -- Cache this lookup
-            rawset(self, key, obj)
-            return obj
-        end
-
-        -- A non-type has been called; e.g. foo = System.Foo()
-        function metatable:__call(...)
-            error('No such type: ' .. rawget(self,'.fqn'), 2)
-        end
-
-        -- This is the root of the .NET namespace
-        luanet['.fqn'] = false
-        setmetatable(luanet, metatable)
-
-        -- Preload the mscorlib assembly
-        luanet.load_assembly('mscorlib')";
-
-        private const string initClrLib = @"
----
---- This lua module provides auto importing of .net classes into a named package.
---- Makes for super easy use of LuaInterface glue
----
---- example:
----   Threading = luanet.namespace('System', 'System.Threading')
----   Threading.Thread.Sleep(100)
----
---- Extensions:
---- import() is a version of luanet.namespace() which puts the package into a list which is used by a global __index lookup,
---- and thus works rather like C#'s using statement. It also recognizes the case where one is importing a local
---- assembly, which must end with an explicit .dll extension.
-
---- Alternatively, luanet.namespace can be used for convenience without polluting the global namespace:
----   local sys, sysio = luanet.namespace {'System','System.IO'}
---    sys.Console.WriteLine('we are at {0}',sysio.Directory.GetCurrentDirectory())
-
-
--- LuaInterface hosted with stock Lua interpreter will need to explicitly require this...
--- if not luanet then require 'luanet' end
-
-local import_type, load_assembly = luanet.import_type, luanet.load_assembly
-
-local mt = {
-	--- Lookup a previously unfound class and add it to our table
-	__index = function(package, classname)
-		local class = rawget(package, classname)
-		if class == nil then
-			class = import_type(package.packageName .. '.' .. classname)
-			package[classname] = class		-- keep what we found around, so it will be shared
-		end
-		return class
-	end
-}
-
-function luanet.namespace(ns)
-    if type(ns) == 'table' then
-        local res = {}
-        for i = 1, #ns do
-            res[i] = luanet.namespace(ns[i])
-        end
-        return unpack(res)
-    end
-    -- FIXME - table.packageName could instead be a private index (see Lua 13.4.4)
-    local t = { packageName = ns }
-    setmetatable(t, mt)
-    return t
-end
-
-local globalMT, packages
-
-local function set_global_mt()
-    packages = {}
-    globalMT = {
-        __index = function(T, classname)
-                for i, package in ipairs(packages) do
-                    local class = package[classname]
-                    if class then
-                        _G[classname] = class
-                        return class
-                    end
-                end
-        end
-    }
-    setmetatable(_G, globalMT)
-end
-
-function luanet.make_array(tp, tbl)
-    local arr = tp[#tbl]
-	for i, v in ipairs(tbl) do
-	    arr:SetValue(v, i-1)
-	end
-	return arr
-end
-
-function luanet.each(o)
-   local e = o:GetEnumerator()
-   return function()
-      if e:MoveNext() then
-        return e.Current
-     end
-   end
-end
-
--- Actual clr library
--- Provides methods for calling static methods, loading clr dll's, importing namespaces, 
--- and creating clr types.
-
-local clr = { }
-
-clr.ns = { ""System"", ""System.IO"", ""System.Windows.Forms"" }
-
-clr.load = luanet.load_assembly
-
-clr.create = function(a, ...)
-    local arg = { ... }
-    local a,b = pcall(function() return luanet.import_type(a, unpack(arg))(unpack(arg)) end)
-    if a then return b end
-    for k, ns in pairs(clr.ns) do
-        local a,b = pcall(function() return luanet.import_type(ns .. ""."" .. a, unpack(arg))(unpack(arg)) end)
-        if a then return b end
-    end
-end
-
-clr.call = function(f, ...)
-    local type = """"
-    local method = """"
-    for i = 1, #f do
-        if f:sub(i, i) == '.' then
-            type = f:sub(1, i - 1)
-            method = f:sub(i + 1)
-        end
-    end
-    --print(type, method)
-    local t = luanet.import_type(type)
-    if t == nil then
-        error('Unable to find type \'' .. type .. '\'')
-    else
-        local m = t[method]
-        if m then 
-            return m(...)
-        else
-            error([[No method ']] + method + [[' on type ']] + type '\'')
-        end
-    end
-end
-
-clr.using = function(ns)
-    table.insert(clr.ns, ns)
-end
-
-clr.getns = luanet.namespace
-
-clr.import = function(assemblyName, packageName)
-    if not globalMT then
-        set_global_mt()
-    end
-    if not packageName then
-		local i = assemblyName:find('%.dll$')
-		if i then packageName = assemblyName:sub(1, i-1)
-		else packageName = assemblyName end
-	end
-    local t = luanet.namespace(assemblyName, packageName)
-	table.insert(packages, t)
-	return t
-end
-
-setmetatable(clr, { 
-    __index = function(t, x)
-        -- Return a System.* type
-        return luanet.import_type('System.' .. x)
-    end, 
-    -- __tostring = ""clr library table"",
-    })
-
-_G.clr = clr
-System = luanet.namespace(""System"")
-";
-
         /*readonly */
-        public SharpLua.Lua.LuaState luaState;
+        private SharpLua.Lua.LuaState luaState;
+
+        public Lua.LuaState LuaState { get { return luaState; } }
+
         ObjectTranslator translator;
 
         SharpLua.Lua.lua_CFunction panicCallback, lockCallback, unlockCallback;
@@ -249,15 +51,20 @@ System = luanet.namespace(""System"")
             LuaDLL.lua_replace(luaState, (int)LuaIndexes.LUA_GLOBALSINDEX);
             translator = new ObjectTranslator(this, luaState);
             LuaDLL.lua_replace(luaState, (int)LuaIndexes.LUA_GLOBALSINDEX);
-            LuaDLL.luaL_dostring(luaState, LuaInterface.init_luanet);	// steffenj: lua_dostring renamed to luaL_dostring
+            LuaDLL.luaL_dostring(luaState, ScriptStrings.InitLuaNet);	// steffenj: lua_dostring renamed to luaL_dostring
 
             tracebackFunction = new SharpLua.Lua.lua_CFunction(traceback);
 
             // We need to keep this in a managed reference so the delegate doesn't get garbage collected
             panicCallback = new SharpLua.Lua.lua_CFunction(PanicCallback);
+            Lua.lua_CFunction oldpanicFunc =
+                //LuaDLL.lua_atpanic(luaState, tracebackFunction);
             LuaDLL.lua_atpanic(luaState, panicCallback);
 
-            LuaDLL.luaL_dostring(luaState, initClrLib);
+            LuaDLL.luaL_dostring(luaState, ScriptStrings.InitClrLib);
+            LuaDLL.luaL_dostring(luaState, ScriptStrings.InitExtLib);
+
+            luaState.SetInterface(this);
         }
 
         private bool _StatePassed;
@@ -267,14 +74,13 @@ System = luanet.namespace(""System"")
          */
         public LuaInterface(SharpLua.Lua.LuaState lState)
         {
-            //IntPtr lState = new IntPtr(luaState);
             LuaDLL.lua_pushstring(lState, "LUAINTERFACE LOADED");
             LuaDLL.lua_gettable(lState, (int)LuaIndexes.LUA_REGISTRYINDEX);
 
             if (LuaDLL.lua_toboolean(lState, -1))
             {
                 LuaDLL.lua_settop(lState, -2);
-                throw new LuaException("There is already a LuaInterface.Lua instance associated with this Lua state");
+                throw new LuaException("There is already a LuaInterface associated with this LuaState");
             }
             else
             {
@@ -291,8 +97,10 @@ System = luanet.namespace(""System"")
                 LuaDLL.lua_replace(lState, (int)LuaIndexes.LUA_GLOBALSINDEX);
                 translator = new ObjectTranslator(this, this.luaState);
                 LuaDLL.lua_replace(lState, (int)LuaIndexes.LUA_GLOBALSINDEX);
-                LuaDLL.luaL_dostring(lState, LuaInterface.init_luanet);	// steffenj: lua_dostring renamed to luaL_dostring
-                LuaDLL.luaL_dostring(luaState, initClrLib);
+                LuaDLL.luaL_dostring(lState, ScriptStrings.InitLuaNet);	// steffenj: lua_dostring renamed to luaL_dostring
+
+                LuaDLL.luaL_dostring(luaState, ScriptStrings.InitClrLib);
+                LuaDLL.luaL_dostring(luaState, ScriptStrings.InitExtLib);
             }
             _StatePassed = true;
         }
@@ -304,6 +112,8 @@ System = luanet.namespace(""System"")
 
             if (luaState != null)
                 LuaDLL.lua_close(luaState);
+
+            luaState = null;
             //luaState = IntPtr.Zero; <- suggested by Christopher Cebulski http://luaforge.net/forum/forum.php?thread_id=44593&forum_id=146
         }
 
@@ -354,10 +164,13 @@ System = luanet.namespace(""System"")
 
             // A pre-wrapped exception - just rethrow it (stack trace of InnerException will be preserved)
             LuaException luaEx = err as LuaException;
-            if (luaEx != null) throw luaEx;
+            if (luaEx != null)
+                throw luaEx;
 
             // A non-wrapped Lua error (best interpreted as a string) - wrap it and throw it
-            if (err == null) err = "Unknown Lua Error";
+            if (err == null)
+                err = "Unknown Lua Error";
+
             throw new LuaException(err.ToString());
         }
 

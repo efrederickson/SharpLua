@@ -565,9 +565,9 @@ sealed class LuaGCOptions
 
 
         //[DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static void lua_atpanic(SharpLua.Lua.LuaState luaState, SharpLua.Lua.lua_CFunction panicf)
+        public static Lua.lua_CFunction lua_atpanic(SharpLua.Lua.LuaState luaState, SharpLua.Lua.lua_CFunction panicf)
         {
-            SharpLua.Lua.lua_atpanic(luaState, panicf);
+            return SharpLua.Lua.lua_atpanic(luaState, panicf);
         }
 
         //[DllImport(LUADLL,CallingConvention=CallingConvention.Cdecl)]

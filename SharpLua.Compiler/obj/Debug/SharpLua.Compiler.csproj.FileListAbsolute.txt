@@ -5,3 +5,17 @@ E:\SharpLua\SharpLua.Compiler\bin\Debug\SharpLua.dll
 E:\SharpLua\SharpLua.Compiler\bin\Debug\SharpLua.pdb
 E:\SharpLua\SharpLua.Compiler\obj\Debug\SharpLua.Compiler.exe
 E:\SharpLua\SharpLua.Compiler\obj\Debug\SharpLua.Compiler.pdb
+W:\Code\SharpLua\SharpLua.Compiler\bin\Debug\SharpLua.Compiler.exe
+W:\Code\SharpLua\SharpLua.Compiler\bin\Debug\SharpLua.Compiler.pdb
+W:\Code\SharpLua\SharpLua.Compiler\bin\Debug\SharpLua.dll
+W:\Code\SharpLua\SharpLua.Compiler\bin\Debug\SharpLua.pdb
+W:\Code\SharpLua\SharpLua.Compiler\obj\Debug\SharpLua.Compiler.csprojResolveAssemblyReference.cache
+W:\Code\SharpLua\SharpLua.Compiler\obj\Debug\SharpLua.Compiler.exe
+W:\Code\SharpLua\SharpLua.Compiler\obj\Debug\SharpLua.Compiler.pdb
+F:\Code\SharpLua\SharpLua.Compiler\bin\Debug\SharpLua.Compiler.exe
+F:\Code\SharpLua\SharpLua.Compiler\bin\Debug\SharpLua.Compiler.pdb
+F:\Code\SharpLua\SharpLua.Compiler\bin\Debug\SharpLua.dll
+F:\Code\SharpLua\SharpLua.Compiler\bin\Debug\SharpLua.pdb
+F:\Code\SharpLua\SharpLua.Compiler\obj\Debug\ResolveAssemblyReference.cache
+F:\Code\SharpLua\SharpLua.Compiler\obj\Debug\SharpLua.Compiler.exe
+F:\Code\SharpLua\SharpLua.Compiler\obj\Debug\SharpLua.Compiler.pdb

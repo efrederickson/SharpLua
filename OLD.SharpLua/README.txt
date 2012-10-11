@@ -7,7 +7,7 @@ It can run lua files including bytecode, create .NET objects and call methods on
 supports all standard lua functions. It does not support C Libraries.
 
 To use in your projects, just add a reference to the SharpLua.dll file and use the 
-SharpLua.LuaInterface class
+SharpLua.LuaInterface class or the SharpLua.LuaRuntime, SharpLua.Lua is the raw Lua API.
 
 Features Lua 5.1.5 doesn't have:
 - table.unpack (similar to _G.unpack)
@@ -18,7 +18,7 @@ Features Lua 5.1.5 doesn't have:
     - << (left shift) (new opcode)
     - & (bitwise and)
     - | (bitwise or)
-    - MAYBEL xor (a xor b)
+    - MAYBE: xor (a xor b)
 
 Current projects:
 SharpLua                     The SharpLua core

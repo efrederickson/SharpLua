@@ -21,6 +21,8 @@ namespace SharpLua
 		  new luaL_Reg(LUA_STRLIBNAME, luaopen_string),
 		  new luaL_Reg(LUA_MATHLIBNAME, luaopen_math),
 		  new luaL_Reg(LUA_DBLIBNAME, luaopen_debug),
+          new luaL_Reg(LUA_BITLIBNAME, luaopen_bit32),
+          new luaL_Reg(LUA_BITLIB32NAME, luaopen_bit32),
 		  new luaL_Reg(null, null)
 		};
 

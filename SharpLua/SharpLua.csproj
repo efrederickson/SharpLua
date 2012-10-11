@@ -20,7 +20,7 @@
     <DefineConstants>DEBUG;TRACE;LUA_CORE;_WIN32;LUA_COMPAT_VARARG;LUA_COMPAT_MOD;LUA_COMPAT_GFIND;CATCH_EXCEPTIONS</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Decompiler\Decompiler.cs" />
     <Compile Include="Interfacing\CheckType.cs" />
     <Compile Include="Interfacing\GenerateEventAssembly.cs" />
     <Compile Include="Interfacing\Lua.cs" />
@@ -49,6 +50,7 @@
     <Compile Include="Interfacing\LuaFunction.cs" />
     <Compile Include="Interfacing\LuaGlobalAttribute.cs" />
     <Compile Include="Interfacing\LuaHideAttribute.cs" />
+    <None Include="Decompiler\disassembler example.lua" />
     <None Include="Interfacing\Main.cs" />
     <Compile Include="Interfacing\LuaRegistrationHelper.cs" />
     <Compile Include="Interfacing\LuaScriptException.cs" />
@@ -62,6 +64,8 @@
     <Compile Include="Interfacing\ProxyType.cs" />
     <None Include="lua.cs" />
     <None Include="luac.cs" />
+    <Compile Include="Interfacing\ScriptStrings.cs" />
+    <Compile Include="LuaCore\Libraries\lbitlib.cs" />
     <Compile Include="LuaCore\VM\lapi.cs" />
     <Compile Include="LuaCore\Libraries\lauxlib.cs" />
     <Compile Include="LuaCore\Libraries\lbaselib.cs" />
@@ -103,11 +107,6 @@
   <ItemGroup>
     <None Include="..\OLD.SharpLua\README.txt">
       <Link>README.txt</Link>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\OLD.SharpLua\TODO.txt">
-      <Link>TODO.txt</Link>
     </None>
   </ItemGroup>
   <ItemGroup />

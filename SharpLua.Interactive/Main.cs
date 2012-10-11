@@ -31,9 +31,6 @@ namespace SharpLua.Interactive
             LuaRuntime.PrintBanner();
             LuaRuntime.RegisterModule(typeof(TestModule));
             LuaRuntime.RegisterModule(typeof(TestModule2));
-            SharpLua.RefactorizationModule.LuaParser prsr = new SharpLua.RefactorizationModule.LuaParser(LuaRuntime.GetLua());
-            //LuaTable result = prsr.Parse("function a() return 1 end");
-            //Console.WriteLine(prsr.Beautify("function a() return 1 end"));
 
             // how to handle errors
 #if DEBUG
@@ -102,18 +99,28 @@ namespace SharpLua.Interactive
                             {
                                 Console.Write("=> ");
                                 for (int i = 0; i < v.Length; i++)
-                                    Console.Write(v[i].ToString() + (i == v.Length - 1 ? ", " : ""));
+                                    if (v[i] == null)
+                                        Console.WriteLine("<nil>");
+                                    else
+                                        Console.Write(v[i].ToString() + (i != v.Length - 1 ? ", " : ""));
                                 Console.WriteLine();
                             }
                         }
                         catch (Exception error)
                         {
                             // TODO: show lua script traceback
+                            // Possible fix... this isn't safe though.
 
-                            if ((bool)LuaRuntime.GetVariable("DEBUG") == true)
-                                Console.WriteLine(error.ToString());
+                            Console.WriteLine(error.Message);
+                            LuaRuntime.Run("pcall(function() print(debug.traceback()) end)");
+                            Console.WriteLine();
+
+                            object dbg = LuaRuntime.GetVariable("DEBUG");
+
+                            if ((dbg is bool && (bool)dbg == true) || dbg is int == false)
+                                ; //Console.WriteLine(error.ToString());
                             else
-                                Console.WriteLine("Error: " + error.Message);
+                                ; // Console.WriteLine("Error: " + error.Message);
                             LuaRuntime.SetVariable("LASTERROR", error);
                         }
                     }
@@ -134,6 +141,7 @@ namespace SharpLua.Interactive
         {
             Console.WriteLine("hi");
         }
+
     }
 
     [LuaModule]

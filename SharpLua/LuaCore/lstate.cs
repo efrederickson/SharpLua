@@ -1,8 +1,8 @@
 /*
-** $Id: lstate.c,v 2.36.1.2 2008/01/03 15:20:39 roberto Exp $
-** Global State
-** See Copyright Notice in lua.h
-*/
+ ** $Id: lstate.c,v 2.36.1.2 2008/01/03 15:20:39 roberto Exp $
+ ** Global State
+ ** See Copyright Notice in lua.h
+ */
 
 using System;
 using System.Collections.Generic;
@@ -48,8 +48,8 @@ namespace SharpLua
 
 
         /*
-        ** informations about a call
-        */
+         ** informations about a call
+         */
         public class CallInfo : ArrayElement
         {
             private CallInfo[] values = null;
@@ -146,8 +146,8 @@ namespace SharpLua
 
 
         /*
-        ** `global state', shared by all threads of this state
-        */
+         ** `global state', shared by all threads of this state
+         */
         public class GlobalState
         {
             public stringtable strt = new stringtable(); /* hash table for strings */
@@ -179,8 +179,8 @@ namespace SharpLua
 
 
         /*
-        ** `per thread' state
-        */
+         ** `per thread' state
+         */
         public class LuaState : GCObject
         {
 
@@ -209,6 +209,41 @@ namespace SharpLua
             public GCObject gclist;
             public lua_longjmp errorJmp;  /* current error recover point */
             public ptrdiff_t errfunc;  /* current error handling function (stack index) */
+            
+            LuaInterface _interface;
+            public LuaInterface Interface
+            {
+                get
+                {
+                    if (_interface == null)
+                        _interface = new LuaInterface(this);
+                    return _interface;
+                }
+            }
+
+            public LuaState()
+            {
+                // Creates all sorts of issues...
+                //_interface = new LuaInterface(this);
+            }
+            
+            public LuaState(LuaInterface i)
+            {
+                _interface = i;
+            }
+            
+            /// <summary>
+            /// Set a LuaInterface to use with this LuaState. Throws an exception if there
+            /// already is one.
+            /// </summary>
+            /// <param name="li"></param>
+            public void SetInterface(LuaInterface li)
+            {
+                if (_interface == null)
+                    _interface = li;
+                else
+                    throw new Exception("A LuaInterface is already attached to this LuaState");
+            }
         };
 
 
@@ -217,8 +252,8 @@ namespace SharpLua
 
 
         /*
-        ** Union of all collectable objects (not a union anymore in the C# port)
-        */
+         ** Union of all collectable objects (not a union anymore in the C# port)
+         */
         public class GCObject : GCheader, ArrayElement
         {
             public void set_index(int index)
@@ -339,7 +374,7 @@ namespace SharpLua
         {
             return (lu_byte)(l - LUAI_EXTRASPACE);
         }
-        */
+         */
         public static LuaState tostate(object l)
         {
             Debug.Assert(LUAI_EXTRASPACE == 0, "LUAI_EXTRASPACE not supported");
@@ -348,8 +383,8 @@ namespace SharpLua
 
 
         /*
-        ** Main thread combines a thread state and the global state
-        */
+         ** Main thread combines a thread state and the global state
+         */
         public class LG : LuaState
         {
             public LuaState l { get { return this; } }
@@ -386,8 +421,8 @@ namespace SharpLua
 
 
         /*
-        ** open parts that may cause memory-allocation errors
-        */
+         ** open parts that may cause memory-allocation errors
+         */
         private static void f_luaopen(LuaState L, object ud)
         {
             GlobalState g = G(L);

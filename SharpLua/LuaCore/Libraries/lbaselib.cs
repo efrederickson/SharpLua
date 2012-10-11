@@ -495,6 +495,7 @@ namespace SharpLua
 		  new luaL_Reg("type", luaB_type),
 		  new luaL_Reg("unpack", luaB_unpack),
 		  new luaL_Reg("xpcall", luaB_xpcall),
+          new luaL_Reg("decompile", decompileFunction),
 		  new luaL_Reg(null, null)
 		};
 
@@ -654,6 +655,32 @@ namespace SharpLua
             lua_pushcclosure(L, f, 1);
             lua_setfield(L, -2, name);
         }
+
+        public static int decompileFunction(LuaState L)
+        {
+            Decompiler.Decompiler d = new Decompiler.Decompiler();
+            Lua.Proto p = Pget(L, 1);
+            if (p == null)
+                lua_pushstring(L, "not a Lua function");
+            string s = d.Decompile(p);
+            //Console.WriteLine(s);
+            lua_pushstring(L, s);
+            return 1;
+        }
+
+        static Lua.Proto Pget(Lua.LuaState L, int i)
+        {
+            if (Lua.lua_isuserdata(L, i) == 1)
+                return (Lua.Proto)Lua.lua_touserdata(L, i);
+            if (!Lua.lua_isfunction(L, i) || Lua.lua_iscfunction(L, i))
+            {
+                return null;
+                //Lua.luaL_typerror(L, i, "Lua function");
+            }
+            return ((Lua.Closure)Lua.lua_topointer(L, i)).l.p;
+        }
+
+
 
         private static void base_open(LuaState L)
         {

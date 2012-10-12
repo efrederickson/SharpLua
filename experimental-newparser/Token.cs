@@ -17,7 +17,7 @@ namespace experimental_newparser
 
         public string Print()
         {
-            return "<" + Type.ToString() + " Data='" + Data + "'>";
+            return "<" + Type.ToString() + ", Data='" + Data + "', Line/Col=" + Line + "/" + Column + ">";
         }
     }
 

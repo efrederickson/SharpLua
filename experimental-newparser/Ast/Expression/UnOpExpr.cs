@@ -5,10 +5,9 @@ using System.Text;
 
 namespace experimental_newparser.Ast.Expression
 {
-    public class VariableExpression : Expression
+    public class UnOpExpr : Expression
     {
-        public string Name;
-        public Variable Var;
-        public bool IsGlobal = false;
+        public Expression Rhs = null;
+        public string Op = "";
     }
 }

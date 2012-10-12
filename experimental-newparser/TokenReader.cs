@@ -8,7 +8,7 @@ namespace experimental_newparser
     public class TokenReader
     {
         Stack<int> savedP = new Stack<int>();
-        int p = 1;
+        public int p = 0;
         public List<Token> tokens;
 
         public TokenReader(List<Token> tokens)
@@ -19,7 +19,7 @@ namespace experimental_newparser
         //getters
         public Token Peek(int n = 0)
         {
-            return tokens[Math.Min(tokens.Count, p + n)];
+            return tokens[Math.Min(tokens.Count - 1, p + n)];
         }
 
         public Token Get()
@@ -132,6 +132,14 @@ namespace experimental_newparser
         public bool IsEof()
         {
             return Peek().Type == TokenType.EndOfStream;
+        }
+
+        public List<Token> Range(int start, int end)
+        {
+            List<Token> t = new List<Token>();
+            for (int i = start; i < end; i++)
+                t.Add(tokens[i]);
+            return t;
         }
     }
 }

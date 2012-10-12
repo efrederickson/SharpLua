@@ -23,7 +23,7 @@ namespace experimental_newparser
 
         char read()
         {
-            if (src.Length < p)
+            if (src.Length < p + 1)
                 return '\0';
             else
             {
@@ -33,6 +33,7 @@ namespace experimental_newparser
                     ln++;
                     col = 1;
                 }
+                col++;
                 p++;
                 return c;
             }
@@ -224,7 +225,7 @@ namespace experimental_newparser
                     {
                         // linux shebang
                         string sh = "";
-                        while (peek() != '\n' && peek() != '\r')
+                        while (peek() != '\n' && peek() != '\r' && peek() != '\0')
                         {
                             sh += read();
                         }
@@ -234,7 +235,7 @@ namespace experimental_newparser
                     {
                         leading.Add(new Token { Type = c_ == ' ' ? TokenType.WhitespaceSpace : TokenType.WhitespaceTab });
                     }
-                    else if (c_ == '-' || peek(1) == '-')
+                    else if (c_ == '-' && peek(1) == '-')
                     {
                         read();
                         read();
@@ -242,7 +243,7 @@ namespace experimental_newparser
                         if (comment == null)
                         {
                             comment = "";
-                            while (peek() != '\n' && peek() != '\r')
+                            while (peek() != '\n' && peek() != '\r' && peek() != '\0')
                                 comment += read();
                             read();
                             if (peek() == '\n') // e.g. \r\n
@@ -279,7 +280,8 @@ namespace experimental_newparser
                     string s4 = c.ToString();
                     while (char.IsLetter(peek()) ||
                         peek() == '_' ||
-                        char.IsDigit(c))
+                        char.IsDigit(c) &&
+                        peek() != '\0')
                     {
                         s4 += read();
                     }
@@ -290,13 +292,13 @@ namespace experimental_newparser
                         t.Type = TokenType.Ident;
                 }
                 else if (char.IsDigit(c) ||
-                    (c == '.' && char.IsDigit(peek(1))))
+                    (c == '.' && char.IsDigit(peek())))
                 { // negative numbers are handled in unary minus collection
                     string num = "";
-                    if (c == '0' && peek(1) == 'x')
+                    if (c == '0' && peek() == 'x')
                     {
                         read();
-                        read();
+                        //read();
                         num = "0x";
                         while (IsHexDigit(peek()))
                             num += read();
@@ -342,6 +344,8 @@ namespace experimental_newparser
                         }
                         else if (c2 == delim)
                             break;
+                        else if (c2 == '\0')
+                            error("expected '" + delim + "', not <eof>");
                         else
                             str += c2;
                     }
@@ -424,6 +428,7 @@ namespace experimental_newparser
                 }
                 else if (c == '-' && peek() == '>')
                 {
+                    read(); // read the '>'
                     t.Data = "->";
                     t.Type = TokenType.Symbol;
                 }
@@ -434,14 +439,14 @@ namespace experimental_newparser
                     if (peek() == '=')
                     {
                         char c2 = peek();
-                        if (c2 == '+' ||
-                            c2 == '-' ||
-                            c2 == '/' ||
-                            c2 == '*' ||
-                            c2 == '^' ||
-                            c2 == '%' ||
-                            c2 == '&' ||
-                            c2 == '|')
+                        if (c == '+' ||
+                            c == '-' ||
+                            c == '/' ||
+                            c == '*' ||
+                            c == '^' ||
+                            c == '%' ||
+                            c == '&' ||
+                            c == '|')
                         {
                             t.Data += "=";
                             read();
@@ -454,6 +459,8 @@ namespace experimental_newparser
                 }
                 tokens.Add(t);
             }
+            if (tokens.Count > 0 && tokens[tokens.Count - 1].Type != TokenType.EndOfStream)
+                tokens.Add(new Token { Type = TokenType.EndOfStream });
             return new TokenReader(tokens);
         }
     }

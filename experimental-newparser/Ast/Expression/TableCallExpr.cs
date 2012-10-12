@@ -5,10 +5,7 @@ using System.Text;
 
 namespace experimental_newparser.Ast.Expression
 {
-    public class VariableExpression : Expression
+    public class TableCallExpr : CallExpr
     {
-        public string Name;
-        public Variable Var;
-        public bool IsGlobal = false;
     }
 }

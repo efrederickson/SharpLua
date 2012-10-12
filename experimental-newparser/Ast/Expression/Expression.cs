@@ -9,5 +9,6 @@ namespace experimental_newparser.Ast.Expression
     {
         public List<Token> LeadingWhitespaceAndComments = new List<Token>();
         public int ParenCount = 0;
+        public Scope Scope = null;
     }
 }

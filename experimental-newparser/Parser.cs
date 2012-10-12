@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using experimental_newparser.Ast.Expression;
 using experimental_newparser.Ast.Statement;
+using experimental_newparser.Ast;
 
 namespace experimental_newparser
 {
@@ -21,9 +22,10 @@ namespace experimental_newparser
             throw new LuaSourceException(tok.Peek().Line, tok.Peek().Column, msg);
         }
 
-        FunctionStatement ParseFunctionArgsAndBody()
+        AnonymousFunctionExpr ParseExprFunctionArgsAndBody(Scope scope)
         {
-            FunctionStatement func = new FunctionStatement();
+            AnonymousFunctionExpr func = new AnonymousFunctionExpr();
+            func.Scope = new Scope();
 
             if (tok.ConsumeSymbol('(') == false)
                 error("'(' expected");
@@ -37,7 +39,7 @@ namespace experimental_newparser
                 {
                     Variable arg = new Variable();
                     arg.Name = tok.Get().Data;
-                    func.AddLocal(arg);
+                    func.Scope.AddLocal(arg);
                     arglist.Add(arg);
                     if (!tok.ConsumeSymbol(','))
                         if (tok.ConsumeSymbol(')'))
@@ -57,7 +59,7 @@ namespace experimental_newparser
             }
 
             // body
-            Chunk body = ParseStatementList(func);
+            List<Statement> body = ParseStatementList(func.Scope);
             // end
             if (!tok.ConsumeKeyword("end"))
                 error("'end' expected after function body");
@@ -65,14 +67,63 @@ namespace experimental_newparser
             //nodeFunc.AstType = AstType.Function;
             func.Arguments = arglist;
             func.Body = body;
-            func.VarArg = isVarArg;
+            func.IsVararg = isVarArg;
 
             return func;
         }
 
-
-        Expression ParsePrimaryExpr(Chunk c)
+        FunctionStatement ParseFunctionArgsAndBody(Scope scope)
         {
+            FunctionStatement func = new FunctionStatement();
+
+            if (tok.ConsumeSymbol('(') == false)
+                error("'(' expected");
+
+            // arg list
+            List<Variable> arglist = new List<Variable>();
+            bool isVarArg = false;
+            while (tok.ConsumeSymbol(')') == false)
+            {
+                if (tok.Is(TokenType.Ident))
+                {
+                    Variable arg = new Variable();
+                    arg.Name = tok.Get().Data;
+                    func.Scope.AddLocal(arg);
+                    arglist.Add(arg);
+                    if (!tok.ConsumeSymbol(','))
+                        if (tok.ConsumeSymbol(')'))
+                            break;
+                        else
+                            error("')' expected");
+                }
+                else if (tok.ConsumeSymbol("..."))
+                {
+                    isVarArg = true;
+                    if (!tok.ConsumeSymbol(')'))
+                        error("'...' must be the last argument of a function");
+                    break;
+                }
+                else
+                    error("Argument name or '...' expected");
+            }
+
+            // body
+            List<Statement> body = ParseStatementList(func.Scope);
+            // end
+            if (!tok.ConsumeKeyword("end"))
+                error("'end' expected after function body");
+
+            //nodeFunc.AstType = AstType.Function;
+            func.Arguments = arglist;
+            func.Body = body;
+            func.IsVararg = isVarArg;
+
+            return func;
+        }
+
+        Expression ParsePrimaryExpr(Scope c)
+        {
+            //Console.WriteLine(tok.Peek().Type + " " + tok.Peek().Data);
             if (tok.ConsumeSymbol('('))
             {
                 Expression ex = ParseExpr(c);
@@ -99,10 +150,11 @@ namespace experimental_newparser
             }
             else
                 error("primary expression expected");
+
+            return null; // satisfy the C# compiler, but this will never happen
         }
 
-
-        Expression ParseSuffixedExpr(Chunk scope, bool onlyDotColon)
+        Expression ParseSuffixedExpr(Scope scope, bool onlyDotColon = false)
         {
             // base primary expression
             Expression prim = ParsePrimaryExpr(scope);
@@ -119,7 +171,7 @@ namespace experimental_newparser
                     MemberExpr m = new MemberExpr();
                     m.Base = prim;
                     m.Indexer = symb;
-                    m.Ident = id;
+                    m.Ident = id.Data;
 
                     prim = m;
                 }
@@ -186,12 +238,20 @@ namespace experimental_newparser
             return prim;
         }
 
-        Expression ParseSimpleExpr(Chunk scope)
+        Expression ParseSimpleExpr(Scope scope)
         {
             if (tok.Is(TokenType.Number))
                 return new NumberExpr { Value = tok.Get().Data };
             else if (tok.Is(TokenType.DoubleQuoteString) || tok.Is(TokenType.SingleQuoteString) || tok.Is(TokenType.LongString))
-                return new StringExpr { Value = tok.Get().Data };
+            {
+                StringExpr s = new StringExpr
+                {
+                    Value = tok.Peek().Data,
+                    Delimiter = tok.Peek().Type == TokenType.DoubleQuoteString ? "\"" : tok.Peek().Type == TokenType.SingleQuoteString ? "'" : "["
+                };
+                tok.Get();
+                return s;
+            }
             else if (tok.ConsumeKeyword("nil"))
                 return new NilExpr();
             else if (tok.IsKeyword("false") || tok.IsKeyword("true"))
@@ -217,7 +277,7 @@ namespace experimental_newparser
 
                         Expression value = ParseExpr(scope);
 
-                        v.EntryList.Add(new KeyExpr
+                        v.EntryList.Add(new TableConstructorKeyExpr
                         {
                             Key = key,
                             Value = value,
@@ -236,7 +296,7 @@ namespace experimental_newparser
 
                             Expression value = ParseExpr(scope);
 
-                            v.EntryList.Add(new StringKeyExpr
+                            v.EntryList.Add(new TableConstructorStringKeyExpr
                             {
                                 Key = key.Data,
                                 Value = value,
@@ -247,7 +307,7 @@ namespace experimental_newparser
                             // we are a value
                             Expression val = ParseExpr(scope);
 
-                            v.EntryList.Add(new ValueExpr
+                            v.EntryList.Add(new TableConstructorValueExpr
                             {
                                 Value = val
                             });
@@ -260,14 +320,18 @@ namespace experimental_newparser
                     {
                         //value
                         Expression value = ParseExpr(scope);
-                        v.EntryList.Add(new ValueExpr
+                        v.EntryList.Add(new TableConstructorValueExpr
                         {
                             Value = value
                         });
                     }
 
                     if (tok.ConsumeSymbol(';') || tok.ConsumeSymbol(','))
-                        ; // all is good
+                    {
+                        // I could have used just an empty ';' here, 
+                        // but that leaves a warning, which clutters up the output
+                        // other than that, all is good
+                    }
                     else if (tok.ConsumeSymbol('}'))
                         break;
                     else
@@ -277,16 +341,15 @@ namespace experimental_newparser
             }
             else if (tok.ConsumeKeyword("function"))
             {
-                FunctionStmt func = ParseFunctionArgsAndBody(scope);
+                AnonymousFunctionExpr func = ParseExprFunctionArgsAndBody(scope);
                 func.IsLocal = true;
-                func.Name = "<anonymous>";
                 return func;
             }
             else if (tok.ConsumeSymbol('|'))
             {
-                // inline function... |<arg list> -> <expr>, <expr>
-                InlineFunctionStatement func = new InlineFunctionStatement();
-
+                // inline function... |<arg list>| -> <expr>, <expr>
+                InlineFunctionExpression func = new InlineFunctionExpression();
+                func.Scope = new Scope();
                 // arg list
                 List<Variable> arglist = new List<Variable>();
                 bool isVarArg = false;
@@ -296,10 +359,10 @@ namespace experimental_newparser
                     {
                         Variable arg = new Variable();
                         arg.Name = tok.Get().Data;
-                        func.AddLocal(arg);
+                        func.Scope.AddLocal(arg);
                         arglist.Add(arg);
                         if (!tok.ConsumeSymbol(','))
-                            if (tok.ConsumeSymbol(')'))
+                            if (tok.ConsumeSymbol('|'))
                                 break;
                             else
                                 error("'|' expected");
@@ -317,24 +380,21 @@ namespace experimental_newparser
                 if (!tok.ConsumeSymbol("->"))
                     error("'->' expected");
                 // body
-                List<Expression> body = ParseExpr(func);
+                List<Expression> body = new List<Expression> { ParseExpr(func.Scope) };
                 while (tok.ConsumeSymbol(','))
-                    body.Add(ParseExpr(func));
+                    body.Add(ParseExpr(func.Scope));
                 // end
-                if (!tok.ConsumeKeyword("end"))
-                    error("'end' expected after function body");
 
                 //nodeFunc.AstType = AstType.Function;
                 func.Arguments = arglist;
                 func.Expressions = body;
-                func.VarArg = isVarArg;
+                func.IsVararg = isVarArg;
 
                 return func;
             }
             else
                 return ParseSuffixedExpr(scope);
         }
-
 
         bool isUnOp(string o)
         {
@@ -390,7 +450,7 @@ namespace experimental_newparser
             return null;
         }
 
-        Expression ParseSubExpr(Chunk scope, int level)
+        Expression ParseSubExpr(Scope scope, int level)
         {
             // base item, possibly with unop prefix
             Expression exp = null;
@@ -398,12 +458,12 @@ namespace experimental_newparser
             {
                 string op = tok.Get().Data;
                 exp = ParseSubExpr(scope, unopprio);
-                exp = new UnOpExpr { Rhs = exp, op = op };
+                exp = new UnOpExpr { Rhs = exp, Op = op };
             }
             else
                 exp = ParseSimpleExpr(scope);
 
-            if (exp is InlineFunctionStatement)
+            if (exp is InlineFunctionExpression)
                 return exp; // |arg| -> expr, expr    functions cannot have any extra parts
 
             // next items in chain
@@ -427,412 +487,458 @@ namespace experimental_newparser
             return exp;
         }
 
-        Expression ParseExpr(Chunk scope)
+        Expression ParseExpr(Scope scope)
         {
             return ParseSubExpr(scope, 0);
         }
 
+        Statement ParseStatement(Scope scope)
+        {
+            int startP = tok.p;
+            Statement stat = null;
+            // print(tok.Peek().Print())
+            if (tok.ConsumeKeyword("if"))
+            {
+                //setup
+                IfStmt _if = new IfStmt();
 
-        Statement ParseStatement(Chunk scope)
-    {
- 		Statement stat = null;
- 		// print(tok.Peek().Print())
-         if (tok.ConsumeKeyword("if"))
-         {
- 			//setup
- 			IfStmt _if = new IfStmt();
- 
- 			//clauses
- 			do
-            {
- 				Expr nodeCond = ParseExpr(scope);
- 				
- 				if (!tok.ConsumeKeyword("then"))
- 					error("'then' expected");
- 				
- 				Chunk nodeBody = ParseStatementList(scope);
- 				
-                _if.Clauses.Add(new ElseIfStmt
-                    { Condition = nodeCond, Body = nodeBody });
-            }
- 			while (tok.ConsumeKeyword("elseif"));
- 
- 			// else clause
- 			if (tok.ConsumeKeyword("else"))
-            {
- 				Chunk nodeBody = ParseStatementList(scope);
- 				
- 				nodeIfStat.Clauses.Add(new ElseStmt{
- 					Body = nodeBody
- 				});
- 			}
- 
- 			// end
- 			if (!tok.ConsumeKeyword("end"))
- 				error("'end' expected");
- 
- 			    stat = nodeIfStat;
-        }
- 		else if (tok.ConsumeKeyword("while"))
-        {
- 			//setup
- 			WhileStatement w = new WhileStatement();
- 
- 			// condition
- 			Expression nodeCond = ParseExpr(scope);
- 			
- 
- 			// do
- 			if (!tok.ConsumeKeyword("do"))
- 				error("'do' expected");
- 			
- 
- 			// body
- 			Chunk body = ParseStatementList(scope);
- 
- 			//end
- 			if (!tok.ConsumeKeyword("end"))
- 				error("'end' expected");
- 			
- 
- 			// return
- 			w.Condition = nodeCond;
- 			w.Body = body;
- 			stat = w;
-        }
- 		else if (tok.ConsumeKeyword("do"))
-         {
- 			// do block
- 			Chunk b = ParseStatementList(scope);
- 			
- 			if (!tok.ConsumeKeyword("end"))
- 				error("'end' expected");
- 			
- 			stat = new DoStatement{Body= b};
-        }
- 		else if (tok.ConsumeKeyword("for"))
-         {
- 			//for block
- 			if (!tok.Is(TokenType.Ident))
- 				error("<ident> expected");
- 			
- 			Token baseVarName = tok.Get();
- 			if (tok.ConsumeSymbol('='))
-            {
- 				//numeric for
- 				NumericForStatement forL = new NumericForStatement();
-                Variable forVar = new Variable() { Name = baseVarName.Data };
-                forL.AddLocal(forVar);
- 				
- 				Expression startEx = ParseExpr(scope);
- 				
- 				if (!tok.ConsumeSymbol(','))
- 					error("',' expected");
- 				
- 				Expression endEx = ParseExpr(scope);
- 				
- 				Expression stepEx = null;
- 				if (tok.ConsumeSymbol(','))
+                //clauses
+                do
                 {
- 					stepEx = ParseExpr(scope);
- 				}
- 				if (!tok.ConsumeKeyword("do"))
- 					error("'do' expected");
- 				
- 				
- 				Chunk body = ParseStatementList(forL);
- 				
- 				if (!tok.ConsumeKeyword("end"))
- 					error("'end' expected");
- 				
- 				
- 				forL.Variable = forVar;
- 				forL.Start = startEx;
- 				forL.End = endEx;
- 				forL.Step = stepEx;
- 				forL.Body = body;
- 				stat = forL;
-            }
- 			else
-            {
- 				// generic for
- 				GenericForStatement forL = new GenericForStatement();
- 				
- 				List<Variable> varList = new List<Variable>{forL.CreateLocal(baseVarName.Data)};
- 				while (tok.ConsumeSymbol(','))
-                {
- 					if (!tok.Is(TokenType.Ident))
- 						error("for variable expected");
- 					
- 					varList.Add(forL.CreateLocal(tok.Get().Data));
- 				}
- 				if (!tok.ConsumeKeyword("in"))
- 					error("'in' expected");
- 				
- 				List<Expression> generators = new List<Expression>();
- 				Expression first = ParseExpr(scope);
- 				
- 				generators.Add(first);
- 				while (tok.ConsumeSymbol(','))
-                {
- 					Expression gen = ParseExpr(scope);
- 					generators.Add(gen);
+                    Expression nodeCond = ParseExpr(scope);
+
+                    if (!tok.ConsumeKeyword("then"))
+                        error("'then' expected");
+
+                    List<Statement> nodeBody = ParseStatementList(scope);
+
+                    _if.Clauses.Add(new ElseIfStmt { Condition = nodeCond, Body = nodeBody });
                 }
- 				if (!tok.ConsumeKeyword("do"))
- 					error("'do' expected");
- 				
- 				Chunk body = ParseStatementList(forL);
- 				
- 				if (!tok.ConsumeKeyword("end"))
- 					error("'end' expected");
- 				
- 				forL.VariableList = varList;
- 				forL.Generators = generators;
- 				forL.Body = body;
- 				stat = forL;
-            }
-        }
- 		else if (tok.ConsumeKeyword("repeat"))
-        {
- 			Chunk body = ParseStatementList(scope);
- 			
- 			if (!tok.ConsumeKeyword("until"))
- 				error("'until' expected");
- 			
- 			Expression cond = ParseExpr(scope);
- 			
-            RepeatStatement r = new RepeatStatement();
- 			r.Condition = cond;
- 			r.Body = body;
- 			stat = r;
-        }
- 		else if (tok.ConsumeKeyword("function"))
-        {
- 			if (!tok.Is(TokenType.Ident))
- 				error("function name expected");
- 			
- 			Expression name = ParseSuffixedExpr(scope, true) // true => only dots and colons
- 			
- 			FunctionStatement func = ParseFunctionArgsAndBody(scope);
- 			
- 			func.IsLocal = false;
- 			func.Name = name;
- 			stat = func;
-        }
- 		else if (tok.ConsumeKeyword("local"))
-         {
- 			if (tok.Is(TokenType.Ident))
-            {
-                List<string> varList = new List<string>{tok:Get().Data};
- 				while (tok.ConsumeSymbol(','))
+                while (tok.ConsumeKeyword("elseif"));
+
+                // else clause
+                if (tok.ConsumeKeyword("else"))
                 {
- 					if (!tok.Is(TokenType.Ident))
- 						error("local variable name expected");
- 					varList.Add(tok.Get().Data);
- 				}
- 
- 				List<Expression> initList = new List<Expression>();
- 				if (tok.ConsumeSymbol('='))
-                {
- 					do
+                    List<Statement> nodeBody = ParseStatementList(scope);
+
+                    _if.Clauses.Add(new ElseStmt
                     {
- 						Expression ex = ParseExpr(scope);
- 						initList.Add(ex);
-                    } while (tok.ConsumeSymbol(','));
+                        Body = nodeBody
+                    });
                 }
- 
- 				//now patch var list
- 				//we can't do this before getting the init list, because the init list does not
- 				//have the locals themselves in scope.
-                List<Variable> newVarList = new List<Variable>();
- 				for (int i = 0; i < varList.Count; i++)
- 					newVarList.Add(scope.CreateLocal(varList[i]));
 
-                LocalVariableStatement l = new LocalVariableStatement();
- 				f.LocalList = newVarList;
- 				f.InitList = initList;
- 				stat = nodeLocal;
-            }
- 			else if (tok.ConsumeKeyword("function"))
-            {
- 				if (!tok.Is(TokenType.Ident))
-                    error("Function name expected");
- 				string name = tok.Get().Data;
- 				Variable localVar = scope.CreateLocal(name);
- 				
- 				FunctionStatement func = ParseFunctionArgsAndBody(scope);
- 				
- 				func.Name = localVar;
- 				func.IsLocal = true;
- 				stat = func;
-            }
- 			else
- 				error("local variable or function definition expected");
-        }
- 		else if (tok.ConsumeSymbol("::"))
-         {
- 			if (!tok.Is(TokenType.Ident))
- 				error("label name expected");
- 			
- 			string label = tok.Get().Data;
- 			if (!tok.ConsumeSymbol("::"))
- 				error("'::' expected");
+                // end
+                if (!tok.ConsumeKeyword("end"))
+                    error("'end' expected");
 
- 			LabelStatement l = new LabelStatement();
- 			l.Label = label;
- 			stat = l;
-        }
- 		else if (tok.ConsumeKeyword("return"))
-        {
- 			List<Expression> exprList = new List<Expression>();
- 			if (!tok.IsKeyword("end"))
-            {
- 				Expression firstEx = ParseExpr(scope);
- 		        exprList.Add(firstEx);
- 				while (tok.ConsumeSymbol(','))
-                {
- 					Expression ex = ParseExpr(scope);
- 					exprList.Add(ex);
-                }
+                stat = _if;
             }
-            ReturnStatement r = new ReturnStatement();
- 			r.Arguments = exprList;
- 			stat = r;
-        }
- 		else if (tok.ConsumeKeyword("break"))
-        {
- 			stat = new BreakStatement();
-        }
- 		else if (tok.ConsumeKeyword("goto"))
-        {
- 			if (!tok.Is(TokenType.Ident))
- 				error("label expected");
- 			
- 			string label = tok.Get().Data;
- 			GotoStatement g = new GotoStatement();
- 			g.Label = label;
- 			stat = g;
-        }
-        else if (tok.ConsumeKeyword("using"))
-        {
-            // using <a = 1, b = x()> do <statements> end
-            UsingStatement us = new UsingStatement();
-            List<AssignmentStatement> exprList = new List<Assignment>();
-            AssignmentStatement a = new AssignmentStatement();
-            do
+            else if (tok.ConsumeKeyword("while"))
             {
-                AssignmentStatement a = new AssignmentStatement();
+                WhileStatement w = new WhileStatement();
+
+                // condition
+                Expression nodeCond = ParseExpr(scope);
+
+                // do
+                if (!tok.ConsumeKeyword("do"))
+                    error("'do' expected");
+
+                // body
+                List<Statement> body = ParseStatementList(scope);
+
+                //end
+                if (!tok.ConsumeKeyword("end"))
+                    error("'end' expected");
+
+
+                // return
+                w.Condition = nodeCond;
+                w.Body = body;
+                stat = w;
+            }
+            else if (tok.ConsumeKeyword("do"))
+            {
+                // do block
+                List<Statement> b = ParseStatementList(scope);
+
+                if (!tok.ConsumeKeyword("end"))
+                    error("'end' expected");
+
+                stat = new DoStatement { Body = b };
+            }
+            else if (tok.ConsumeKeyword("for"))
+            {
+                //for block
                 if (!tok.Is(TokenType.Ident))
-                    error("<Ident> expected");
-                a.Lhs = us.CreateLocal(tok.Get().Data);
-                if (!tok.ConsumeSymbol("="))
-                    error("'=' expected");
-                a.Rhs = ParseExpr();
-                exprList.Add(a);
-            } while (tok.ConsumeSymbol(','));
+                    error("<ident> expected");
 
-            if (!tok.ConsumeKeyword("do"))
-                error("'do' expected");
-
-            Chunk block = ParseStatementList(us);
-
-            if (!tok.ConsumeKeyword("end"))
-                error("'end' expected");
-
-            stat.Vars = exprList;
-            stat.Block = block;
-            stat = us;
-        }
-        else if (tok.ConsumeKeyword("match"))
-        {
-            //match <expr list> with  
-            //    | <expr> -> <statement list> 
-            //end
-
-            // match <expr list> with
-            MatchWithStatement m = new MatchWithStatement();
-            do 
-            {
-                m.Exprs.Add(ParseExpr());
-            } while (tok.ConsumeSymbol(','));
-
-
-            // | <expr>, <expr> | <expr> ->
-            //     <statement list>
-            // | <expr> -> <statement list>
-
-            do 
-            {
-                List<Expression> exprs = new List<Expression>();
-                Chunk body = null;
-                while (tok.ConsumeSymbol('|'))
+                Token baseVarName = tok.Get();
+                if (tok.ConsumeSymbol('='))
                 {
-                    exprs.Add(ParseExpr());
-                    while (tok.ConsumeSymbol(','))
-                        exprs.Add(ParseExpr());
-                }
-                if (tok.ConsumeSymbol("->"))
-                {
-                    body = ParseStatementList(m);
+                    //numeric for
+                    NumericForStatement forL = new NumericForStatement();
+                    Variable forVar = new Variable() { Name = baseVarName.Data };
+                    forL.Scope.AddLocal(forVar);
+
+                    Expression startEx = ParseExpr(scope);
+
+                    if (!tok.ConsumeSymbol(','))
+                        error("',' expected");
+
+                    Expression endEx = ParseExpr(scope);
+
+                    Expression stepEx = null;
+                    if (tok.ConsumeSymbol(','))
+                    {
+                        stepEx = ParseExpr(scope);
+                    }
+                    if (!tok.ConsumeKeyword("do"))
+                        error("'do' expected");
+
+
+                    List<Statement> body = ParseStatementList(forL.Scope);
+
+                    if (!tok.ConsumeKeyword("end"))
+                        error("'end' expected");
+
+
+                    forL.Variable = forVar;
+                    forL.Start = startEx;
+                    forL.End = endEx;
+                    forL.Step = stepEx;
+                    forL.Body = body;
+                    stat = forL;
                 }
                 else
-                    error("'->' expected");
-                m.Clauses.Add(new MatchClauseStatement() { exprs = exprs, Block = body });
-            } while (!tok.ConsumeKeyword("end"));
-            // end has been eaten
-        }
- 		else
-        {
- 			// statementParseExpr
- 			Expression suffixed = ParseSuffixedExpr(scope);
- 			
- 			// assignment or call?
- 			if (tok.IsSymbol(',') || tok.IsSymbol('='))
+                {
+                    // generic for
+                    GenericForStatement forL = new GenericForStatement();
+
+                    List<Variable> varList = new List<Variable> { forL.Scope.CreateLocal(baseVarName.Data) };
+                    while (tok.ConsumeSymbol(','))
+                    {
+                        if (!tok.Is(TokenType.Ident))
+                            error("for variable expected");
+
+                        varList.Add(forL.Scope.CreateLocal(tok.Get().Data));
+                    }
+                    if (!tok.ConsumeKeyword("in"))
+                        error("'in' expected");
+
+                    List<Expression> generators = new List<Expression>();
+                    Expression first = ParseExpr(scope);
+
+                    generators.Add(first);
+                    while (tok.ConsumeSymbol(','))
+                    {
+                        Expression gen = ParseExpr(scope);
+                        generators.Add(gen);
+                    }
+                    if (!tok.ConsumeKeyword("do"))
+                        error("'do' expected");
+
+                    List<Statement> body = ParseStatementList(forL.Scope);
+
+                    if (!tok.ConsumeKeyword("end"))
+                        error("'end' expected");
+
+                    forL.VariableList = varList;
+                    forL.Generators = generators;
+                    forL.Body = body;
+                    stat = forL;
+                }
+            }
+            else if (tok.ConsumeKeyword("repeat"))
             {
- 			    // check that it was not parenthesized, making it not an lvalue
- 				if (suffixed.ParenCount > 0)
- 					error("Can not assign to parenthesized expression, it is not an lvalue");
- 
- 				// more processing needed
- 				List<Expression> lhs = new List<Expression>{ suffixed };
- 				while (tok.ConsumeSymbol(','))
+                List<Statement> body = ParseStatementList(scope);
+
+                if (!tok.ConsumeKeyword("until"))
+                    error("'until' expected");
+
+                Expression cond = ParseExpr(scope);
+
+                RepeatStatement r = new RepeatStatement();
+                r.Condition = cond;
+                r.Body = body;
+                stat = r;
+            }
+            else if (tok.ConsumeKeyword("function"))
+            {
+                if (!tok.Is(TokenType.Ident))
+                    error("function name expected");
+
+                Expression name = ParseSuffixedExpr(scope, true);
+                // true => only dots and colons
+
+                FunctionStatement func = ParseFunctionArgsAndBody(scope);
+
+                func.IsLocal = false;
+                func.Name = name;
+                stat = func;
+            }
+            else if (tok.ConsumeKeyword("local"))
+            {
+                if (tok.Is(TokenType.Ident))
                 {
- 					lhs.Add(ParseSuffixedExpr(scope));
+                    List<string> varList = new List<string> { tok.Get().Data };
+                    while (tok.ConsumeSymbol(','))
+                    {
+                        if (!tok.Is(TokenType.Ident))
+                            error("local variable name expected");
+                        varList.Add(tok.Get().Data);
+                    }
+
+                    List<Expression> initList = new List<Expression>();
+                    if (tok.ConsumeSymbol('='))
+                    {
+                        do
+                        {
+                            Expression ex = ParseExpr(scope);
+                            initList.Add(ex);
+                        } while (tok.ConsumeSymbol(','));
+                    }
+
+                    //now patch var list
+                    //we can't do this before getting the init list, because the init list does not
+                    //have the locals themselves in scope.
+                    List<Variable> newVarList = new List<Variable>();
+                    for (int i = 0; i < varList.Count; i++)
+                        newVarList.Add(scope.CreateLocal(varList[i]));
+
+                    LocalAssignmentStatement l = new LocalAssignmentStatement();
+                    l.LocalList = newVarList;
+                    l.InitList = initList;
+                    stat = l;
                 }
- 
- 				// equals
- 				if (!tok.ConsumeSymbol('='))
- 					error("'=' expected");
- 
- 				//rhs
- 				List<Expression> rhs = new List<Expression>();
- 				rhs.Add(ParseExpr());
- 				while (tok.ConsumeSymbol(','))
+                else if (tok.ConsumeKeyword("function"))
                 {
- 					rhs.Add(ParseExpr(scope));
+                    if (!tok.Is(TokenType.Ident))
+                        error("Function name expected");
+                    string name = tok.Get().Data;
+                    Variable localVar = scope.CreateLocal(name);
+
+                    FunctionStatement func = ParseFunctionArgsAndBody(scope);
+
+                    func.Name = new VariableExpression { Var = localVar, Name = name };
+                    func.IsLocal = true;
+                    stat = func;
                 }
- 
+                else
+                    error("local variable or function definition expected");
+            }
+            else if (tok.ConsumeSymbol("::"))
+            {
+                if (!tok.Is(TokenType.Ident))
+                    error("label name expected");
+
+                string label = tok.Get().Data;
+                if (!tok.ConsumeSymbol("::"))
+                    error("'::' expected");
+
+                LabelStatement l = new LabelStatement();
+                l.Label = label;
+                stat = l;
+            }
+            else if (tok.ConsumeKeyword("return"))
+            {
+                List<Expression> exprList = new List<Expression>();
+                if (!tok.IsKeyword("end"))
+                {
+                    Expression firstEx = ParseExpr(scope);
+                    exprList.Add(firstEx);
+                    while (tok.ConsumeSymbol(','))
+                    {
+                        Expression ex = ParseExpr(scope);
+                        exprList.Add(ex);
+                    }
+                }
+                ReturnStatement r = new ReturnStatement();
+                r.Arguments = exprList;
+                stat = r;
+            }
+            else if (tok.ConsumeKeyword("break"))
+            {
+                stat = new BreakStatement();
+            }
+            else if (tok.ConsumeKeyword("goto"))
+            {
+                if (!tok.Is(TokenType.Ident))
+                    error("label expected");
+
+                string label = tok.Get().Data;
+                GotoStatement g = new GotoStatement();
+                g.Label = label;
+                stat = g;
+            }
+            else if (tok.ConsumeKeyword("using"))
+            {
+                // using <a, b = 1, x()> do <statements> end
+                UsingStatement us = new UsingStatement();
+                us.Scope = new Scope();
+
+                List<Expression> lhs = new List<Expression> { ParseExpr(us.Scope) };
+                while (tok.ConsumeSymbol(','))
+                {
+                    lhs.Add(ParseSuffixedExpr(us.Scope));
+                }
+
+                // equals
+                if (!tok.ConsumeSymbol('='))
+                    error("'=' expected");
+
+                //rhs
+                List<Expression> rhs = new List<Expression>();
+                rhs.Add(ParseExpr(us.Scope));
+                while (tok.ConsumeSymbol(','))
+                {
+                    rhs.Add(ParseExpr(scope));
+                }
+
                 AssignmentStatement a = new AssignmentStatement();
- 				a.Lhs = lhs;
- 				a.Rhs = rhs;
- 				stat = a;
+                a.Lhs = lhs;
+                a.Rhs = rhs;
+
+                if (!tok.ConsumeKeyword("do"))
+                    error("'do' expected");
+
+                List<Statement> block = ParseStatementList(us.Scope);
+
+                if (!tok.ConsumeKeyword("end"))
+                    error("'end' expected");
+
+                us.Vars = a;
+                us.Body = block;
+                stat = us;
             }
- 			else if (suffixed is CallExpr ||
- 			       suffixed is TableCallExpr ||
- 			       suffixed is StringCallExpr)
+            else if (tok.ConsumeKeyword("match"))
             {
- 				//it's a call statement
-                CallStatement c = new CallStatement();
- 				c.Expression = suffixed;
- 				stat = c;
+                //match <expr list> with  
+                //    | <expr> -> <statement list> 
+                //end
+
+                // match <expr list> with
+                MatchWithStatement m = new MatchWithStatement();
+                do
+                {
+                    m.Exprs.Add(ParseExpr(m.Scope));
+                } while (tok.ConsumeSymbol(','));
+
+
+                // | <expr>, <expr> | <expr> ->
+                //     <statement list>
+                // | <expr> -> <statement list>
+
+                do
+                {
+                    List<Expression> exprs = new List<Expression>();
+                    List<Statement> body = null;
+                    while (tok.ConsumeSymbol('|'))
+                    {
+                        exprs.Add(ParseExpr(m.Scope));
+                        while (tok.ConsumeSymbol(',') || tok.ConsumeSymbol('|'))
+                            exprs.Add(ParseExpr(m.Scope));
+                    }
+                    if (tok.ConsumeSymbol("->"))
+                    {
+                        body = ParseStatementList(m.Scope);
+                    }
+                    else
+                        error("'->' expected");
+                    m.Clauses.Add(new MatchClauseStatement() { Exprs = exprs, Body = body });
+                } while (!tok.ConsumeKeyword("end"));
+                // end has been eaten
             }
- 			else
- 				error("assignment statement expected");
+            else
+            {
+                // statementParseExpr
+                Expression suffixed = ParseSuffixedExpr(scope);
+                // assignment or call?
+                if (tok.IsSymbol(',') || tok.IsSymbol('='))
+                {
+                    // check that it was not parenthesized, making it not an lvalue
+                    if (suffixed.ParenCount > 0)
+                        error("Can not assign to parenthesized expression, it is not an lvalue");
+
+                    // more processing needed
+                    List<Expression> lhs = new List<Expression> { suffixed };
+                    while (tok.ConsumeSymbol(','))
+                    {
+                        lhs.Add(ParseSuffixedExpr(scope));
+                    }
+
+                    // equals
+                    if (!tok.ConsumeSymbol('='))
+                        error("'=' expected");
+
+                    //rhs
+                    List<Expression> rhs = new List<Expression>();
+                    rhs.Add(ParseExpr(scope));
+                    while (tok.ConsumeSymbol(','))
+                    {
+                        rhs.Add(ParseExpr(scope));
+                    }
+
+                    AssignmentStatement a = new AssignmentStatement();
+                    a.Lhs = lhs;
+                    a.Rhs = rhs;
+                    stat = a;
+                }
+                else if (isAugmentedAssignment(tok.Peek()))
+                {
+                    AugmentedAssignmentStatement aas = new AugmentedAssignmentStatement();
+                    Expression left = suffixed;
+                    Expression right = null;
+                    string augmentedOp = tok.Get().Data;
+                    right = ParseExpr(scope);
+                    BinOpExpr nRight = new BinOpExpr();
+                    nRight.Lhs = left;
+                    nRight.Op = augmentedOp;
+                    nRight.Rhs = right;
+
+                    aas.Lhs = new List<Expression> { left };
+                    aas.Rhs = new List<Expression> { nRight };
+                    stat = aas;
+                }
+                else if (suffixed is CallExpr ||
+                       suffixed is TableCallExpr ||
+                       suffixed is StringCallExpr)
+                {
+                    //it's a call statement
+                    CallStatement c = new CallStatement();
+                    c.Expression = suffixed;
+                    stat = c;
+                }
+                else
+                    error("assignment statement expected");
+            }
+
+            stat.HasSemicolon = tok.ConsumeSymbol(';');
+            stat.ScannedTokens = tok.Range(startP, tok.p);
+            return stat;
         }
- 
- 		stat.HasSemicolon = tok.ConsumeSymbol(';');
- 		return stat;
-    }
+
+        bool isAugmentedAssignment(Token token)
+        {
+            switch (token.Data)
+            {
+                case "..=":
+                case ">>=":
+                case "<<=":
+                case "+=":
+                case "-=":
+                case "/=":
+                case "*=":
+                case "&=":
+                case "|=":
+                case "^=":
+                case "%=":
+                    return true;
+
+                default:
+                    return false;
+            }
+        }
 
         bool isClosing(string s)
         {
@@ -843,15 +949,15 @@ namespace experimental_newparser
         }
 
 
-        Chunk ParseStatementList(Chunk scope)
+        List<Statement> ParseStatementList(Scope scope)
         {
-            Chunk c = new Chunk(scope);
+            List<Statement> c = new List<Statement>();
 
             while (!isClosing(tok.Peek().Data) && !tok.IsEof())
             {
-                Statement nodeStatement = ParseStatement(nodeStatlist.Scope);
+                Statement nodeStatement = ParseStatement(scope);
                 //stats[#stats+1] = nodeStatement
-                c.Body.Add(nodeStatement);
+                c.Add(nodeStatement);
             }
             return c;
         }
@@ -859,8 +965,8 @@ namespace experimental_newparser
 
         public Chunk Parse()
         {
-            Chunk c = new Chunk();
-            return ParseStatementList(c);
+            Scope s = new Scope();
+            return new Chunk { Body = ParseStatementList(s) };
         }
     }
 }

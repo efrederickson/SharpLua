@@ -7,7 +7,7 @@ namespace experimental_newparser
     /// </summary>
     public class LuaSourceException : Exception
     {
-        public string Message;
+        public new string Message;
         public int Line, Column;
 
         public LuaSourceException(int line, int col, string msg)

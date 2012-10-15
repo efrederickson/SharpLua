@@ -70,7 +70,6 @@ namespace SharpLua
 ---   local sys, sysio = luanet.namespace {'System','System.IO'}
 --    sys.Console.WriteLine('we are at {0}',sysio.Directory.GetCurrentDirectory())
 
-
 -- LuaInterface hosted with stock Lua interpreter will need to explicitly require this...
 -- if not luanet then require 'luanet' end
 
@@ -180,7 +179,7 @@ clr.call = function(f, ...)
     end
 end
 
-clr.using = function(ns)
+clr.import = function(ns)
     table.insert(clr.ns, ns)
 end
 
@@ -216,6 +215,14 @@ System = luanet.namespace(""System"")
         #region ExtLib
         public const string InitExtLib = @" -- Ext lib - a bunch of extension functions
 
+-- _G.arg -> _G['...']
+if arg then
+    _G['...'] = { }
+    for k, v in pairs(arg) do
+        _G['...'][k] = v
+    end
+end
+
 -- table.tolookup
 function table.tolookup(t)
     local r = { }
@@ -226,7 +233,7 @@ function table.tolookup(t)
 end
 
 -- override base type
-local rawtype = type
+rawtype = type
 function type(o)
     local mt = getmetatable(o)
     local t = rawtype(o)

@@ -11,7 +11,7 @@ SharpLua.LuaInterface class or the SharpLua.LuaRuntime, SharpLua.Lua is the raw 
 
 Features Lua 5.1.5 doesn't have:
 - table.unpack (similar to _G.unpack)
-- clr library (partially implemented, needs a ton of work)
+- clr library (allows .NET object access)
 - Syntax extensions
     - ! (not)
     - >> (right shift) (new opcode)

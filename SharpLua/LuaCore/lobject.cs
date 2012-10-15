@@ -22,17 +22,17 @@ namespace SharpLua
     public partial class Lua
     {
         /* tags for values visible from Lua */
-        public const int LAST_TAG	= LUA_TTHREAD;
+        public const int LAST_TAG = LUA_TTHREAD;
 
-        public const int NUM_TAGS	= (LAST_TAG+1);
+        public const int NUM_TAGS = (LAST_TAG + 1);
 
 
         /*
          ** Extra tags for non-values
          */
-        public const int LUA_TPROTO	= (LAST_TAG+1);
-        public const int LUA_TUPVAL	= (LAST_TAG+2);
-        public const int LUA_TDEADKEY	= (LAST_TAG+3);
+        public const int LUA_TPROTO = (LAST_TAG + 1);
+        public const int LUA_TUPVAL = (LAST_TAG + 2);
+        public const int LUA_TDEADKEY = (LAST_TAG + 3);
 
         public interface ArrayElement
         {
@@ -56,7 +56,8 @@ namespace SharpLua
         /*
          ** Common header in struct form
          */
-        public class GCheader : CommonHeader {
+        public class GCheader : CommonHeader
+        {
         };
 
 
@@ -81,8 +82,8 @@ namespace SharpLua
 
             public GCObject gc
             {
-                get {return (GCObject)this.p;}
-                set {this.p = value;}
+                get { return (GCObject)this.p; }
+                set { this.p = value; }
             }
             public object p;
             public lua_Number n
@@ -156,7 +157,7 @@ namespace SharpLua
                 Debug.Assert(a.values == b.values);
                 return a.index - b.index;
             }
-            
+
             public static bool operator <(lua_TValue a, lua_TValue b)
             {
                 Debug.Assert(a.values == b.values);
@@ -180,7 +181,7 @@ namespace SharpLua
                 Debug.Assert(a.values == b.values);
                 return a.index >= b.index;
             }
-            
+
             public static lua_TValue inc(ref lua_TValue value)
             {
                 value = value[1];
@@ -225,17 +226,17 @@ namespace SharpLua
 
         /* Macros to test type */
         internal static bool ttisnil(TValue o) { return (ttype(o) == LUA_TNIL); }
-        internal static bool ttisnumber(TValue o)	{return (ttype(o) == LUA_TNUMBER);}
-        internal static bool ttisstring(TValue o)	{return (ttype(o) == LUA_TSTRING);}
-        internal static bool ttistable(TValue o)	{return (ttype(o) == LUA_TTABLE);}
-        internal static bool ttisfunction(TValue o)	{return (ttype(o) == LUA_TFUNCTION);}
+        internal static bool ttisnumber(TValue o) { return (ttype(o) == LUA_TNUMBER); }
+        internal static bool ttisstring(TValue o) { return (ttype(o) == LUA_TSTRING); }
+        internal static bool ttistable(TValue o) { return (ttype(o) == LUA_TTABLE); }
+        internal static bool ttisfunction(TValue o) { return (ttype(o) == LUA_TFUNCTION); }
         internal static bool ttisboolean(TValue o) { return (ttype(o) == LUA_TBOOLEAN); }
         internal static bool ttisuserdata(TValue o) { return (ttype(o) == LUA_TUSERDATA); }
-        internal static bool ttisthread(TValue o)	{return (ttype(o) == LUA_TTHREAD);}
+        internal static bool ttisthread(TValue o) { return (ttype(o) == LUA_TTHREAD); }
         internal static bool ttislightuserdata(TValue o) { return (ttype(o) == LUA_TLIGHTUSERDATA); }
 
         /* Macros to access values */
-        #if DEBUG
+#if DEBUG
         public static int ttype(TValue o) { return o.tt; }
         public static int ttype(CommonHeader o) { return o.tt; }
         public static GCObject gcvalue(TValue o) { return (GCObject)check_exp(iscollectable(o), o.value.gc); }
@@ -249,7 +250,7 @@ namespace SharpLua
         public static Table hvalue(TValue o) { return (Table)check_exp(ttistable(o), o.value.gc.h); }
         public static int bvalue(TValue o) { return (int)check_exp(ttisboolean(o), o.value.b); }
         public static LuaState thvalue(TValue o) { return (LuaState)check_exp(ttisthread(o), o.value.gc.th); }
-        #else
+#else
         public static int ttype(TValue o) { return o.tt; }
         public static int ttype(CommonHeader o) { return o.tt; }
         public static GCObject gcvalue(TValue o) { return o.value.gc; }
@@ -263,7 +264,7 @@ namespace SharpLua
         public static Table hvalue(TValue o) { return o.value.gc.h; }
         public static int bvalue(TValue o) { return o.value.b; }
         public static lua_State thvalue(TValue o) { return (lua_State)check_exp(ttisthread(o), o.value.gc.th); }
-        #endif
+#endif
 
         public static int l_isfalse(TValue o) { return ((ttisnil(o) || (ttisboolean(o) && bvalue(o) == 0))) ? 1 : 0; }
 
@@ -282,64 +283,75 @@ namespace SharpLua
             lua_assert(!iscollectable(obj) ||
                        ((ttype(obj) == obj.value.gc.gch.tt) && !isdead(g, obj.value.gc)));
         }
-        
+
         /* Macros to set values */
-        internal static void setnilvalue(TValue obj) {
-            obj.tt=LUA_TNIL;
+        internal static void setnilvalue(TValue obj)
+        {
+            obj.tt = LUA_TNIL;
         }
 
-        internal static void setnvalue(TValue obj, lua_Number x) {
+        internal static void setnvalue(TValue obj, lua_Number x)
+        {
             obj.value.n = x;
             obj.tt = LUA_TNUMBER;
         }
 
-        internal static void setpvalue( TValue obj, object x) {
+        internal static void setpvalue(TValue obj, object x)
+        {
             obj.value.p = x;
             obj.tt = LUA_TLIGHTUSERDATA;
         }
 
-        internal static void setbvalue(TValue obj, int x) {
+        internal static void setbvalue(TValue obj, int x)
+        {
             obj.value.b = x;
             obj.tt = LUA_TBOOLEAN;
         }
 
-        internal static void setsvalue(LuaState L, TValue obj, GCObject x) {
+        internal static void setsvalue(LuaState L, TValue obj, GCObject x)
+        {
             obj.value.gc = x;
             obj.tt = LUA_TSTRING;
             checkliveness(G(L), obj);
         }
 
-        internal static void setuvalue(LuaState L, TValue obj, GCObject x) {
+        internal static void setuvalue(LuaState L, TValue obj, GCObject x)
+        {
             obj.value.gc = x;
             obj.tt = LUA_TUSERDATA;
             checkliveness(G(L), obj);
         }
 
-        internal static void setthvalue(LuaState L, TValue obj, GCObject x) {
+        internal static void setthvalue(LuaState L, TValue obj, GCObject x)
+        {
             obj.value.gc = x;
             obj.tt = LUA_TTHREAD;
             checkliveness(G(L), obj);
         }
 
-        internal static void setclvalue(LuaState L, TValue obj, Closure x) {
+        internal static void setclvalue(LuaState L, TValue obj, Closure x)
+        {
             obj.value.gc = x;
             obj.tt = LUA_TFUNCTION;
             checkliveness(G(L), obj);
         }
 
-        internal static void sethvalue(LuaState L, TValue obj, Table x) {
+        internal static void sethvalue(LuaState L, TValue obj, Table x)
+        {
             obj.value.gc = x;
             obj.tt = LUA_TTABLE;
             checkliveness(G(L), obj);
         }
 
-        internal static void setptvalue(LuaState L, TValue obj, Proto x) {
+        internal static void setptvalue(LuaState L, TValue obj, Proto x)
+        {
             obj.value.gc = x;
             obj.tt = LUA_TPROTO;
             checkliveness(G(L), obj);
         }
 
-        internal static void setobj(LuaState L, TValue obj1, TValue obj2) {
+        internal static void setobj(LuaState L, TValue obj1, TValue obj2)
+        {
             obj1.value.Copy(obj2.value);
             obj1.tt = obj2.tt;
             checkliveness(G(L), obj1);
@@ -354,7 +366,7 @@ namespace SharpLua
         //#define setobjs2s	setobj
         public static void setobjs2s(LuaState L, TValue obj, TValue x) { setobj(L, obj, x); }
         ///* to stack (not from same stack) */
-        
+
         //#define setobj2s	setobj
         public static void setobj2s(LuaState L, TValue obj, TValue x) { setobj(L, obj, x); }
 
@@ -390,7 +402,7 @@ namespace SharpLua
 
 
         //typedef TValue *StkId;  /* index to stack elements */
-        
+
         /*
          ** String headers for string table
          */
@@ -400,7 +412,8 @@ namespace SharpLua
             public uint hash;
             public uint len;
         };
-        public class TString : TString_tsv {
+        public class TString : TString_tsv
+        {
             //public L_Umaxalign dummy;  /* ensures maximum alignment for strings */
             public TString_tsv tsv { get { return this; } }
 
@@ -444,19 +457,21 @@ namespace SharpLua
         /*
          ** Function Prototypes
          */
-        public class Proto : GCObject {
+        public class Proto : GCObject
+        {
 
             public Proto[] protos = null;
             public int index = 0;
-            public Proto this[int offset] {get { return this.protos[this.index + offset]; }}
+            public Proto this[int offset] { get { return this.protos[this.index + offset]; } }
 
             public TValue[] k;  /* constants used by the function */
-            public Instruction[] code;
+            //public Instruction[] code;
+            public uint[] code;
             public new Proto[] p;  /* functions defined inside the function */
             public int[] lineinfo;  /* map from opcodes to source lines */
             public LocVar[] locvars;  /* information about local variables */
             public TString[] upvalues;  /* upvalue names */
-            public TString  source;
+            public TString source;
             public int sizeupvalues;
             public int sizek;  /* size of `k' */
             public int sizecode;
@@ -474,11 +489,12 @@ namespace SharpLua
 
 
         /* masks for new-style vararg */
-        public const int VARARG_HASARG			= 1;
-        public const int VARARG_ISVARARG		= 2;
-        public const int VARARG_NEEDSARG		= 4;
+        public const int VARARG_HASARG = 1;
+        public const int VARARG_ISVARARG = 2;
+        public const int VARARG_NEEDSARG = 4;
 
-        public class LocVar {
+        public class LocVar
+        {
             public TString varname;
             public int startpc;  /* first point where variable is active */
             public int endpc;    /* first point where variable is dead */
@@ -490,13 +506,16 @@ namespace SharpLua
          ** Upvalues
          */
 
-        public class UpVal : GCObject {
+        public class UpVal : GCObject
+        {
             public TValue v;  /* points to stack or to its own value */
 
-            public class _u {
+            public class _u
+            {
                 public TValue value = new TValue();  /* the value (when closed) */
 
-                public class _l {  /* double linked list (when open) */
+                public class _l
+                {  /* double linked list (when open) */
                     public UpVal prev;
                     public UpVal next;
                 };
@@ -511,19 +530,21 @@ namespace SharpLua
          ** Closures
          */
 
-        public class ClosureHeader : GCObject {
+        public class ClosureHeader : GCObject
+        {
             public lu_byte isC;
             public lu_byte nupvalues;
             public GCObject gclist;
             public Table env;
         };
 
-        public class ClosureType {
+        public class ClosureType
+        {
 
             ClosureHeader header;
 
-            public static implicit operator ClosureHeader(ClosureType ctype) {return ctype.header;}
-            public ClosureType(ClosureHeader header) {this.header = header;}
+            public static implicit operator ClosureHeader(ClosureType ctype) { return ctype.header; }
+            public ClosureType(ClosureHeader header) { this.header = header; }
 
             public lu_byte isC { get { return header.isC; } set { header.isC = value; } }
             public lu_byte nupvalues { get { return header.nupvalues; } set { header.nupvalues = value; } }
@@ -531,14 +552,16 @@ namespace SharpLua
             public Table env { get { return header.env; } set { header.env = value; } }
         }
 
-        public class CClosure : ClosureType {
+        public class CClosure : ClosureType
+        {
             public CClosure(ClosureHeader header) : base(header) { }
             public lua_CFunction f;
             public TValue[] upvalue;
         };
 
 
-        public class LClosure : ClosureType {
+        public class LClosure : ClosureType
+        {
             public LClosure(ClosureHeader header) : base(header) { }
             public Proto p;
             public UpVal[] upvals;
@@ -558,7 +581,7 @@ namespace SharpLua
 
 
         public static bool iscfunction(TValue o) { return ((ttype(o) == LUA_TFUNCTION) && (clvalue(o).c.isC != 0)); }
-        public static bool isLfunction(TValue o) { return ((ttype(o) == LUA_TFUNCTION) && (clvalue(o).c.isC==0)); }
+        public static bool isLfunction(TValue o) { return ((ttype(o) == LUA_TFUNCTION) && (clvalue(o).c.isC == 0)); }
 
 
         /*
@@ -568,14 +591,16 @@ namespace SharpLua
         public class TKey_nk : TValue
         {
             public TKey_nk() { }
-            public TKey_nk(Value value, int tt, Node next) : base(value, tt)
+            public TKey_nk(Value value, int tt, Node next)
+                : base(value, tt)
             {
                 this.next = next;
             }
             public Node next;  /* for chaining */
         };
 
-        public class TKey {
+        public class TKey
+        {
             public TKey()
             {
                 this.nk = new TKey_nk();
@@ -677,14 +702,15 @@ namespace SharpLua
                 if (n1.values != n2.values) return false;
                 return n1.index == n2.index;
             }
-            public static bool operator !=(Node n1, Node n2) { return !(n1==n2); }
+            public static bool operator !=(Node n1, Node n2) { return !(n1 == n2); }
 
-            public override bool Equals(object o) {return this == (Node)o;}
-            public override int GetHashCode() {return 0;}
+            public override bool Equals(object o) { return this == (Node)o; }
+            public override int GetHashCode() { return 0; }
         };
 
 
-        public class Table : GCObject {
+        public class Table : GCObject
+        {
             public lu_byte flags;  /* 1<<p means tagmethod(p) is not present */
             public lu_byte lsizenode;  /* log2 of size of `node' array */
             public Table metatable;
@@ -710,8 +736,8 @@ namespace SharpLua
         public static TValue luaO_nilobject_ = new TValue(new Value(), LUA_TNIL);
         public static TValue luaO_nilobject = luaO_nilobject_;
 
-        public static int ceillog2(int x)	{return luaO_log2((uint)(x-1)) + 1;}
-        
+        public static int ceillog2(int x) { return luaO_log2((uint)(x - 1)) + 1; }
+
 
 
         /*
@@ -719,22 +745,25 @@ namespace SharpLua
          ** (eeeeexxx), where the real value is (1xxx) * 2^(eeeee - 1) if
          ** eeeee != 0 and (xxx) otherwise.
          */
-        public static int luaO_int2fb (uint x) {
+        public static int luaO_int2fb(uint x)
+        {
             int e = 0;  /* expoent */
-            while (x >= 16) {
-                x = (x+1) >> 1;
+            while (x >= 16)
+            {
+                x = (x + 1) >> 1;
                 e++;
             }
             if (x < 8) return (int)x;
-            else return ((e+1) << 3) | (cast_int(x) - 8);
+            else return ((e + 1) << 3) | (cast_int(x) - 8);
         }
 
 
         /* converts back */
-        public static int luaO_fb2int (int x) {
+        public static int luaO_fb2int(int x)
+        {
             int e = (x >> 3) & 31;
             if (e == 0) return x;
-            else return ((x & 7)+8) << (e - 1);
+            else return ((x & 7) + 8) << (e - 1);
         }
 
 
@@ -749,7 +778,8 @@ namespace SharpLua
             8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8
         };
 
-        public static int luaO_log2 (uint x) {
+        public static int luaO_log2(uint x)
+        {
             int l = -1;
             while (x >= 256) { l += 8; x >>= 8; }
             return l + log_2[x];
@@ -757,29 +787,32 @@ namespace SharpLua
         }
 
 
-        public static int luaO_rawequalObj (TValue t1, TValue t2) {
+        public static int luaO_rawequalObj(TValue t1, TValue t2)
+        {
             if (ttype(t1) != ttype(t2)) return 0;
-            else switch (ttype(t1)) {
-                case LUA_TNIL:
-                    return 1;
-                case LUA_TNUMBER:
-                    return luai_numeq(nvalue(t1), nvalue(t2)) ? 1 : 0;
-                case LUA_TBOOLEAN:
-                    return bvalue(t1) == bvalue(t2) ? 1 : 0;  /* boolean true must be 1....but not in C# !! */
-                case LUA_TLIGHTUSERDATA:
-                    return pvalue(t1) == pvalue(t2) ? 1 : 0;
-                default:
-                    lua_assert(iscollectable(t1));
-                    return gcvalue(t1) == gcvalue(t2) ? 1 : 0;
-            }
+            else switch (ttype(t1))
+                {
+                    case LUA_TNIL:
+                        return 1;
+                    case LUA_TNUMBER:
+                        return luai_numeq(nvalue(t1), nvalue(t2)) ? 1 : 0;
+                    case LUA_TBOOLEAN:
+                        return bvalue(t1) == bvalue(t2) ? 1 : 0;  /* boolean true must be 1....but not in C# !! */
+                    case LUA_TLIGHTUSERDATA:
+                        return pvalue(t1) == pvalue(t2) ? 1 : 0;
+                    default:
+                        lua_assert(iscollectable(t1));
+                        return gcvalue(t1) == gcvalue(t2) ? 1 : 0;
+                }
         }
 
-        public static int luaO_str2d (CharPtr s, out lua_Number result) {
+        public static int luaO_str2d(CharPtr s, out lua_Number result)
+        {
             CharPtr endptr;
             result = lua_str2number(s, out endptr);
             if (endptr == s) return 0;  /* conversion failed */
             if (endptr[0] == 'x' || endptr[0] == 'X')  /* maybe an hexadecimal constant? */
-            result = cast_num(strtoul(s, out endptr, 16));
+                result = cast_num(strtoul(s, out endptr, 16));
             if (endptr[0] == '\0') return 1;  /* most common case */
             while (isspace(endptr[0])) endptr = endptr.next();
             if (endptr[0] != '\0') return 0;  /* invalid trailing characters? */
@@ -788,24 +821,29 @@ namespace SharpLua
 
 
 
-        private static void pushstr (LuaState L, CharPtr str) {
+        private static void pushstr(LuaState L, CharPtr str)
+        {
             setsvalue2s(L, L.top, luaS_new(L, str));
             incr_top(L);
         }
 
 
         /* this function handles only `%d', `%c', %f, %p, and `%s' formats */
-        public static CharPtr luaO_pushvfstring (LuaState L, CharPtr fmt, params object[] argp) {
+        public static CharPtr luaO_pushvfstring(LuaState L, CharPtr fmt, params object[] argp)
+        {
             int parm_index = 0;
             int n = 1;
             pushstr(L, "");
-            for (;;) {
+            for (; ; )
+            {
                 CharPtr e = strchr(fmt, '%');
                 if (e == null) break;
-                setsvalue2s(L, L.top, luaS_newlstr(L, fmt, (uint)(e-fmt)));
+                setsvalue2s(L, L.top, luaS_newlstr(L, fmt, (uint)(e - fmt)));
                 incr_top(L);
-                switch (e[1]) {
-                        case 's': {
+                switch (e[1])
+                {
+                    case 's':
+                        {
                             object o = argp[parm_index++];
                             CharPtr s = o as CharPtr;
                             if (s == null)
@@ -814,35 +852,41 @@ namespace SharpLua
                             pushstr(L, s);
                             break;
                         }
-                        case 'c': {
+                    case 'c':
+                        {
                             CharPtr buff = new char[2];
                             buff[0] = (char)(int)argp[parm_index++];
                             buff[1] = '\0';
                             pushstr(L, buff);
                             break;
                         }
-                        case 'd': {
+                    case 'd':
+                        {
                             setnvalue(L.top, (int)argp[parm_index++]);
                             incr_top(L);
                             break;
                         }
-                        case 'f': {
+                    case 'f':
+                        {
                             setnvalue(L.top, (l_uacNumber)argp[parm_index++]);
                             incr_top(L);
                             break;
                         }
-                        case 'p': {
+                    case 'p':
+                        {
                             //CharPtr buff = new char[4*sizeof(void *) + 8]; /* should be enough space for a `%p' */
                             CharPtr buff = new char[32];
                             sprintf(buff, "0x%08x", argp[parm_index++].GetHashCode());
                             pushstr(L, buff);
                             break;
                         }
-                        case '%': {
+                    case '%':
+                        {
                             pushstr(L, "%");
                             break;
                         }
-                        default: {
+                    default:
+                        {
                             CharPtr buff = new char[3];
                             buff[0] = '%';
                             buff[1] = e[1];
@@ -852,10 +896,10 @@ namespace SharpLua
                         }
                 }
                 n += 2;
-                fmt = e+2;
+                fmt = e + 2;
             }
             pushstr(L, fmt);
-            luaV_concat(L, n+1, cast_int(L.top - L.base_) - 1);
+            luaV_concat(L, n + 1, cast_int(L.top - L.base_) - 1);
             L.top -= n;
             return svalue(L.top - 1);
         }
@@ -866,31 +910,38 @@ namespace SharpLua
         }
 
 
-        public static void luaO_chunkid (CharPtr out_, CharPtr source, uint bufflen) {
+        public static void luaO_chunkid(CharPtr out_, CharPtr source, uint bufflen)
+        {
             //out_ = "";
-            if (source[0] == '=') {
-                strncpy(out_, source+1, (int)bufflen);  /* remove first char */
-                out_[bufflen-1] = '\0';  /* ensures null termination */
+            if (source[0] == '=')
+            {
+                strncpy(out_, source + 1, (int)bufflen);  /* remove first char */
+                out_[bufflen - 1] = '\0';  /* ensures null termination */
             }
-            else {  /* out = "source", or "...source" */
-                if (source[0] == '@') {
+            else
+            {  /* out = "source", or "...source" */
+                if (source[0] == '@')
+                {
                     uint l;
                     source = source.next();  /* skip the `@' */
                     bufflen -= (uint)(" '...' ".Length + 1);
                     l = (uint)strlen(source);
                     strcpy(out_, "");
-                    if (l > bufflen) {
-                        source += (l-bufflen);  /* get last part of file name */
+                    if (l > bufflen)
+                    {
+                        source += (l - bufflen);  /* get last part of file name */
                         strcat(out_, "...");
                     }
                     strcat(out_, source);
                 }
-                else {  /* out = [string "string"] */
+                else
+                {  /* out = [string "string"] */
                     uint len = strcspn(source, "\n\r");  /* stop at first newline */
                     bufflen -= (uint)(" [string \"...\"] ".Length + 1);
                     if (len > bufflen) len = bufflen;
                     strcpy(out_, "[string \"");
-                    if (source[len] != '\0') {  /* must truncate? */
+                    if (source[len] != '\0')
+                    {  /* must truncate? */
                         strncat(out_, source, (int)len);
                         strcat(out_, "...");
                     }

@@ -717,7 +717,8 @@ namespace SharpLua
             {
                 lua_pushfstring(L, "@%s", filename);
                 lf.f = fopen(filename, "r");
-                if (lf.f == null) return errfile(L, "open", fnameindex);
+                if (lf.f == null)
+                    return errfile(L, "open", fnameindex);
             }
             c = getc(lf.f);
             if (c == '#')
@@ -729,9 +730,11 @@ namespace SharpLua
             if (c == LUA_SIGNATURE[0] && (filename != null))
             {  /* binary file? */
                 lf.f = freopen(filename, "rb", lf.f);  /* reopen in binary mode */
-                if (lf.f == null) return errfile(L, "reopen", fnameindex);
+                if (lf.f == null)
+                    return errfile(L, "reopen", fnameindex);
                 /* skip eventual `#!...' */
-                while ((c = getc(lf.f)) != EOF && c != LUA_SIGNATURE[0]) ;
+                while ((c = getc(lf.f)) != EOF && c != LUA_SIGNATURE[0])
+                    ; // do nothing here
                 lf.extraline = 0;
             }
             ungetc(c, lf.f);
@@ -796,7 +799,7 @@ namespace SharpLua
         public static LuaState luaL_newstate()
         {
             LuaState L = lua_newstate(l_alloc, null);
-            if (L != null) 
+            if (L != null)
                 lua_atpanic(L, panic);
             return L;
         }

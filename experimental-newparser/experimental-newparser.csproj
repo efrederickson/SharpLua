@@ -41,57 +41,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Ast\Chunk.cs" />
-    <Compile Include="Ast\Expression\AnonymousFunctionExpr.cs" />
-    <Compile Include="Ast\Expression\BinOpExpr.cs" />
-    <Compile Include="Ast\Expression\BoolExpr.cs" />
-    <Compile Include="Ast\Expression\CallExpr.cs" />
-    <Compile Include="Ast\Expression\Expression.cs" />
-    <Compile Include="Ast\Expression\IndexExpr.cs" />
-    <Compile Include="Ast\Expression\KeyExpr.cs" />
-    <Compile Include="Ast\Expression\MemberExpr.cs" />
-    <Compile Include="Ast\Expression\NilExpr.cs" />
-    <Compile Include="Ast\Expression\NumberExpr.cs" />
-    <Compile Include="Ast\Expression\StringCallExpr.cs" />
-    <Compile Include="Ast\Expression\StringExpr.cs" />
-    <Compile Include="Ast\Expression\StringKeyExpr.cs" />
-    <Compile Include="Ast\Expression\TableCallExpr.cs" />
-    <Compile Include="Ast\Expression\TableConstructorExpr.cs" />
-    <Compile Include="Ast\Expression\UnOpExpr.cs" />
-    <Compile Include="Ast\Expression\ValueExpr.cs" />
-    <Compile Include="Ast\Expression\VarargExpr.cs" />
-    <Compile Include="Ast\Scope.cs" />
-    <Compile Include="Ast\Statement\AssignmentStatement.cs" />
-    <Compile Include="Ast\Statement\AugmentedAssignmentStatement.cs" />
-    <Compile Include="Ast\Statement\BreakStatement.cs" />
-    <Compile Include="Ast\Statement\CallStatement.cs" />
-    <Compile Include="Ast\Statement\DoStatement.cs" />
-    <Compile Include="Ast\Statement\FunctionStatement.cs" />
-    <Compile Include="Ast\Expression\InlineFunctionStatement.cs" />
-    <Compile Include="Ast\Statement\GotoStatement.cs" />
-    <Compile Include="Ast\Statement\IfStmt.cs" />
-    <Compile Include="Ast\Statement\ForStatement.cs" />
-    <Compile Include="Ast\Statement\LabelStatement.cs" />
-    <Compile Include="Ast\Statement\LocalAssignmentStatement.cs" />
-    <Compile Include="Ast\Statement\MatchWithStatement.cs" />
-    <Compile Include="Ast\Statement\RepeatStatement.cs" />
-    <Compile Include="Ast\Statement\ReturnStatement.cs" />
-    <Compile Include="Ast\Statement\UsingStatement.cs" />
-    <Compile Include="Ast\Statement\WhileStatement.cs" />
-    <Compile Include="Ast\Variable.cs" />
-    <Compile Include="Ast\Expression\VariableExpression.cs" />
-    <Compile Include="Ast\Statement\Statement.cs" />
-    <Compile Include="Lexer.cs" />
-    <Compile Include="LuaSourceException.cs" />
-    <Compile Include="Parser.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="StringExt.cs" />
-    <Compile Include="Token.cs" />
-    <Compile Include="TokenReader.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Todo.txt" />
+    <ProjectReference Include="..\SharpLua\SharpLua.csproj">
+      <Project>{90a9c907-11ad-4754-8b70-51ccb3a6c98a}</Project>
+      <Name>SharpLua</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

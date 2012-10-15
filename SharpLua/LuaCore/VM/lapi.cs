@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Diagnostics;
+using System.IO;
 
 namespace SharpLua
 {
@@ -965,6 +966,70 @@ namespace SharpLua
             int status;
             lua_lock(L);
             if (chunkname == null) chunkname = "?";
+
+            if (data is LoadS)
+            {
+                LoadS d = data as LoadS;
+                if (d.size > 0)
+                {
+                    Lexer l = new Lexer();
+                    try
+                    {
+                        //Console.WriteLine(d.s);
+                        TokenReader tr = l.Lex(d.s);
+                        Parser p = new Parser(tr);
+                        Ast.Chunk c = p.Parse();
+
+                        Visitors.LuaCompatibleOutput lco = new Visitors.LuaCompatibleOutput();
+                        string s = lco.Format(c);
+                        d.s = s;
+                        d.size = (lu_mem)s.Length;
+                    }
+                    catch (LuaSourceException ex)
+                    {
+                        throw ex;
+                    }
+                }
+            }
+            else if (data is LoadF)
+            {
+                LoadF lf = data as LoadF;
+
+                MemoryStream ms = new MemoryStream();
+                while (lf.f.Position < lf.f.Length)
+                    ms.WriteByte((byte)lf.f.ReadByte());
+                ms.Position = 0;
+                if (ms.ReadByte() != 27)
+                {
+                    // not binary file 
+                    ms.Position = 0; 
+                    StringBuilder sb = new StringBuilder();
+                    while (ms.Position < ms.Length)
+                        sb.Append((char)ms.ReadByte());
+                    
+                    try
+                    {
+                        Lexer l = new Lexer();
+                        TokenReader tr = l.Lex(sb.ToString());
+                        Parser p = new Parser(tr);
+                        Ast.Chunk c = p.Parse();
+
+                        Visitors.LuaCompatibleOutput lco = new Visitors.LuaCompatibleOutput();
+                        string s = lco.Format(c);
+                        ms = new MemoryStream();
+                        // TODO: there HAS to be a better way...
+                        foreach (char c2 in s)
+                            ms.WriteByte((byte)c2);
+                        ms.Position = 0;
+                        lf.f = ms;
+                    }
+                    catch (LuaSourceException ex)
+                    {
+                        throw ex;
+                    }
+                }
+            }
+
             luaZ_init(L, z, reader, data);
             status = luaD_protectedparser(L, z, chunkname);
             lua_unlock(L);

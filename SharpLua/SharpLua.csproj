@@ -101,15 +101,62 @@
     <Compile Include="LuaCore\lzio.cs" />
     <Compile Include="LuaCore\print.cs" />
     <Compile Include="LuaRuntime.cs" />
+    <Compile Include="NewParser\Ast\Chunk.cs" />
+    <Compile Include="NewParser\Ast\Expression\AnonymousFunctionExpr.cs" />
+    <Compile Include="NewParser\Ast\Expression\BinOpExpr.cs" />
+    <Compile Include="NewParser\Ast\Expression\BoolExpr.cs" />
+    <Compile Include="NewParser\Ast\Expression\CallExpr.cs" />
+    <Compile Include="NewParser\Ast\Expression\Expression.cs" />
+    <Compile Include="NewParser\Ast\Expression\IndexExpr.cs" />
+    <Compile Include="NewParser\Ast\Expression\InlineFunctionStatement.cs" />
+    <Compile Include="NewParser\Ast\Expression\KeyExpr.cs" />
+    <Compile Include="NewParser\Ast\Expression\MemberExpr.cs" />
+    <Compile Include="NewParser\Ast\Expression\NilExpr.cs" />
+    <Compile Include="NewParser\Ast\Expression\NumberExpr.cs" />
+    <Compile Include="NewParser\Ast\Expression\StringCallExpr.cs" />
+    <Compile Include="NewParser\Ast\Expression\StringExpr.cs" />
+    <Compile Include="NewParser\Ast\Expression\StringKeyExpr.cs" />
+    <Compile Include="NewParser\Ast\Expression\TableCallExpr.cs" />
+    <Compile Include="NewParser\Ast\Expression\TableConstructorExpr.cs" />
+    <Compile Include="NewParser\Ast\Expression\UnOpExpr.cs" />
+    <Compile Include="NewParser\Ast\Expression\ValueExpr.cs" />
+    <Compile Include="NewParser\Ast\Expression\VarargExpr.cs" />
+    <Compile Include="NewParser\Ast\Expression\VariableExpression.cs" />
+    <Compile Include="NewParser\Ast\Scope.cs" />
+    <Compile Include="NewParser\Ast\Statement\AssignmentStatement.cs" />
+    <Compile Include="NewParser\Ast\Statement\AugmentedAssignmentStatement.cs" />
+    <Compile Include="NewParser\Ast\Statement\BreakStatement.cs" />
+    <Compile Include="NewParser\Ast\Statement\CallStatement.cs" />
+    <Compile Include="NewParser\Ast\Statement\DoStatement.cs" />
+    <Compile Include="NewParser\Ast\Statement\ForStatement.cs" />
+    <Compile Include="NewParser\Ast\Statement\FunctionStatement.cs" />
+    <Compile Include="NewParser\Ast\Statement\GotoStatement.cs" />
+    <Compile Include="NewParser\Ast\Statement\IfStmt.cs" />
+    <Compile Include="NewParser\Ast\Statement\LabelStatement.cs" />
+    <Compile Include="NewParser\Ast\Statement\RepeatStatement.cs" />
+    <Compile Include="NewParser\Ast\Statement\ReturnStatement.cs" />
+    <Compile Include="NewParser\Ast\Statement\Statement.cs" />
+    <Compile Include="NewParser\Ast\Statement\UsingStatement.cs" />
+    <Compile Include="NewParser\Ast\Statement\WhileStatement.cs" />
+    <Compile Include="NewParser\Ast\Variable.cs" />
+    <Compile Include="NewParser\Compiler\Compiler.cs" />
+    <Compile Include="NewParser\Compiler\K2Reg.cs" />
+    <Compile Include="NewParser\Compiler\Var2Reg.cs" />
+    <Compile Include="NewParser\Lexer.cs" />
+    <Compile Include="NewParser\LuaSourceException.cs" />
+    <Compile Include="NewParser\Parser.cs" />
+    <None Include="NewParser\Program.cs" />
+    <Compile Include="NewParser\StringExt.cs" />
+    <Compile Include="NewParser\Token.cs" />
+    <Compile Include="NewParser\TokenReader.cs" />
+    <Compile Include="NewParser\Visitors\Beautifier.cs" />
+    <Compile Include="NewParser\Visitors\LuaCompatibleOutput.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="LuaCore\printf.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\OLD.SharpLua\README.txt">
-      <Link>README.txt</Link>
-    </None>
+    <Content Include="NewParser\Todo.txt" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -278,7 +278,7 @@ namespace SharpLua
             else
                 ThrowExceptionFromError(oldTop);
 
-            return null;            // Never reached - keeps compiler happy
+            return null; // Never reached - keeps compiler happy
         }
 
         private int traceback(SharpLua.Lua.LuaState luaState)

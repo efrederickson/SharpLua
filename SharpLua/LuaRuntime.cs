@@ -35,20 +35,6 @@ namespace SharpLua
         }
 
         /// <summary>
-        /// Returns the parsed code
-        /// </summary>
-        /// <param name="luaCode"></param>
-        /// <returns></returns>
-        public static Lua.Proto Parse(string luaCode)
-        {
-            Lua.LuaState L = new Lua.LuaState();
-            Lua.Zio zio = new Lua.Zio();
-            zio.L = L;
-            zio.p = luaCode;
-            return Lua.luaY_parser(L, zio, new Lua.Mbuffer(), "@chunk");
-        }
-
-        /// <summary>
         /// Attempts to find a file from a shortened path (no extension)
         /// </summary>
         /// <param name="spath"></param>

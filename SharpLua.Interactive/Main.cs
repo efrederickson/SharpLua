@@ -10,7 +10,6 @@ namespace SharpLua.Interactive
 {
     public class Program
     {
-
         /// <summary>
         /// The Prompt used in Interactive Mode
         /// </summary>
@@ -40,7 +39,12 @@ namespace SharpLua.Interactive
 #endif
 
             Prompt = "> ";
-
+            
+            LuaRuntime.GetLua().NewTable("arg");
+            LuaTable t = LuaRuntime.GetLua().GetTable("arg");
+            for (int i = 0; i < args.Length; i++)
+                t[i] = args[i];
+            
             // check command line args
             if (args.Length > 0)
             {
@@ -106,21 +110,34 @@ namespace SharpLua.Interactive
                                 Console.WriteLine();
                             }
                         }
+                        catch (LuaSourceException ex)
+                        {
+                            for (int i = 0; i < ex.Column; i++)
+                                Console.Write(" ");
+                            
+                            // Offset for prompt
+                            for (int i = 0; i < Prompt.Length - 1; i++)
+                                Console.Write(" ");
+                            
+                            Console.WriteLine("^");
+                            Console.WriteLine(ex.GenerateMessage("<stdin>"));
+                        }
                         catch (Exception error)
                         {
                             // TODO: show lua script traceback
                             // Possible fix... this isn't safe though.
 
-                            Console.WriteLine(error.Message);
-                            LuaRuntime.Run("pcall(function() print(debug.traceback()) end)");
-                            Console.WriteLine();
+                            //Console.WriteLine(error.Message);
+                            // doesnt work :(
+                            //LuaRuntime.Run("pcall(function() print(debug.traceback()) end)");
+                            //Console.WriteLine();
 
                             object dbg = LuaRuntime.GetVariable("DEBUG");
 
                             if ((dbg is bool && (bool)dbg == true) || dbg is int == false)
-                                ; //Console.WriteLine(error.ToString());
+                                Console.WriteLine(error.ToString());
                             else
-                                ; // Console.WriteLine("Error: " + error.Message);
+                                Console.WriteLine("Error: " + error.Message);
                             LuaRuntime.SetVariable("LASTERROR", error);
                         }
                     }

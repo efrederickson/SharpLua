@@ -32,13 +32,3 @@ SharpLua.Web                 Web handler for #Lua
 SharpLua SharpDevelop AddIn  Support SharpLua/Lua files and projects, GUI 
                                 designer, and msbuild project builder
 SharpLua Wpf support
-
-TODO
-- Documentation
-- Simple library extension
-- compression library (separate project), using IExtendFramework
-- set "..." to command line args in _G
-- Lists
-- new icon
-- set              - set (table, key, value)
-- table.removeitem - removes an item from a table

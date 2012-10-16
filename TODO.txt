@@ -1,0 +1,150 @@
+SharpLua TODO
+
+- Documentation
+- Simple library extension
+- compression library (separate project), using IExtendFramework
+- set "..." to command line args in _G
+- Lists
+- new icon
+- set              - set (table, key, value)
+- table.removeitem - removes an item from a table
+
+Parser
+     - option to continue parsing after a parse error (add to error list)
+     - allow embedded LASM (?)
+ 
+Port LuaAssemblyTools to c# and use in #lua (SharpLua.LASM)
+ 
+Supported files:
+ LASM, #Lua, Lua, MetaLua, [S]Luac (LASM Editor?)
+ 
+Supported Compilers/Debuggers
+     - Standard SharpLua compiler
+     - SharpLua interpreter
+     - MetaLua compiler
+     - Lua compiler
+     - Lua interpreter
+     - custom (specify file path and command line)
+     - KopiLua compiler/interpreter
+     - ManagedLua interpreter
+     - Lamn compiler/interpreter
+     - AluminumLua
+     - SilverLua (Lua for XBox)
+     - Java Lua compilers/interpreters
+     - IronLua compiler/interpreter
+     - Yeuliang compiler
+     - LuLu vm interpreter
+     - LBI interpreter
+     - Other random Lua compilers/interpreters
+ 
+ ? bundle MetaLua with SDAddIn
+
+ ! Rename variables/functions (options for in comments/strings also)
+     - do a regex check to see if it worked. If it didn't, prompt user to send report data.
+     ! - global variables (e.g. function a() end) are not renamed
+
+ - Find unused variables
+ - Find misspelled variables(only used once, similar to other var names)
+ - Goto Definition
+ - Find eternal loops
+ - Optimize simple functions to inline functions
+ - Find functions with only some return paths
+ - Find code that will never be run
+ - Find All References
+ - Change line breaks (\n, \r, \r\n)
+ -  Comment documentation/intellisense
+     - LuaDoc
+     - LDoc
+     - ExpLua
+     - SharpLua comment (XML/.net)
+ - Indentation/formatting
+     - minfied
+     - beautified
+     - tabs to spaces
+ - Convert
+     - SharpLua to Lua
+     - Lua to SharpLua
+     - Rbx.Lua to SharpLua
+     - MetaLua to SharpLua
+ - WinForms/Wpf designer
+ - Asp/Web integration
+ - MSBuild task to build luac/dependencies
+ - Build release module
+     - compile to luac
+     - copy dependencies to output folder
+     - minify/beautify/create Lua compatible output Lua files
+     - XFuscate output
+     ? generate exe
+ - Have .net file dependencies
+ - Watch window/variables window
+ - Comment/String spell checker
+ - Comment/Uncomment selection/line
+     - if one line, use --, if multiple lines use --[[
+ - Fold blocks
+ ? Live building
+ - Live coding window while program is running
+ - LuaPad #Lua interactive
+ - LuaPad LASM interactive
+ - String Pattern Editor
+ - View file outline
+ - Highlight selected word
+ - LASM editor
+     - edit actual LASM
+     - edit constant table
+     - edit local's names
+     - edit/remove other debugging info
+ - view/edit LASM of running Lua project
+ - Rip Scripts/LocalScripts from rbxm/rbxl files
+ - XFUSCATOR
+ 
+
+- Documentation files
+ - Sample projects (#lua sln)
+ 
+- templates
+      - Lua
+          - Hello World
+          - Empty File
+          - Sample Module
+     - #Lua
+         - Hello World
+         - Empty File
+         - Sample Module/library
+         - Empty Class
+         - Sample Clr Integration
+         - Sample Web Page
+         - Sample "sandbox" (using the github one I found)
+     - LASM
+         - hello world sample
+         - empty file
+     - #Lua Projects
+         - Basic Project
+         - Empty project
+         - WinForms project
+         - Wpf project
+         - Web Site project
+         - LASM Project
+ Code Snippets
+     - if/then, if/then/elseif, if/then/else
+     - do/end
+     - while/do
+     - repeat/until
+     - nfor (numeric for)
+     - gfor (generic for)
+     - function (anonymous, inline, std)
+     -
+     - require
+     - class
+ 
+
+
+Class:
+ local? <name> = {
+     new = function(self, ...)
+         local n = { }
+         setmetatable(n, self)
+         return n
+     end,
+ }
+ setmetatable(<name>, { __index = <super/base class> })
+ 

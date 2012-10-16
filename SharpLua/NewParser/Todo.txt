@@ -1,6 +1,5 @@
 ﻿TODO:
-- Match/With and BitwiseOr get mixed up when an expr list ends with an assignment. This needs fixed.
 - Test it more
 - Ast2code
-  - Parens back into code
-- Ast2Lua.Proto (compiler)
+  - Write comments in Beautifier and LuaCompliantOutput
+- Compiler

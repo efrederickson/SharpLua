@@ -3,7 +3,7 @@
 namespace SharpLua
 {
     /// <summary>
-    /// Lua script parse error
+    /// Lua script parsing error
     /// </summary>
     public class LuaSourceException : Exception
     {

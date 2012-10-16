@@ -17,6 +17,7 @@ namespace SharpLua.Compiler
 
         public Compiler() { current = main; }
 
+        /*
         void DoExpr(Expression e)
         {
             if (e is AnonymousFunctionExpr) // function() ... end
@@ -111,7 +112,7 @@ namespace SharpLua.Compiler
 
             throw new NotImplementedException(s.GetType().Name + " is not implemented");
         }
-
+        
         void DoChunk(Chunk c)
         {
             foreach (Statement s in c.Body)
@@ -130,5 +131,6 @@ namespace SharpLua.Compiler
             Lua.SET_OPCODE(ref r, Lua.OpCode.OP_LOADK);
             return r;
         }
+        */
     }
 }

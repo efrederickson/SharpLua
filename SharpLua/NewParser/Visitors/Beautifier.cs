@@ -14,7 +14,7 @@ namespace SharpLua.Visitors
         public string EOL = "\r\n";
         public string Tab = "    ";
 
-        int indent = 0;
+        internal int indent = 0;
         string nlindent()
         {
             indent++;
@@ -40,7 +40,7 @@ namespace SharpLua.Visitors
             return s.ToString();
         }
 
-        string DoExpr(Expression e)
+        internal string DoExpr(Expression e)
         {
             string ret = null;
             if (e is AnonymousFunctionExpr) // function() ... end
@@ -200,7 +200,7 @@ namespace SharpLua.Visitors
             else if (e is VarargExpr)
                 ret = "...";
             else if (e is VariableExpression)
-                ret = (e as VariableExpression).Name;
+                ret = (e as VariableExpression).Var.Name;
 
             if (ret != null)
                 return string.Format("{0}{1}{2}", "(".Repeat(e.ParenCount), ret, ")".Repeat(e.ParenCount));
@@ -208,7 +208,7 @@ namespace SharpLua.Visitors
             throw new NotImplementedException(e.GetType().Name + " is not implemented");
         }
 
-        string DoStatement(Statement s)
+        internal string DoStatement(Statement s)
         {
             if (s is AssignmentStatement && !(s is AugmentedAssignmentStatement))
             {
@@ -467,7 +467,7 @@ namespace SharpLua.Visitors
             throw new NotImplementedException(s.GetType().Name + " is not implemented");
         }
 
-        string DoChunk(List<Statement> statements)
+        internal string DoChunk(List<Statement> statements)
         {
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < statements.Count; i++)

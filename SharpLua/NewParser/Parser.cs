@@ -10,6 +10,9 @@ namespace SharpLua
 {
     public class Parser
     {
+        public List<LuaSourceException> Errors = new List<LuaSourceException>();
+        public bool ThrowParsingErrors = true;
+
         TokenReader tok;
 
         public Parser(TokenReader tr)
@@ -19,13 +22,16 @@ namespace SharpLua
 
         void error(string msg)
         {
-            throw new LuaSourceException(tok.Peek().Line, tok.Peek().Column, msg + ", got '" + tok.Peek().Data + "'");
+            LuaSourceException ex = new LuaSourceException(tok.Peek().Line, tok.Peek().Column, msg + ", got '" + tok.Peek().Data + "'");
+            Errors.Add(ex);
+            if (ThrowParsingErrors)
+                throw ex;
         }
 
         AnonymousFunctionExpr ParseExprFunctionArgsAndBody(Scope scope)
         {
             AnonymousFunctionExpr func = new AnonymousFunctionExpr();
-            func.Scope = new Scope();
+            func.Scope = new Scope(scope);
 
             if (tok.ConsumeSymbol('(') == false)
                 error("'(' expected");
@@ -74,7 +80,7 @@ namespace SharpLua
 
         FunctionStatement ParseFunctionArgsAndBody(Scope scope)
         {
-            FunctionStatement func = new FunctionStatement();
+            FunctionStatement func = new FunctionStatement(scope);
 
             if (tok.ConsumeSymbol('(') == false)
                 error("'(' expected");
@@ -140,11 +146,12 @@ namespace SharpLua
                 VariableExpression v = new VariableExpression();
                 Variable var = c.GetLocal(id.Data);
                 if (var == null)
+                {
                     v.IsGlobal = true;
+                    v.Var = new Variable { Name = id.Data };
+                }
                 else
                     v.Var = var;
-                //nodePrimExp.AstType = AstType.VarExpr;
-                v.Name = id.Data;
 
                 return v;
             }
@@ -350,7 +357,7 @@ namespace SharpLua
             {
                 // inline function... |<arg list>| -> <expr>, <expr>
                 InlineFunctionExpression func = new InlineFunctionExpression();
-                func.Scope = new Scope();
+                func.Scope = new Scope(scope);
                 // arg list
                 List<Variable> arglist = new List<Variable>();
                 bool isVarArg = false;
@@ -455,7 +462,7 @@ namespace SharpLua
         {
             // base item, possibly with unop prefix
             Expression exp = null;
-            if (isUnOp(tok.Peek().Data) && 
+            if (isUnOp(tok.Peek().Data) &&
                 (tok.Peek().Type == TokenType.Symbol || tok.Peek().Type == TokenType.Keyword))
             {
                 string op = tok.Get().Data;
@@ -514,7 +521,7 @@ namespace SharpLua
 
                     List<Statement> nodeBody = ParseStatementList(scope);
 
-                    _if.Clauses.Add(new ElseIfStmt { Condition = nodeCond, Body = nodeBody });
+                    _if.Clauses.Add(new ElseIfStmt(scope) { Condition = nodeCond, Body = nodeBody });
                 }
                 while (tok.ConsumeKeyword("elseif"));
 
@@ -523,7 +530,7 @@ namespace SharpLua
                 {
                     List<Statement> nodeBody = ParseStatementList(scope);
 
-                    _if.Clauses.Add(new ElseStmt
+                    _if.Clauses.Add(new ElseStmt(scope)
                     {
                         Body = nodeBody
                     });
@@ -537,7 +544,7 @@ namespace SharpLua
             }
             else if (tok.ConsumeKeyword("while"))
             {
-                WhileStatement w = new WhileStatement();
+                WhileStatement w = new WhileStatement(scope);
 
                 // condition
                 Expression nodeCond = ParseExpr(scope);
@@ -567,7 +574,7 @@ namespace SharpLua
                 if (!tok.ConsumeKeyword("end"))
                     error("'end' expected");
 
-                stat = new DoStatement { Body = b };
+                stat = new DoStatement(scope) { Body = b };
             }
             else if (tok.ConsumeKeyword("for"))
             {
@@ -579,7 +586,7 @@ namespace SharpLua
                 if (tok.ConsumeSymbol('='))
                 {
                     //numeric for
-                    NumericForStatement forL = new NumericForStatement();
+                    NumericForStatement forL = new NumericForStatement(scope);
                     Variable forVar = new Variable() { Name = baseVarName.Data };
                     forL.Scope.AddLocal(forVar);
 
@@ -615,7 +622,7 @@ namespace SharpLua
                 else
                 {
                     // generic for
-                    GenericForStatement forL = new GenericForStatement();
+                    GenericForStatement forL = new GenericForStatement(scope);
 
                     List<Variable> varList = new List<Variable> { forL.Scope.CreateLocal(baseVarName.Data) };
                     while (tok.ConsumeSymbol(','))
@@ -660,7 +667,7 @@ namespace SharpLua
 
                 Expression cond = ParseExpr(scope);
 
-                RepeatStatement r = new RepeatStatement();
+                RepeatStatement r = new RepeatStatement(scope);
                 r.Condition = cond;
                 r.Body = body;
                 stat = r;
@@ -708,7 +715,7 @@ namespace SharpLua
                     for (int i = 0; i < varList.Count; i++)
                     {
                         Variable x = scope.CreateLocal(varList[i]);
-                        newVarList.Add(new VariableExpression { Var = x, Name = x.Name });
+                        newVarList.Add(new VariableExpression { Var = x });
                     }
 
                     AssignmentStatement l = new AssignmentStatement();
@@ -726,7 +733,7 @@ namespace SharpLua
 
                     FunctionStatement func = ParseFunctionArgsAndBody(scope);
 
-                    func.Name = new VariableExpression { Var = localVar, Name = name };
+                    func.Name = new VariableExpression { Var = localVar };
                     func.IsLocal = true;
                     stat = func;
                 }
@@ -780,8 +787,8 @@ namespace SharpLua
             else if (tok.ConsumeKeyword("using"))
             {
                 // using <a, b = 1, x()> do <statements> end
-                UsingStatement us = new UsingStatement();
-                us.Scope = new Scope();
+                UsingStatement us = new UsingStatement(scope);
+                us.Scope = new Scope(scope);
 
                 List<Expression> lhs = new List<Expression> { ParseExpr(us.Scope) };
                 while (tok.ConsumeSymbol(','))
@@ -883,6 +890,8 @@ namespace SharpLua
 
             stat.HasSemicolon = tok.ConsumeSymbol(';');
             stat.ScannedTokens = tok.Range(startP, tok.p);
+            if (stat.Scope == null)
+                stat.Scope = scope;
             return stat;
         }
 
@@ -934,7 +943,7 @@ namespace SharpLua
         public Chunk Parse()
         {
             Scope s = new Scope();
-            return new Chunk { Body = ParseStatementList(s) };
+            return new Chunk { Body = ParseStatementList(s), Scope = s };
         }
     }
 }

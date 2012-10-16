@@ -12,9 +12,10 @@ namespace SharpLua.Ast.Statement
         public List<Variable> Arguments = new List<Variable>();
         public Expression.Expression Name = null;
 
-        public FunctionStatement()
+        public FunctionStatement(Scope s)
+            : base(s)
         {
-            Scope = new Scope();
+
         }
     }
 }

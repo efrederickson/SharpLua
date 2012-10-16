@@ -11,8 +11,6 @@ namespace SharpLua.Visitors
     // Non-Lua compliant constructs:
     // - augmented operators          -> expanded form (a += 1 -> a = a + (1))
     // - inline functions             -> Anonymous functions
-    // - match/with                   -> if/then/elseif
-    // (Not implemented, as match/with may be removed soon due to '|' conflicts)
     // - using                        -> do/end
 
     public class LuaCompatibleOutput
@@ -217,7 +215,7 @@ namespace SharpLua.Visitors
             else if (e is VarargExpr)
                 ret = "...";
             else if (e is VariableExpression)
-                ret = (e as VariableExpression).Name;
+                ret = (e as VariableExpression).Var.Name;
 
             return string.Format("{0}{1}{2}", oparens(e.ParenCount), ret, cparens(e.ParenCount));
 

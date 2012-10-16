@@ -12,15 +12,30 @@ namespace SharpLua.Ast.Statement
 
     public abstract class SubIfStmt : Chunk
     {
-        //public List<Statement> Body = null;
+        public SubIfStmt(Scope s)
+            : base(s)
+        {
+
+        }
     }
 
     public class ElseIfStmt : SubIfStmt
     {
         public Expression.Expression Condition = null;
+
+        public ElseIfStmt(Scope s)
+            : base(new Scope(s))
+        {
+
+        }
     }
 
     public class ElseStmt : SubIfStmt
     {
+        public ElseStmt(Scope s)
+            : base(new Scope(s))
+        {
+
+        }
     }
 }

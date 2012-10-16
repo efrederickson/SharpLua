@@ -11,18 +11,32 @@ namespace SharpLua
         /// <summary>
         /// Leading whitespace and comments
         /// </summary>
-        public List<Token> Leading;
+        public List<Token> Leading = new List<Token>();
+        /// <summary>
+        /// Only value will be the EndOfStream token.
+        /// </summary>
+        public Token FollowingEoSToken = null;
         public string Data;
         public int Line, Column;
 
+        public Token()
+        {
+            Line = 0;
+            Column = 0;
+            Data = "";
+            Type = TokenType.UNKNOWN;
+        }
+
         public string Print()
         {
-            return "<" + Type.ToString() + ", Data='" + Data + "', Line/Col=" + Line + "/" + Column + ">";
+            return "<" + Type.ToString() + ", Data='" + Data + "', LeadingCount = " + Leading.Count + ", Line/Col=" + Line + "/" + Column + ">";
         }
     }
 
     public enum TokenType
     {
+        UNKNOWN = -1,
+
         Keyword,
         Ident,
 
@@ -39,6 +53,7 @@ namespace SharpLua
         WhitespaceR,     // \r
         ShortComment,
         LongComment,
+        Shebang,
 
         EndOfStream,
     }

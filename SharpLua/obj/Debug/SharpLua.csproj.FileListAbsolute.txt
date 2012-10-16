@@ -13,3 +13,8 @@ F:\Code\SharpLua\SharpLua\obj\Debug\ResolveAssemblyReference.cache
 F:\Code\SharpLua\SharpLua\obj\Debug\SharpLua.dll
 F:\Code\SharpLua\SharpLua\obj\Debug\SharpLua.pdb
 W:\Code\SharpLua\SharpLua\obj\Debug\SharpLua.csprojResolveAssemblyReference.cache
+C:\Users\edfrederickson\Desktop\SharpLua\SharpLua\bin\Debug\SharpLua.dll
+C:\Users\edfrederickson\Desktop\SharpLua\SharpLua\bin\Debug\SharpLua.pdb
+C:\Users\edfrederickson\Desktop\SharpLua\SharpLua\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\edfrederickson\Desktop\SharpLua\SharpLua\obj\Debug\SharpLua.dll
+C:\Users\edfrederickson\Desktop\SharpLua\SharpLua\obj\Debug\SharpLua.pdb

@@ -191,7 +191,10 @@ namespace SharpLua
             }
             string content = src.Substring(start, p - start);
             for (int i = 0; i < numEquals + 2; i++) // read closing ](=*)]
-                read();
+                if (peek() == '=' || peek() == ']') 
+                    read();
+                else
+                    break;
             return "[" + "=".Repeat(numEquals) + "[" + content + "]" + "=".Repeat(numEquals) + "]";
         }
 
@@ -214,7 +217,7 @@ namespace SharpLua
             List<Token> tokens = new List<Token>();
             src = s;
 
-            while (peek() != '\0')
+            while (true)
             {
                 List<Token> leading = new List<Token>();
                 // eat whitespace/comments
@@ -230,19 +233,24 @@ namespace SharpLua
                             sh += read();
                         }
                         //readnl();
+                        leading.Add(new Token { Type = TokenType.Shebang, Data = sh });
                     }
                     else if (c_ == ' ' || c_ == '\t')
                     {
-                        leading.Add(new Token { Type = c_ == ' ' ? TokenType.WhitespaceSpace : TokenType.WhitespaceTab });
+                        leading.Add(new Token { Type = c_ == ' ' ? TokenType.WhitespaceSpace : TokenType.WhitespaceTab, Data = c_.ToString() });
+                        read();
                     }
                     else if (c_ == '-' && peek(1) == '-')
                     {
                         read();
                         read();
+                        char openParen = '\0';
+                        if (peek() == '[')
+                            openParen = read();
                         string comment = tryReadLongStr();
                         if (comment == null)
                         {
-                            comment = "";
+                            comment = "--" + (openParen != '\0' ? openParen.ToString() : "");
                             while (peek() != '\n' && peek() != '\r' && peek() != '\0')
                                 comment += read();
                             //read();
@@ -253,18 +261,20 @@ namespace SharpLua
                         }
                         else
                         {
+                            comment = "--" + comment;
                             leading.Add(new Token { Type = TokenType.LongComment, Data = comment });
                         }
                     }
                     else if (c_ == '\n' || c_ == '\r')
                     {
-                        leading.Add(new Token { Type = c_ == '\n' ? TokenType.WhitespaceN : TokenType.WhitespaceR });
+                        leading.Add(new Token { Type = c_ == '\n' ? TokenType.WhitespaceN : TokenType.WhitespaceR, Data = c_.ToString() });
                         // read handles line changing...
+                        read();
                     }
                     else
                         break;
-                    read();
                 }
+
                 Token t = new Token();
                 t.Leading = leading;
                 t.Line = ln;
@@ -456,12 +466,21 @@ namespace SharpLua
                 }
                 else
                 {
+                    p--; // un-read token
+                    col--;
                     error("Unexpected Symbol '" + c + "'");
+                    read();
                 }
+
                 tokens.Add(t);
+
+                if (peek() == '\0')
+                    break;
             }
             if (tokens.Count > 0 && tokens[tokens.Count - 1].Type != TokenType.EndOfStream)
                 tokens.Add(new Token { Type = TokenType.EndOfStream });
+            if (tokens.Count > 1) // 2+
+                tokens[tokens.Count - 2].FollowingEoSToken = tokens[tokens.Count - 1];
             return new TokenReader(tokens);
         }
     }

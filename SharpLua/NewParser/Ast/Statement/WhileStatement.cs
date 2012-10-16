@@ -8,5 +8,11 @@ namespace SharpLua.Ast.Statement
     public class WhileStatement : Chunk
     {
         public Expression.Expression Condition = null;
+
+        public WhileStatement(Scope s)
+            : base(new Scope(s))
+        {
+
+        }
     }
 }

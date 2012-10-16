@@ -11,6 +11,8 @@ namespace SharpLua
     {
         static void Main(string[] args)
         {
+            TestRename();
+
             while (true)
             {
                 string line = Console.ReadLine();
@@ -20,7 +22,11 @@ namespace SharpLua
                     TokenReader r = l.Lex(line);
                     //Console.WriteLine("---------------------------------");
                     foreach (Token t in r.tokens)
+                    {
                         Console.WriteLine(t.Print());
+                        foreach (Token t2 in t.Leading)
+                            Console.WriteLine("    " + t2.Print());
+                    }
                     //Console.WriteLine("- PARSER OUTPUT -");
                     Parser p = new Parser(r);
                     Chunk c = p.Parse();
@@ -31,6 +37,10 @@ namespace SharpLua
                     Console.WriteLine("- Lua Compatible -");
                     Visitors.LuaCompatibleOutput lco = new Visitors.LuaCompatibleOutput();
                     Console.WriteLine(lco.Format(c));
+                    Console.WriteLine("- Exact reconstruction -");
+                    Console.WriteLine(new Visitors.ExactReconstruction().Reconstruct(c));
+                    Console.WriteLine("- Minified -");
+                    Console.WriteLine(new Visitors.Minifier().Minify(c));
                 }
                 catch (LuaSourceException ex)
                 {
@@ -46,6 +56,19 @@ namespace SharpLua
             }
             Console.Write("Press any key to continue . . . ");
             Console.ReadKey(true);
+        }
+
+        private static void TestRename()
+        {
+            Lexer l = new Lexer();
+            Parser p = new Parser(l.Lex("local a = 5; local function c() print(a) end c()"));
+            Chunk c = p.Parse();
+            c.Scope.RenameVariable("a", "b");
+            c.Scope.RenameVariable("c", "testfunc");
+            Visitors.Beautifier e = new Visitors.Beautifier();
+            Console.WriteLine(e.Beautify(c));
+            Visitors.ExactReconstruction e2 = new Visitors.ExactReconstruction();
+            Console.WriteLine(e2.Reconstruct(c));
         }
 
         static void dump(List<Statement> s)

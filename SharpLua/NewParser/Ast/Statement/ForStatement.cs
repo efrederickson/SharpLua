@@ -12,9 +12,10 @@ namespace SharpLua.Ast.Statement
         public Expression.Expression End = null;
         public Expression.Expression Step = null;
 
-        public NumericForStatement()
+        public NumericForStatement(Scope s)
+            : base(new Scope(s))
         {
-            Scope = new Scope();
+
         }
     }
 
@@ -23,9 +24,10 @@ namespace SharpLua.Ast.Statement
         public List<Variable> VariableList = null;
         public List<Expression.Expression> Generators = null;
 
-        public GenericForStatement()
+        public GenericForStatement(Scope s)
+            : base(new Scope(s))
         {
-            Scope = new Scope();
+
         }
     }
 }

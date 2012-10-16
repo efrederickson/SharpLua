@@ -685,7 +685,12 @@ namespace SharpLua
                 lua_rawseti(L, -2, i + 1);
             }
             lua_setfield(L, -2, "loaders");  /* put it in field `loaders' */
-            setpath(L, "path", LUA_PATH, LUA_PATH_DEFAULT);  /* set field `path' */
+            string lpath = Environment.GetEnvironmentVariable(LUA_PATH);
+            if (lpath != null && !string.IsNullOrWhiteSpace(lpath))
+                lpath = lpath + ";" + LUA_PATH_DEFAULT;
+            else
+                lpath = LUA_PATH_DEFAULT;
+            setpath(L, "path", LUA_PATH, lpath);  /* set field `path' */
             setpath(L, "cpath", LUA_CPATH, LUA_CPATH_DEFAULT); /* set field `cpath' */
             /* store config information */
             lua_pushliteral(L, LUA_DIRSEP + "\n" + LUA_PATHSEP + "\n" + LUA_PATH_MARK + "\n" +

@@ -213,7 +213,7 @@ OpcodeType.ABC
             Bx = 0;
             sBx = 0;
             //Opcode = LuaOpName[opcode];
-            OpcodeNumber = opcode - 1;
+            OpcodeNumber = opcode;// -1;
             //OpcodeType = LuaOpTypeLookup[opcode];
             //OpcodeParams = LuaOpcodeParams[LuaOpName[opcode]];
             Number = num;

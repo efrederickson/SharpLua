@@ -3,7 +3,7 @@ namespace SharpLua.LASM
 {
     public class LuaFile
     {
-        public string Identifier = "\027Lua";
+        public string Identifier = (char)27 + "Lua";
         public int Version = 0x51;
         public Format Format = Format.Official;
         public int FormatNumber = 0;
@@ -18,17 +18,17 @@ namespace SharpLua.LASM
         public string Compile()
         {
             string c = "";
-            c = c + Identifier;
-            c = c + (char)Version; // Should be 0x51
-            c = c + (char)(Format == Format.Official ? 0 : FormatNumber);
-            c = c + (char)(BigEndian ? 0 : 1);
-            c = c + (char)IntegerSize;
-            c = c + (char)SizeT;
-            c = c + (char)InstructionSize;
-            c = c + (char)NumberSize;
-            c = c + (char)(IsFloatingPointNumbers ? 0 : 1);
+            c += Identifier;
+            c += (char)Version; // Should be 0x51
+            c += (char)(Format == Format.Official ? 0 : FormatNumber);
+            c += (char)(BigEndian ? 0 : 1);
+            c += (char)IntegerSize;
+            c += (char)SizeT;
+            c += (char)InstructionSize;
+            c += (char)NumberSize;
+            c += (char)(IsFloatingPointNumbers ? 0 : 1);
             // Main function
-            c = c + Main.Compile(this);
+            c += Main.Compile(this);
             return c;
         }
 

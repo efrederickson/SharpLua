@@ -1,3 +1,4 @@
+using System.Text;
 using System;
 namespace SharpLua.LASM
 {
@@ -50,11 +51,11 @@ namespace SharpLua.LASM
         }
         public static long srb(long x, int n)
         {
-            return (long)Math.Floor((double)x / p2[n + 1]);
+            return (long)Math.Floor((double)x / p2[n]);// + 1]);
         }
         public static long slb(long x, int n)
         {
-            return x * p2[n + 1];
+            return x * p2[n];// + 1];
         }
 
         public static double ldexp(double val, int exp)
@@ -62,65 +63,65 @@ namespace SharpLua.LASM
             return (val * (Math.Pow(2, exp)));
         }
 
-        public class FRexpResult 
-{ 
-   public int exponent = 0; 
-   public double mantissa = 0; 
-} 
- 
-public static FRexpResult frexp(double value) 
-{ 
-   FRexpResult result = new FRexpResult(); 
-   long bits = BitConverter.DoubleToInt64Bits(value); 
-   double realMant = 1; 
- 
-   // Test for NaN, infinity, and zero. 
-   if (Double.IsNaN(value) ||  
-       value + value == value ||  
-       Double.IsInfinity(value)) 
-   { 
-      result.exponent = 0; 
-      result.mantissa = value; 
-   } 
-   else 
-   { 
-      bool neg = (bits < 0); 
-      int exponent = (int)((bits >> 52) & 0x7ffL); 
-      long mantissa = bits & 0xfffffffffffffL; 
- 
-      if(exponent == 0) 
-      { 
-         exponent++; 
-      } 
-      else 
-      { 
-         mantissa = mantissa | (1L<<52); 
-      } 
- 
-      // bias the exponent - actually biased by 1023. 
-      // we are treating the mantissa as m.0 instead of 0.m 
-      //  so subtract another 52. 
-      exponent -= 1075; 
-      realMant = mantissa; 
- 
-      // normalize 
-      while(realMant > 1.0)  
-      { 
-         mantissa >>= 1; 
-         realMant /= 2; 
-         exponent++; 
-      } 
- 
-      if(neg) 
-      { 
-         realMant = realMant * -1; 
-      } 
- 
-      result.exponent = exponent; 
-      result.mantissa = realMant; 
-   } 
-   return result; 
-} 
+        public class FRexpResult
+        {
+            public int exponent = 0;
+            public double mantissa = 0;
+        }
+
+        public static FRexpResult frexp(double value)
+        {
+            FRexpResult result = new FRexpResult();
+            long bits = BitConverter.DoubleToInt64Bits(value);
+            double realMant = 1;
+
+            // Test for NaN, infinity, and zero. 
+            if (Double.IsNaN(value) ||
+                value + value == value ||
+                Double.IsInfinity(value))
+            {
+                result.exponent = 0;
+                result.mantissa = value;
+            }
+            else
+            {
+                bool neg = (bits < 0);
+                int exponent = (int)((bits >> 52) & 0x7ffL);
+                long mantissa = bits & 0xfffffffffffffL;
+
+                if (exponent == 0)
+                {
+                    exponent++;
+                }
+                else
+                {
+                    mantissa = mantissa | (1L << 52);
+                }
+
+                // bias the exponent - actually biased by 1023. 
+                // we are treating the mantissa as m.0 instead of 0.m 
+                //  so subtract another 52. 
+                exponent -= 1075;
+                realMant = mantissa;
+
+                // normalize 
+                while (realMant > 1.0)
+                {
+                    mantissa >>= 1;
+                    realMant /= 2;
+                    exponent++;
+                }
+
+                if (neg)
+                {
+                    realMant = realMant * -1;
+                }
+
+                result.exponent = exponent;
+                result.mantissa = realMant;
+            }
+            return result;
+        }
 
     }
     /*
@@ -222,7 +223,12 @@ public static FRexpResult frexp(double value)
                 c2 = Bit.srb(op.C, 2) + Bit.slb(Bit.keep(op.B, 1), 7);
                 c3 = Bit.srb(op.B, 1);
             }
-            return new String(new char[] { (char)c0, (char)c1, (char)c2, (char)c3 });
+            StringBuilder sb = new StringBuilder();
+            sb.Append((char)c0);
+            sb.Append((char)c1);
+            sb.Append((char)c2);
+            sb.Append((char)c3);
+            return sb.ToString();
         }
     }
 }

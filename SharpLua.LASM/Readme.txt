@@ -7,6 +7,10 @@ MODS (http://www.roblox.com/Item.aspx?id=44474190 or https://github.com/NecroBum
 ChunkBake (http://luaforge.net/projects/chunkbake),
 and ChunkSpy (http://luaforge.net/projects/chunkspy).
 
+Todo:
+- Change the parser from line-by-line to tokenizing and ast, with output visitors and everything
+
+
 Eventually, i hope to have full support for all available Lua versions.
 This is not going to happen in the near future though.
 

@@ -33,11 +33,12 @@ using System.Text.RegularExpressions;
 namespace SharpLua.LASM
 {
     public class LasmParser
-        {
+    {
         LuaFile file;
         int index, lineNumber;
         Chunk func;
         Stack<Chunk> funcStack;
+        string text = "";
 
         void parseControl(string line)
         {
@@ -78,7 +79,7 @@ namespace SharpLua.LASM
                 func.UpvalueCount = nums.Count > 0 ? nums[0] : func.UpvalueCount;
                 func.ArgumentCount = nums.Count > 1 ? nums[1] : func.ArgumentCount;
                 func.Vararg = nums.Count > 2 ? nums[2] : func.Vararg;
-                func.MaxStackSize = nums.Count > 3 ? nums[3] : func.MaxStackSize;
+                func.MaxStackSize = nums.Count > 3 ? (uint)nums[3] : func.MaxStackSize;
             }
             else if (ll.Substring(0, 6) == ".local")
             {
@@ -107,13 +108,13 @@ namespace SharpLua.LASM
             else if (ll.Substring(0, 10) == ".stacksize")
             {
                 string l = line.Substring(10).Trim();
-                int n = int.Parse(l);
+                uint n = uint.Parse(l);
                 func.MaxStackSize = n;
             }
             else if (ll.Substring(0, 13) == ".maxstacksize")
             {
                 string l = line.Substring(13).Trim();
-                int n = int.Parse(l);
+                uint n = uint.Parse(l);
                 func.MaxStackSize = n;
             }
             else if (ll.Substring(0, 7) == ".vararg")
@@ -163,26 +164,26 @@ namespace SharpLua.LASM
                 { } //func.Instructions.Add(instr2);
                 else
                     func.Instructions.Add(instr2);
-                    
+
                 func = f;
             }
             else
                 throw new Exception("Invalid Control Label");
         }
 
-           int tonumber(string s)
-           {
-                if (s[0]== '$' 
-                    || char.ToLower(s[0])== 'r'
-                    || char.ToLower(s[0]) == 'k')
-                    s = s.Substring(1);
-                return int.Parse(s);
-           }
+        int tonumber(string s)
+        {
+            if (s[0] == '$'
+                || char.ToLower(s[0]) == 'r'
+                || char.ToLower(s[0]) == 'k')
+                s = s.Substring(1);
+            return int.Parse(s);
+        }
 
-   Instruction parseOpcode(string line)
-   {
+        Instruction parseOpcode(string line)
+        {
             string op = "";
-            int i = 1;
+            int i = 0;
             string l = line.ToLower();
             while (true)
             {
@@ -196,116 +197,117 @@ namespace SharpLua.LASM
             Instruction instr = new Instruction(op, 0);
 
             line = line.Substring(i).Trim();
-            i = 1;
+            i = 0;
 
-       switch (instr.OpcodeType)
-	{
-		case OpcodeType.ABC:
-               string a = "", b = "", c = "";
-                bool inA = true, inB = false;
-                while (true)
-                {
-                    if (line.Length < i)
-                        break;
-
-                    char ch = line[i];
-                    if (ch == '\t' || ch == ' ')
-                        if (inA)
-                        {
-                            inB = true;
-                            inA = false;
-                        }
-                        else if (inB)
-                            inB = false;
-                        else
+            switch (instr.OpcodeType)
+            {
+                case OpcodeType.ABC:
+                    string a = "", b = "", c = "";
+                    bool inA = true, inB = false;
+                    while (true)
+                    {
+                        if (line.Length <= i)
                             break;
-                    else
-                        if (inA)
-                            a = a + ch;
-                        else if (inB)
-                            b = b + ch;
-                        else
-                            c = c + ch;
-                    i++;
-                }
-                c = c == "" ? "0" : c;
-                instr.A = tonumber(a);
-                instr.B = tonumber(b);
-                instr.C = tonumber(c);
- break;
-case OpcodeType.ABx:
-               string bx = "";
-               a = "";
-               inA = true;
-                while (true)
-                {
-                    if (line.Length < i)
-                        break;
 
-                    char ch = line[i];
-                    if (ch == '\t' || ch == ' ')
-                        if (inA)
-                            inA = false;
+                        char ch = line[i];
+                        if (ch == '\t' || ch == ' ')
+                            if (inA)
+                            {
+                                inB = true;
+                                inA = false;
+                            }
+                            else if (inB)
+                                inB = false;
+                            else
+                                break;
                         else
+                            if (inA)
+                                a = a + ch;
+                            else if (inB)
+                                b = b + ch;
+                            else
+                                c = c + ch;
+                        i++;
+                    }
+                    c = c == "" ? "0" : c;
+                    instr.A = tonumber(a);
+                    instr.B = tonumber(b);
+                    instr.C = tonumber(c);
+                    break;
+                case OpcodeType.ABx:
+                    string bx = "";
+                    a = "";
+                    inA = true;
+                    while (true)
+                    {
+                        if (line.Length <= i)
                             break;
-                    else
-                        if (inA)
-                            a = a + ch;
-                        else
-                            bx = bx + ch;
-                    i++;
-                }
-                instr.A = tonumber(a);
-                instr.Bx = tonumber(bx);
- break;
-case OpcodeType.AsBx:
-               string sbx = "";
-               inA = true;
-                while (true)
-                {
-                    if (line.Length < i)
-                        break;
 
-                    char ch = line[i];
-                    if (ch == '\t' || ch == ' ')
-                        if (inA)
-                            inA = false;
+                        char ch = line[i];
+                        if (ch == '\t' || ch == ' ')
+                            if (inA)
+                                inA = false;
+                            else
+                                break;
                         else
+                            if (inA)
+                                a = a + ch;
+                            else
+                                bx = bx + ch;
+                        i++;
+                    }
+                    instr.A = tonumber(a);
+                    instr.Bx = tonumber(bx);
+                    break;
+                case OpcodeType.AsBx:
+                    string sbx = "";
+                    a = "";
+                    inA = true;
+                    while (true)
+                    {
+                        if (line.Length <= i)
                             break;
-                    else
-                        if (inA)
-                            a = a + ch;
+
+                        char ch = line[i];
+                        if (ch == '\t' || ch == ' ')
+                            if (inA)
+                                inA = false;
+                            else
+                                break;
                         else
-                            sbx =sbx + ch;
-                    i++;
-                }
-                instr.A = tonumber(a);
-                instr.sBx = tonumber(sbx);
- break;
-default:
- break;
-	}
+                            if (inA)
+                                a = a + ch;
+                            else
+                                sbx = sbx + ch;
+                        i++;
+                    }
+                    instr.A = tonumber(a);
+                    instr.sBx = tonumber(sbx);
+                    break;
+                default:
+                    break;
+            }
             return instr;
-   }
+        }
 
-    string readVarName()
-    {
-            local varPattern = "([%w_]*)" -- Any letter, number, or underscore
-            local varName = string.match(text, varPattern, index)
-            if not varName then
-                error("Invalid variable name!")
-            end
-            index = index + varName:len()
-            return varName
-    }
+        //string readVarName()
+        //{
+        //        local varPattern = "([%w_]*)" -- Any letter, number, or underscore
+        //        local varName = string.match(text, varPattern, index)
+        //        if not varName then
+        //            error("Invalid variable name!")
+        //        end
+        //        index = index + varName:len()
+        //        return varName
+        //}
 
-    void readComment()
-    {
+        void readComment()
+        {
             if (text[index] == ';')
             {
                 while (true)
                 {
-                    if (text.Length < index)
+                    if (text.Length <= index)
                         break;
 
                     char c = text[index];
@@ -328,11 +330,11 @@ default:
                     index++;
                 }
             }
-    }
+        }
 
-    object readValue(string text)
-    {
-            int index = 1;
+        object readValue(string text)
+        {
+            int index = 0;
             if (text[index] == '"')
             {
                 string s = "";
@@ -341,10 +343,10 @@ default:
                 {
                     char c = text[index];
                     if (c == '\\')
-                        {
+                    {
                         char c2 = text[index + 1];
                         if (c2 == 'n')
-                           s += "\n";
+                            s += "\n";
                         else if (c2 == 'r')
                             s += "\r";
                         else if (c2 == 't')
@@ -352,7 +354,7 @@ default:
                         else if (c2 == '\\')
                             s += "\\";
                         else if (c2 == '"')
-                            s +="\"";
+                            s += "\"";
                         else if (c2 == '\'')
                             s += "'";
                         else if (c2 == 'a')
@@ -374,7 +376,7 @@ default:
                                 {
                                     index++;
                                     ch += text[index + 2];
-                            }
+                                }
                             }
                             s += int.Parse(ch);
                         }
@@ -392,9 +394,9 @@ default:
                 }
                 return s;
             }
-            else if(text.StartsWith("true"))
+            else if (text.StartsWith("true"))
                 return true;
-        else if (text.StartsWith("false"))
+            else if (text.StartsWith("false"))
                 return false;
             else if (text.StartsWith("nil"))
                 return null;
@@ -403,119 +405,114 @@ default:
                 // number
                 int x;
                 if (!int.TryParse(text.Trim(), out x))
-                    throw new Exception("Unable to read value '" + num + "'");
+                    throw new Exception("Unable to read value '" + text + "'");
                 else
                     return x;
             }
-    }
+        }
 
-    local function readWhitespace()
-            local c = text:sub(index, index)
-            while true do
-                readComment()
-                if c == ' ' or c == '\t' or c == '\n' or c == '\r' then
-                    index = index + 1
+        void readWhitespace()
+        {
+            char c = text[index];
+            while (true)
+            {
+                readComment();
+                if (c == ' ' || c == '\t' || c == '\n' || c == '\r')
+                    index++;
                 else
-                    break
-                end
-                if index > text:len() then
-                    break
-                end
-                c = text:sub(index, index)
-            end
-        end
+                    break;
+                if (text.Length <= index)
+                    break;
+                c = text[index];
+            }
+        }
 
 
-    public LuaFile Parse(string text)
-    {
-        file = new LuaFile();
-        index = 1;
-        lineNumber = 1;
-        func = file.Main;
-        file.Main.Vararg = 2;
-        file.Main.Name = "LASM Chunk";
-        funcStack = new Stack<Chunk>();
-        
-        readWhitespace()
-        while text:sub(index, index) ~= "" do
-            readWhitespace()
-            local line = ""
-            while true do
-                local c = text:sub(index, index)
-                if c == "\r" then
-                    index = index + 1
-                    if text:sub(index, index) == "\n" then
-                        index = index + 1
-                    end
-                    break
-                elseif c == "\n" then
-                    index = index + 1
-                    break
-                elseif c == "" then
-                    break
+        public LuaFile Parse(string t)
+        {
+            this.text = t;
+
+            file = new LuaFile();
+            index = 0;
+            lineNumber = 1;
+            func = file.Main;
+            file.Main.Vararg = 2;
+            file.Main.Name = "LASM Chunk";
+            funcStack = new Stack<Chunk>();
+
+            readWhitespace();
+            while (text.Length > index)
+            {
+                readWhitespace();
+                string line = "";
+                while (true)
+                {
+                    if (text.Length <= index)
+                        break;
+                    char c = text[index];
+                    if (c == '\r')
+                    {
+                        index++;
+                        if (text[index] == '\n')
+                            index++;
+                        break;
+                    }
+                    else if (c == '\n')
+                    {
+                        index++;
+                        break;
+                    }
+                    else
+                        line += c;
+                    index++;
+                }
+                line = line.Trim();
+                if (string.IsNullOrEmpty(line) || line[0] == ';')
+                { } // do nothing.
+                else if (line[0] == '.')
+                    parseControl(line);
                 else
-                    line = line .. c
-                end
-                index = index + 1
-            end
-            while line:sub(1, 1) == " " or line:sub(1, 1) == "\t" do
-                line = line:sub(2) -- strip whitespace
-            end
-            if line:sub(1, 1) == "." then
-                parseControl(line)
-            else if line == "" or line:sub(1, 1) == ";" then
-        { }// do nothing.
-            else
-                local op = parseOpcode(line)
-                if not op then error"Unable to parse opcode!" end
-                op.LineNumber = lineNumber
-                //table.insert(func.Instructions, op)
-                // I CAN'T BELIEVE I HAD TO RESORT TO THIS CRAP TO GET IT TO ADD INSTRUCTIONS. I MEAN SERIOUSLY, LUA, COME ON...
-                getmetatable(func.Instructions).__newindex(func.Instructions, func.Instructions.Count, op)
-            end
-            lineNumber = lineNumber + 1
-        end
-        
-        local instr1 = func.Instructions[func.Instructions.Count - 1];
-        local instr2 = Instruction:new("RETURN");
-        instr2.A = 0;
-        instr2.B = 1;
-        instr2.C = 0;
-        //getmetatable(func.Instructions).__newindex(func.Instructions, func.Instructions.Count, op)
-        if instr1 then
-            if instr1.Opcode ~= "RETURN" then
-                getmetatable(func.Instructions).__newindex(func.Instructions, func.Instructions.Count, instr2)
-                --table.insert(func.Instructions, func.Instructions.Count, instr2)
-            end
-        else
-            getmetatable(func.Instructions).__newindex(func.Instructions, 0, instr2)
-        end
-        return file
+                {
+                    Instruction op = parseOpcode(line);
+                    op.LineNumber = lineNumber;
+                    func.Instructions.Add(op);
+                }
+                lineNumber++;
+            }
+
+            Instruction instr1 = func.Instructions.Count > 0 ? func.Instructions[func.Instructions.Count - 1] : null;
+            Instruction instr2 = new Instruction("RETURN");
+            instr2.A = 0;
+            instr2.B = 1;
+            instr2.C = 0;
+            //getmetatable(func.Instructions).__newindex(func.Instructions, func.Instructions.Count, op)
+            if (instr1 == null || instr1.Opcode != Instruction.LuaOp.RETURN)
+                func.Instructions.Add(instr1);
+            return file;
+        }
     }
-}
-/*
-if false then -- Testing. 
-    local p = Parser:new()
-    local file = p:Parse[[
-    .const "print"
-    .const "Hello"
-    getglobal 0 0
-    loadk 1 1
-    call 0 2 1
-    return 0 1
-    ]]
-    local code = file:Compile()
-    local f = io.open("lasm.out", "wb")
-    f:write(code)
-    f:close()
-    local funcX = { loadstring(code) }
-    print(funcX[1], funcX[2])
-    if funcX[1] then
-        funcX[1]()
+    /*
+    if false then -- Testing. 
+        local p = Parser:new()
+        local file = p:Parse[[
+        .const "print"
+        .const "Hello"
+        getglobal 0 0
+        loadk 1 1
+        call 0 2 1
+        return 0 1
+        ]]
+        local code = file:Compile()
+        local f = io.open("lasm.out", "wb")
+        f:write(code)
+        f:close()
+        local funcX = { loadstring(code) }
+        print(funcX[1], funcX[2])
+        if funcX[1] then
+            funcX[1]()
+        end
+        --table.foreach(file.Main.Instructions, function(x) pcall(function() print(x) end) end)
+        --funcX()
     end
-    --table.foreach(file.Main.Instructions, function(x) pcall(function() print(x) end) end)
-    --funcX()
-end
-*/
-}
+    */
 }

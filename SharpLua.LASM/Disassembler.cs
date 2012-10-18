@@ -54,11 +54,13 @@ namespace SharpLua.LASM
             else
             {
                 long sum = 0;
-                for (int i = file.IntegerSize; i > 0; i--)
-                    sum = sum * 256 + (int)x[i];
+                for (int i = file.IntegerSize - 1; i >= 0; i--)
+                {
+                    sum = (sum * 256) + (int)x[i];
+                }
 
-                // test for negative number
-                if (x[file.IntegerSize] > 127)
+                // check for negative number
+                if (x[file.IntegerSize - 1] > 127)
                     sum = sum - (long)Bit.ldexp(1, 8 * file.IntegerSize);
                 return (int)sum;
             }
@@ -67,8 +69,11 @@ namespace SharpLua.LASM
         static string ReadString()
         {
             int len = (int)ReadInt32();
-            string s = GetString(len); // Strip last '\0'
-            return s.Substring(0, s.Length - 1);
+            string s = GetString(len);
+            // Strip last '\0':
+            return s.Length > 0
+                ? s.Substring(0, s.Length - 1)
+                : s;
         }
 
         static Chunk ReadFunction()
@@ -113,7 +118,7 @@ namespace SharpLua.LASM
             count = ReadInt32();
             for (int i = 0; i < count; i++)
             {
-                Constant cnst = null;
+                Constant cnst = new Constant(0, null);
                 int t = ReadInt8();
 
                 cnst.Number = i;
@@ -172,7 +177,7 @@ namespace SharpLua.LASM
                 throw new Exception("chunk is empty");
 
             file.Identifier = GetString(4); // \027Lua
-            if (file.Identifier != "\027Lua")
+            if (file.Identifier != (char)27 + "Lua")
                 throw new Exception("Not a valid Lua bytecode chunk");
 
             file.Version = ReadInt8(); // 0x51

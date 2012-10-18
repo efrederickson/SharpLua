@@ -970,7 +970,7 @@ namespace SharpLua
             if (data is LoadS)
             {
                 LoadS d = data as LoadS;
-                if (d.size > 0)
+                if (d.size > 0 && d.s.ToString()[0] != 27)
                 {
                     Lexer l = new Lexer();
                     try

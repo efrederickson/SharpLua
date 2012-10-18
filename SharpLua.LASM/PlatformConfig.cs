@@ -259,7 +259,7 @@ public static Func<string, double> GetNumberTypeConvertFrom(LuaFile file)
 
 public static Func<double, string> GetNumberTypeConvertTo(LuaFile file)
 {
-    string nt = LuaNumberID[file.IntegerSize.ToString() + (file.IsFloatingPointNumbers ? "0" : "1")];
+    string nt = LuaNumberID[file.NumberSize.ToString() + (file.IsFloatingPointNumbers ? "0" : "1")];
     if (nt == null)
         throw new Exception("Unable to determine Number type");
     return ConvertTo[nt];

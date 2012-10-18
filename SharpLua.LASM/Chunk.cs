@@ -24,9 +24,9 @@ namespace SharpLua.LASM
             Func<int, string> DumpInt = new Func<int, string>(delegate(int num)
                 {
                     string v = "";
-                    for (int i = 1; i < file.IntegerSize; i++)
+                    for (int i = 0; i < file.IntegerSize; i++)
                     {
-                        v = v + (char)(num % 256);
+                        v += (char)(num % 256);
                         num = (int)Math.Floor((double)num / 256);
                     }
                     return v;
@@ -38,74 +38,77 @@ namespace SharpLua.LASM
                     if (s == null || s.Length == 0)
                         return "\0".Repeat(len);
                     else
-                        return DumpInt(s.Length + 1) + s + "\0";
+                    {
+                        string l = DumpInt(s.Length + 1);
+                        return l + s + "\0";
+                    }
                 });
 
             string c = "";
-            c = c + DumpString(Name);
-            c = c + DumpInt((int)FirstLine);
-            c = c + DumpInt((int)LastLine);
-            c = c + (char)UpvalueCount;
-            c = c + (char)ArgumentCount;
-            c = c + (char)Vararg;
-            c = c + (char)MaxStackSize;
+            c += DumpString(Name);
+            c += DumpInt((int)FirstLine);
+            c += DumpInt((int)LastLine);
+            c += (char)UpvalueCount;
+            c += (char)ArgumentCount;
+            c += (char)Vararg;
+            c += (char)MaxStackSize;
 
             // Instructions
-            c = c + DumpInt(Instructions.Count);
+            c += DumpInt(Instructions.Count);
             foreach (Instruction i in Instructions)
-                c = c + DumpBinary.Opcode(i);
+                c += DumpBinary.Opcode(i);
 
 
             // Constants
-            c = c + DumpInt(Constants.Count);
+            c += DumpInt(Constants.Count);
             foreach (Constant cnst in Constants)
             {
                 if (cnst.Type == ConstantType.Nil)
-                    c = c + (char)0;
+                    c += (char)0;
                 else if (cnst.Type == ConstantType.Bool)
                 {
-                    c = c + (char)1;
-                    c = c + (char)((bool)cnst.Value ? 1 : 0);
+                    c += (char)1;
+                    c += (char)((bool)cnst.Value ? 1 : 0);
                 }
                 else if (cnst.Type == ConstantType.Number)
                 {
-                    c = c + (char)3;
-                    c = c + DumpNumber((long)cnst.Value);
+                    c += (char)3;
+                    c += DumpNumber((long)cnst.Value);
                 }
                 else if (cnst.Type == ConstantType.String)
                 {
-                    c = c + (char)4;
-                    c = c + DumpString((string)cnst.Value);
+                    c += (char)4;
+                    c += DumpString((string)cnst.Value);
                 }
                 else
                     throw new Exception("Invalid constant type: " + cnst.Type.ToString());
             }
 
             // Protos
-            c = c + DumpInt(Protos.Count);
+            c += DumpInt(Protos.Count);
             foreach (Chunk ch in Protos)
-                c = c + ch.Compile(file);
+                c += ch.Compile(file);
 
 
             // Line Numbers
-            c = c + DumpInt(Instructions.Count);
+            c += DumpInt(Instructions.Count);
             foreach (Instruction i in Instructions)
-                c = c = DumpInt(i.LineNumber);
+                c += DumpInt(i.LineNumber);
 
 
             // Locals 
-            c = c + DumpInt(Locals.Count);
+            c += DumpInt(Locals.Count);
             foreach (Local l in Locals)
             {
-                c = c + DumpString(l.Name);
-                c = c + DumpInt(l.StartPC);
-                c = c + DumpInt(l.EndPC);
+                c += DumpString(l.Name);
+                c += DumpInt(l.StartPC);
+                c += DumpInt(l.EndPC);
             }
 
             // Upvalues
-            c = c + DumpInt(Upvalues.Count);
+            c += DumpInt(Upvalues.Count);
             foreach (Upvalue v in Upvalues)
-                c = c + DumpString(v.Name);
+                c += DumpString(v.Name);
             return c;
         }
 

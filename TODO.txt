@@ -12,9 +12,13 @@ SharpLua TODO
 Parser
      - option to continue parsing after a parse error (add to error list)
      - allow embedded LASM (?)
- 
+
+X Modify exact reconstructor to check Expressions before reconstructing
+ then work exact reconstructor comment/ws logic into the other reconstructors
+
 Port LuaAssemblyTools to c# and use in #lua (SharpLua.LASM)
- 
+
+(some of the following is for an SD/VS/Standalone ide thing, other stuff isn't. its not sorted well) 
 Supported files:
  LASM, #Lua, Lua, MetaLua, [S]Luac (LASM Editor?)
  
@@ -62,7 +66,7 @@ Supported Compilers/Debuggers
      - beautified
      - tabs to spaces
  - Convert
-     - SharpLua to Lua
+     - SharpLua to C#
      - Lua to SharpLua
      - Rbx.Lua to SharpLua
      - MetaLua to SharpLua

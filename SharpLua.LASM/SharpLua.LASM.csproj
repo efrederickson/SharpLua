@@ -53,7 +53,7 @@
     <Compile Include="Disassembler.cs" />
     <None Include="Dumper.lua" />
     <Compile Include="Instruction.cs" />
-    <None Include="LasmParser.lua" />
+    <Compile Include="LasmParser.cs" />
     <Compile Include="LuaFile.cs" />
     <Compile Include="PlatformConfig.cs" />
     <Compile Include="Verifier.cs" />

@@ -289,8 +289,8 @@ namespace SharpLua.Visitors
                 if (f.IsVararg)
                     sb.Append("...");
                 sb.Append(")");
-                sb.Append(" " + DoStatement(f.Body[0]));
-                sb.Append(" end");
+                sb.Append(DoChunk(f.Body));
+                sb.Append("end");
 
                 return sb.ToString();
             }
@@ -393,8 +393,8 @@ namespace SharpLua.Visitors
             for (int i = 0; i < statements.Count; i++)
             {
                 string s = DoStatement(statements[i]);
-                if (i != statements.Count - 1 && col < DesiredHorizontalLength)
-                    s += ";";
+                //if (i != statements.Count - 1 && col < DesiredHorizontalLength)
+                s += ";";
                 col += s.Length;
                 sb.Append(s);
                 if (col >= DesiredHorizontalLength)

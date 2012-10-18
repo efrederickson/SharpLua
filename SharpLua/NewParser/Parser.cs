@@ -514,6 +514,7 @@ namespace SharpLua
                 //clauses
                 do
                 {
+                    int sP = tok.p;
                     Expression nodeCond = ParseExpr(scope);
 
                     if (!tok.ConsumeKeyword("then"))
@@ -521,18 +522,32 @@ namespace SharpLua
 
                     List<Statement> nodeBody = ParseStatementList(scope);
 
-                    _if.Clauses.Add(new ElseIfStmt(scope) { Condition = nodeCond, Body = nodeBody });
+                    List<Token> range = new List<Token>();
+                    range.Add(tok.tokens[sP - 1]);
+                    range.AddRange(tok.Range(sP, tok.p));
+
+                    _if.Clauses.Add(new ElseIfStmt(scope)
+                    {
+                        Condition = nodeCond,
+                        Body = nodeBody,
+                        ScannedTokens = range
+                    });
                 }
                 while (tok.ConsumeKeyword("elseif"));
 
                 // else clause
                 if (tok.ConsumeKeyword("else"))
                 {
+                    int sP = tok.p;
                     List<Statement> nodeBody = ParseStatementList(scope);
+                    List<Token> range = new List<Token>();
+                    range.Add(tok.tokens[sP - 1]);
+                    range.AddRange(tok.Range(sP, tok.p));
 
                     _if.Clauses.Add(new ElseStmt(scope)
                     {
-                        Body = nodeBody
+                        Body = nodeBody,
+                        ScannedTokens = range
                     });
                 }
 
@@ -888,8 +903,12 @@ namespace SharpLua
                     error("assignment statement expected");
             }
 
-            stat.HasSemicolon = tok.ConsumeSymbol(';');
             stat.ScannedTokens = tok.Range(startP, tok.p);
+            if (tok.Peek().Data == ";" && tok.Peek().Type == TokenType.Symbol)
+            {
+                stat.HasSemicolon = true;
+                stat.SemicolonToken = tok.Get();
+            }
             if (stat.Scope == null)
                 stat.Scope = scope;
             return stat;

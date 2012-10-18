@@ -10,6 +10,8 @@ namespace SharpLua.Visitors
 {
     /// <summary>
     /// Not entirely exact, it checks variable renaming...
+    /// It assumes the input Ast token streams are well-formed. It may not fail on 
+    /// malformed token streams, but it will generate invalid code.
     /// </summary>
     public class ExactReconstruction
     {
@@ -50,6 +52,145 @@ namespace SharpLua.Visitors
             return sb.ToString();
         }
 
+        internal string DoExpr(Expression e, List<Token> tok, ref int index, Scope s)
+        {
+            string ret = null;
+            if (e is AnonymousFunctionExpr) // function() ... end
+            {
+                AnonymousFunctionExpr f = e as AnonymousFunctionExpr;
+                StringBuilder sb = new StringBuilder();
+
+                int i = 0;
+                sb.Append(fromToken(tok[i++], s)); // 'function' 
+                sb.Append(fromToken(tok[i++], s)); // '('
+                sb.Append(fromToken(tok[i++], s)); // ')'
+
+                sb.Append(DoChunk(f.Body));
+                sb.Append(fromToken(tok[tok.Count - 1], s)); // <end>
+
+                return sb.ToString();
+            }
+            else if (e is BinOpExpr)
+            {
+                int i = 0;
+                string left = DoExpr((e as BinOpExpr).Lhs, tok, ref index, s);
+                string op = fromToken(tok[index++], s);
+                string right = DoExpr((e as BinOpExpr).Rhs, tok, ref index, s);
+                ret = string.Format("{0}{1}{2}", left, op, right);
+            }
+            else if (e is BoolExpr)
+            {
+                ret = fromToken(tok[index++], s);
+            }
+            else if (e is CallExpr && (!(e is StringCallExpr) && !(e is TableCallExpr)))
+            {
+                CallExpr c = e as CallExpr;
+                StringBuilder sb = new StringBuilder();
+                sb.Append(DoExpr(c.Base, tok, ref index, s) // <base>
+                    + fromToken(tok[index++], s)); // '('
+                for (int i = 0; i < c.Arguments.Count; i++)
+                {
+                    sb.Append(DoExpr(c.Arguments[i], tok, ref index, s));
+                    if (i != c.Arguments.Count - 1)
+                        sb.Append(fromToken(tok[index++], s)); // ', '
+                }
+                sb.Append(fromToken(tok[index++], s)); // ')'
+                ret = sb.ToString();
+            }
+            else if (e is StringCallExpr)
+            {
+                StringCallExpr sc = e as StringCallExpr;
+                ret = string.Format("{0}{1}", DoExpr(sc.Base, tok, ref index, s), DoExpr(sc.Arguments[0], tok, ref index, s));
+            }
+            else if (e is TableCallExpr)
+            {
+                TableCallExpr sc = e as TableCallExpr;
+                ret = string.Format("{0}{1}", DoExpr(sc.Base, tok, ref index, s), DoExpr(sc.Arguments[0], tok, ref index, s));
+            }
+            else if (e is IndexExpr)
+            {
+                IndexExpr i = e as IndexExpr;
+                ret = string.Format("{0}{1}{2}{3}", DoExpr(i.Base, tok, ref index, s), fromToken(tok[index++], s), DoExpr(i.Index, tok, ref index, s), fromToken(tok[index++], s));
+            }
+            else if (e is InlineFunctionExpression) // |<args>| -> <exprs>
+            {
+                InlineFunctionExpression ife = e as InlineFunctionExpression;
+                StringBuilder sb = new StringBuilder();
+                sb.Append(fromToken(tok[index++], s)); // '|;
+                for (int i = 0; i < ife.Arguments.Count; i++)
+                {
+                    sb.Append(fromToken(tok[index++], s)); // <arg name>
+                    if (i != ife.Arguments.Count - 1 || ife.IsVararg)
+                        sb.Append(fromToken(tok[index++], s)); // ','
+                }
+                if (ife.IsVararg)
+                    sb.Append(fromToken(tok[index++], s)); // '...'
+                sb.Append(fromToken(tok[index++], s)); // '|'
+                sb.Append(fromToken(tok[index++], s)); // '->'
+                for (int i2 = 0; i2 < ife.Expressions.Count; i2++)
+                {
+                    sb.Append(DoExpr(ife.Expressions[i2], tok, ref index, s));
+                    if (i2 != ife.Expressions.Count - 1)
+                        sb.Append(fromToken(tok[index++], s)); // ','
+                }
+                ret = sb.ToString();
+            }
+            else if (e is TableConstructorKeyExpr)
+            {
+                TableConstructorKeyExpr t = e as TableConstructorKeyExpr;
+                ret = fromToken(tok[index++], s) + DoExpr(t.Key, tok, ref index, s) + fromToken(tok[index++], s) + fromToken(tok[index++], s) + DoExpr(t.Value, tok, ref index, s);
+            }
+            else if (e is MemberExpr)
+            {
+                MemberExpr m = e as MemberExpr;
+                ret = DoExpr(m.Base, tok, ref index, s) + fromToken(tok[index++], s) + fromToken(tok[index++], s);
+            }
+            else if (e is NilExpr)
+                ret = fromToken(tok[index++], s);
+            else if (e is NumberExpr)
+                ret = fromToken(tok[index++], s);
+            else if (e is StringExpr)
+                ret = fromToken(tok[index++], s);
+            else if (e is TableConstructorStringKeyExpr)
+            {
+                TableConstructorStringKeyExpr tcske = e as TableConstructorStringKeyExpr;
+                ret = fromToken(tok[index++], s); // key
+                ret += fromToken(tok[index++], s); // '='
+                ret += DoExpr(tcske.Value, tok, ref index, s); // value
+            }
+            else if (e is TableConstructorExpr)
+            {
+                TableConstructorExpr t = e as TableConstructorExpr;
+                StringBuilder sb = new StringBuilder();
+                sb.Append(fromToken(tok[index++], s)); // '{'
+                for (int i = 0; i < t.EntryList.Count; i++)
+                {
+                    sb.Append(DoExpr(t.EntryList[i], tok, ref index, s));
+                    if (i != t.EntryList.Count - 1)
+                        sb.Append(fromToken(tok[index++], s)); // ','
+                }
+                sb.Append(fromToken(tok[index++], s)); // '}'
+                ret = sb.ToString();
+            }
+            else if (e is UnOpExpr)
+            {
+                string sc = fromToken(tok[index++], s);
+                ret = sc + DoExpr((e as UnOpExpr).Rhs, tok, ref index, s);
+            }
+            else if (e is TableConstructorValueExpr)
+                ret = DoExpr(((TableConstructorValueExpr)e).Value, tok, ref index, s);
+            else if (e is VarargExpr)
+                ret = fromToken(tok[index++], s);
+            else if (e is VariableExpression)
+                ret = fromToken(tok[index++], s);
+
+            if (ret != null)
+                return ret;
+            //return string.Format("{0}{1}{2}", "(".Repeat(e.ParenCount), ret, ")".Repeat(e.ParenCount));
+
+            throw new NotImplementedException(e.GetType().Name + " is not implemented");
+        }
+
         internal string DoStatement(Statement s)
         {
             // If the statement contains a body, we cant just fromTokens it, as it's body might not be 
@@ -59,11 +200,44 @@ namespace SharpLua.Visitors
             {
                 if (s is AssignmentStatement && !(s is AugmentedAssignmentStatement))
                 {
+                    AssignmentStatement a = s as AssignmentStatement;
+                    StringBuilder sb = new StringBuilder();
+                    int p = 0;
+                    if (a.IsLocal)
+                        sb.Append(fromToken(a.ScannedTokens[p++], a.Scope));
+                    for (int i = 0; i < a.Lhs.Count; i++)
+                    {
+                        sb.Append(DoExpr(a.Lhs[i], s.ScannedTokens, ref p, s.Scope));
+                        if (i != a.Lhs.Count - 1)
+                            sb.Append(fromToken(a.ScannedTokens[p++], a.Scope));
+                    }
+                    if (a.Rhs.Count > 0)
+                    {
+                        sb.Append(fromToken(a.ScannedTokens[p++], a.Scope));
+                        for (int i = 0; i < a.Rhs.Count; i++)
+                        {
+                            sb.Append(DoExpr(a.Rhs[i], s.ScannedTokens, ref p, s.Scope));
+                            if (i != a.Rhs.Count - 1)
+                                sb.Append(fromToken(a.ScannedTokens[p++], s.Scope));
+                        }
+                    }
+
                     return fromTokens(s.ScannedTokens, s.Scope);
                 }
                 else if (s is AugmentedAssignmentStatement)
                 {
-                    return fromTokens(s.ScannedTokens, s.Scope);
+                    AugmentedAssignmentStatement a = s as AugmentedAssignmentStatement;
+                    StringBuilder sb = new StringBuilder();
+                    //sb.Append(DoExpr(a.Lhs[0]));
+                    int p = 0;
+                    if (a.IsLocal)
+                        sb.Append(fromToken(a.ScannedTokens[p++], a.Scope));
+                    Expression assignment = ((BinOpExpr)a.Rhs[0]).Rhs;
+                    Expression tmp = ((BinOpExpr)a.Rhs[0]).Lhs;
+                    sb.Append(DoExpr(tmp, s.ScannedTokens, ref p, s.Scope));
+                    sb.Append(fromToken(s.ScannedTokens[p++], s.Scope));
+                    sb.Append(DoExpr(assignment, s.ScannedTokens, ref p, s.Scope));
+                    return sb.ToString();
                 }
                 else if (s is BreakStatement)
                 {
@@ -73,7 +247,8 @@ namespace SharpLua.Visitors
                 else if (s is CallStatement)
                 {
                     // Also incredibly simple...
-                    return fromTokens(s.ScannedTokens, s.Scope);
+                    int p = 0;
+                    return DoExpr(((CallStatement)s).Expression, s.ScannedTokens, ref p, s.Scope);
                 }
                 else if (s is DoStatement)
                 {
@@ -81,7 +256,7 @@ namespace SharpLua.Visitors
                     StringBuilder sb = new StringBuilder();
                     sb.Append(fromToken(d.ScannedTokens[0], s.Scope)); // 'do'
                     sb.Append(DoChunk(d.Body));
-                    sb.Append(fromToken(d.ScannedTokens[d.ScannedTokens.Count - 1], s.Scope));
+                    sb.Append(fromToken(d.ScannedTokens[d.ScannedTokens.Count - 1], s.Scope)); // end
                     return sb.ToString();
                 }
                 else if (s is GenericForStatement)
@@ -89,11 +264,22 @@ namespace SharpLua.Visitors
                     GenericForStatement g = s as GenericForStatement;
                     StringBuilder sb = new StringBuilder();
                     int i = 0;
-                    while (g.ScannedTokens[i].Data != "do")
-                        sb.Append(fromToken(g.ScannedTokens[i++], s.Scope));
-                    sb.Append(fromToken(g.ScannedTokens[i++], s.Scope));
+                    for (int x = 0; x < g.VariableList.Count; x++)
+                    {
+                        sb.Append(fromToken(s.ScannedTokens[i++], s.Scope));
+                        if (x != g.VariableList.Count - 1)
+                            sb.Append(fromToken(s.ScannedTokens[i++], s.Scope)); // ','
+                    }
+                    sb.Append(fromToken(g.ScannedTokens[i++], s.Scope)); // 'in'
+                    for (int x = 0; x < g.Generators.Count; x++)
+                    {
+                        sb.Append(fromToken(s.ScannedTokens[i++], s.Scope));
+                        if (x != g.VariableList.Count - 1)
+                            sb.Append(fromToken(s.ScannedTokens[i++], s.Scope)); // ','
+                    }
+                    sb.Append(fromToken(g.ScannedTokens[i++], s.Scope)); // 'do'
                     sb.Append(DoChunk(g.Body));
-                    sb.Append(fromToken(g.ScannedTokens[g.ScannedTokens.Count - 1], s.Scope));
+                    sb.Append(fromToken(s.ScannedTokens[s.ScannedTokens.Count - 1], s.Scope)); // <end>
                     return sb.ToString();
                 }
                 else if (s is NumericForStatement)
@@ -101,11 +287,20 @@ namespace SharpLua.Visitors
                     NumericForStatement n = s as NumericForStatement;
                     StringBuilder sb = new StringBuilder();
                     int i = 0;
-                    while (n.ScannedTokens[i].Data != "do")
-                        sb.Append(fromToken(n.ScannedTokens[i++], s.Scope));
-                    sb.Append(fromToken(n.ScannedTokens[i++], s.Scope));
+                    sb.Append(fromToken(n.ScannedTokens[i++], s.Scope)); // 'for'
+                    sb.Append(fromToken(n.ScannedTokens[i++], s.Scope)); // <var>
+                    sb.Append(fromToken(n.ScannedTokens[i++], s.Scope)); // '='
+                    sb.Append(fromToken(n.ScannedTokens[i++], s.Scope)); // <start>
+                    sb.Append(fromToken(n.ScannedTokens[i++], s.Scope)); // ','
+                    sb.Append(fromToken(n.ScannedTokens[i++], s.Scope)); // <end>
+                    if (n.Step != null)
+                    {
+                        sb.Append(fromToken(n.ScannedTokens[i++], s.Scope)); // ','
+                        sb.Append(fromToken(n.ScannedTokens[i++], s.Scope)); // <step>
+                    }
+                    sb.Append(fromToken(n.ScannedTokens[i++], s.Scope)); // 'do'
                     sb.Append(DoChunk(n.Body));
-                    sb.Append(fromToken(n.ScannedTokens[n.ScannedTokens.Count - 1], s.Scope));
+                    sb.Append(fromToken(s.ScannedTokens[s.ScannedTokens.Count - 1], s.Scope)); // <end>
                     return sb.ToString();
                 }
                 else if (s is FunctionStatement)
@@ -114,17 +309,19 @@ namespace SharpLua.Visitors
                     StringBuilder sb = new StringBuilder();
 
                     int i = 0;
-                    while (f.ScannedTokens[i].Data != ")")
-                        sb.Append(fromToken(f.ScannedTokens[i++], s.Scope));
-                    sb.Append(fromToken(f.ScannedTokens[i++], s.Scope));
+                    sb.Append(fromToken(s.ScannedTokens[i++], s.Scope)); // 'function' 
+                    sb.Append(fromToken(s.ScannedTokens[i++], s.Scope)); // <name>
+                    sb.Append(fromToken(s.ScannedTokens[i++], s.Scope)); // '('
+                    sb.Append(fromToken(s.ScannedTokens[i++], s.Scope)); // ')'
 
                     sb.Append(DoChunk(f.Body));
-                    sb.Append(fromToken(f.ScannedTokens[f.ScannedTokens.Count - 1], s.Scope));
+                    sb.Append(fromToken(s.ScannedTokens[s.ScannedTokens.Count - 1], s.Scope)); // <end>
 
                     return sb.ToString();
                 }
                 else if (s is GotoStatement)
                 {
+                    // goto <string label>, so no expr
                     GotoStatement g = s as GotoStatement;
                     return fromTokens(s.ScannedTokens, s.Scope);
                 }
@@ -135,16 +332,30 @@ namespace SharpLua.Visitors
 
                     foreach (SubIfStmt clause in i.Clauses)
                     {
-                        int i2 = 0;
-                        while (clause.ScannedTokens[i2].Data != "then")
-                            sb.Append(fromToken(clause.ScannedTokens[i2++], clause.Scope));
-                        sb.Append(DoChunk(clause.Body));
-                        sb.Append(fromToken(clause.ScannedTokens[i2++], clause.Scope));
+                        int i3 = 0;
+                        if (clause is ElseIfStmt)
+                        {
+                            ElseIfStmt c = clause as ElseIfStmt;
+
+                            sb.Append(fromToken(c.ScannedTokens[i3++], s.Scope)); // if/elseif
+                            sb.Append(DoExpr(c.Condition, c.ScannedTokens, ref i3, c.Scope));
+                            sb.Append(fromToken(c.ScannedTokens[i3++], s.Scope)); // 'then'
+                            sb.Append(DoChunk(clause.Body));
+                        }
+                        else if (clause is ElseStmt)
+                        {
+                            sb.Append(fromToken(clause.ScannedTokens[i3++], s.Scope)); // if/elseif
+                            sb.Append(DoChunk(clause.Body));
+                        }
+                        else
+                            throw new NotImplementedException(clause.GetType().Name);
                     }
+                    sb.Append(fromToken(s.ScannedTokens[s.ScannedTokens.Count - 1], s.Scope));
                     return sb.ToString();
                 }
                 else if (s is LabelStatement)
                 {
+                    // ::<string label>::, so no expr
                     return fromTokens(s.ScannedTokens, s.Scope);
                 }
                 else if (s is RepeatStatement)
@@ -153,30 +364,59 @@ namespace SharpLua.Visitors
                     StringBuilder sb = new StringBuilder();
                     sb.Append(fromToken(r.ScannedTokens[0], s.Scope));
                     sb.Append(DoChunk(r.Body));
-                    int i = 0;
-                    for (int i2 = 0; i2 < r.ScannedTokens.Count; i2++)
-                        if (r.ScannedTokens[i2].Data == "until")
-                            i = i2;
-
-                    for (int i2 = i; i2 < r.ScannedTokens.Count; i2++)
-                        sb.Append(fromToken(r.ScannedTokens[i2], s.Scope));
+                    int i = -1;
+                    for (int k = r.ScannedTokens.Count - 1; k > 0; k--)
+                        if (r.ScannedTokens[k].Type == TokenType.Keyword && r.ScannedTokens[k].Data == "until")
+                        {
+                            i = k;
+                            break;
+                        }
+                    sb.Append(fromToken(r.ScannedTokens[i++], r.Scope));
+                    sb.Append(DoExpr(r.Condition, r.ScannedTokens, ref i, r.Scope));
                     return sb.ToString();
                 }
                 else if (s is ReturnStatement)
                 {
-                    return fromTokens(s.ScannedTokens, s.Scope);
+                    ReturnStatement rs = s as ReturnStatement;
+                    StringBuilder sb = new StringBuilder();
+                    int i = 0;
+                    sb.Append(fromToken(s.ScannedTokens[i++], s.Scope)); // 'return'
+                    for (int x = 0; x < rs.Arguments.Count; x++)
+                    {
+                        sb.Append(DoExpr(rs.Arguments[x], rs.ScannedTokens, ref i, s.Scope));
+                        if (x != rs.Arguments.Count - 1)
+                            sb.Append(fromToken(s.ScannedTokens[i++], s.Scope)); // ','
+                    }
+                    return sb.ToString();
                 }
                 else if (s is UsingStatement)
                 {
                     UsingStatement u = s as UsingStatement;
                     StringBuilder sb = new StringBuilder();
                     int i = 0;
-                    while (s.ScannedTokens[i].Data != "do")
-                        sb.Append(fromToken(s.ScannedTokens[i++], s.Scope));
-                    sb.Append(fromToken(s.ScannedTokens[i++], s.Scope));
+                    sb.Append(fromToken(s.ScannedTokens[i++], s.Scope)); // 'using'
 
+                    AssignmentStatement a = u.Vars;
+                    for (int i2 = 0; i2 < a.Lhs.Count; i2++)
+                    {
+                        sb.Append(DoExpr(a.Lhs[i2], u.ScannedTokens, ref i, s.Scope));
+                        if (i2 != a.Lhs.Count - 1)
+                            sb.Append(fromToken(u.ScannedTokens[i++], a.Scope));
+                    }
+                    if (a.Rhs.Count > 0)
+                    {
+                        sb.Append(fromToken(u.ScannedTokens[i++], a.Scope));
+                        for (int i2 = 0; i2 < a.Rhs.Count; i2++)
+                        {
+                            sb.Append(DoExpr(a.Rhs[i2], u.ScannedTokens, ref i, s.Scope));
+                            if (i2 != a.Rhs.Count - 1)
+                                sb.Append(fromToken(u.ScannedTokens[i++], s.Scope));
+                        }
+                    }
+
+                    sb.Append(fromToken(s.ScannedTokens[i++], s.Scope)); // 'do'
                     sb.Append(DoChunk(u.Body));
-                    sb.Append(fromToken(s.ScannedTokens[s.ScannedTokens.Count - 1], s.Scope));
+                    sb.Append(fromToken(s.ScannedTokens[s.ScannedTokens.Count - 1], s.Scope)); // 'end'
                     return sb.ToString();
                 }
                 else if (s is WhileStatement)
@@ -184,27 +424,14 @@ namespace SharpLua.Visitors
                     WhileStatement w = s as WhileStatement;
                     StringBuilder sb = new StringBuilder();
                     int i = 0;
-                    while (s.ScannedTokens[i].Data != "do")
-                        sb.Append(fromToken(s.ScannedTokens[i++], s.Scope));
-                    sb.Append(fromToken(s.ScannedTokens[i++], s.Scope));
+                    sb.Append(fromToken(s.ScannedTokens[i++], s.Scope)); // 'while'
+                    sb.Append(DoExpr(w.Condition, w.ScannedTokens, ref i, s.Scope));
+                    sb.Append(fromToken(s.ScannedTokens[i++], s.Scope)); // 'do'
 
                     sb.Append(DoChunk(w.Body));
                     sb.Append(fromToken(s.ScannedTokens[s.ScannedTokens.Count - 1], s.Scope));
                     return sb.ToString();
                 }
-                /*
-                else if (s is ElseIfStmt)
-                {
-                    ElseIfStmt e = s as ElseIfStmt;
-                    string s2 = DoExpr(e.Condition) + " then" + EOL;
-                    s2 += DoChunk(e.Body);
-                    return s2;
-                }
-                else if (s is ElseStmt)
-                {
-                    return DoChunk(((ElseStmt)s).Body);
-                }
-                */
             }
             else // No token stream, beautify
                 return beautifier.DoStatement(s);
@@ -216,7 +443,11 @@ namespace SharpLua.Visitors
         {
             StringBuilder sb = new StringBuilder();
             foreach (Statement s in statements)
+            {
                 sb.Append(DoStatement(s));
+                if (s.HasSemicolon)
+                    sb.Append(fromToken(s.SemicolonToken, s.Scope));
+            }
             return sb.ToString();
         }
 

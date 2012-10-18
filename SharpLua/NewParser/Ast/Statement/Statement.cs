@@ -11,6 +11,7 @@ namespace SharpLua.Ast.Statement
         public bool HasSemicolon = false;
 
         public List<Token> ScannedTokens = new List<Token>();
+        public Token SemicolonToken;
     }
 
 }

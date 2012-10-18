@@ -50,6 +50,9 @@
     <Compile Include="Interfacing\LuaFunction.cs" />
     <Compile Include="Interfacing\LuaGlobalAttribute.cs" />
     <Compile Include="Interfacing\LuaHideAttribute.cs" />
+    <None Include="..\TODO.txt">
+      <Link>TODO.txt</Link>
+    </None>
     <None Include="Decompiler\disassembler example.lua" />
     <None Include="Interfacing\Main.cs" />
     <Compile Include="Interfacing\LuaRegistrationHelper.cs" />
@@ -150,6 +153,7 @@
     <Compile Include="NewParser\Token.cs" />
     <Compile Include="NewParser\TokenReader.cs" />
     <Compile Include="NewParser\Visitors\Beautifier.cs" />
+    <None Include="NewParser\Visitors\Beautifier2.cs" />
     <Compile Include="NewParser\Visitors\Minifier.cs" />
     <Compile Include="NewParser\Visitors\ExactReconstruction.cs" />
     <Compile Include="NewParser\Visitors\LuaCompatibleOutput.cs" />

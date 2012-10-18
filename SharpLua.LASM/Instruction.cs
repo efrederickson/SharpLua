@@ -219,6 +219,10 @@ OpcodeType.ABC
             Number = num;
             LineNumber = 0;
         }
+        public Instruction(string name, int num = 0)
+            : this((int)(LuaOp)Enum.Parse(typeof(LuaOp), name, true), num)
+        {
+        }
     }
 
     public class Local

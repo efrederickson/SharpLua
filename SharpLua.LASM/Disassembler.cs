@@ -12,7 +12,7 @@ namespace SharpLua.LASM
         }
 
         static int index = 0;
-        static bool big = false;
+        //static bool big = false;
         static LuaFile file = new LuaFile();
         static Func<string, double> loadNumber = null;
         static string chunk = "";
@@ -23,8 +23,6 @@ namespace SharpLua.LASM
             index += len;
             if (file.BigEndian)
             {
-                string tmp = "";
-
                 c = Reverse(c);
             }
             return c;

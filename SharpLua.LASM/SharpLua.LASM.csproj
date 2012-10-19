@@ -49,7 +49,7 @@
   <ItemGroup>
     <Compile Include="bit.cs" />
     <Compile Include="Chunk.cs" />
-    <Compile Include="Decompiler.LASM.cs" />
+    <Compile Include="LASMDecompiler.cs" />
     <Compile Include="Disassembler.cs" />
     <None Include="Dumper.lua" />
     <Compile Include="Instruction.cs" />

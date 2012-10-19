@@ -76,6 +76,11 @@ namespace SharpLua.LASM
                 : s;
         }
 
+        static uint MASK1(int n, int p)
+        {
+            return (uint)((~((~0) << n)) << p);
+        }
+
         static Chunk ReadFunction()
         {
             Chunk c = new Chunk();
@@ -91,24 +96,32 @@ namespace SharpLua.LASM
             long count = ReadInt32();
             for (int i = 0; i < count; i++)
             {
-                long op = ReadInt32();
-                int opcode = (int)Bit.Get(op, 1, 6);
-                Instruction instr = new Instruction(opcode + 1, i);
+                uint op = (uint)ReadInt32();
+                int opcode = (int)Lua.GET_OPCODE(op);
+                //(int)Bit.Get(op, 1, 6);
+                Instruction instr = new Instruction(opcode, i);
                 if (instr.OpcodeType == OpcodeType.ABC)
                 {
-                    instr.A = Bit.Get(op, 7, 14);
-                    instr.B = Bit.Get(op, 24, 32);
-                    instr.C = Bit.Get(op, 15, 23);
+                    instr.A = Lua.GETARG_A(op);
+                    instr.B = Lua.GETARG_B(op);
+                    instr.C = Lua.GETARG_C(op);
+                    //instr.A = Bit.Get(op, 7, 14);
+                    //instr.B = Bit.Get(op, 24, 32);
+                    //instr.C = Bit.Get(op, 15, 23);
                 }
                 else if (instr.OpcodeType == OpcodeType.ABx)
                 {
-                    instr.A = Bit.Get(op, 7, 14);
-                    instr.Bx = Bit.Get(op, 15, 32);
+                    instr.A = Lua.GETARG_A(op);
+                    instr.Bx = Lua.GETARG_Bx(op);
+                    //instr.A = Bit.Get(op, 7, 14);
+                    //instr.Bx = Bit.Get(op, 15, 32);
                 }
                 else if (instr.OpcodeType == OpcodeType.AsBx)
                 {
-                    instr.A = Bit.Get(op, 7, 14);
-                    instr.sBx = Bit.Get(op, 15, 32) - 131071;
+                    instr.A = Lua.GETARG_A(op);
+                    instr.sBx = Lua.GETARG_sBx(op);
+                    //instr.A = Bit.Get(op, 7, 14);
+                    //instr.sBx = Bit.Get(op, 15, 32) - 131071;
                 }
                 c.Instructions.Add(instr);
             }

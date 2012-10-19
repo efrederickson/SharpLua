@@ -39,12 +39,12 @@ namespace SharpLua.Interactive
 #endif
 
             Prompt = "> ";
-            
+
             LuaRuntime.GetLua().NewTable("arg");
             LuaTable t = LuaRuntime.GetLua().GetTable("arg");
             for (int i = 0; i < args.Length; i++)
                 t[i] = args[i];
-            
+
             // check command line args
             if (args.Length > 0)
             {
@@ -114,11 +114,11 @@ namespace SharpLua.Interactive
                         {
                             for (int i = 0; i < ex.Column; i++)
                                 Console.Write(" ");
-                            
+
                             // Offset for prompt
                             for (int i = 0; i < Prompt.Length - 1; i++)
                                 Console.Write(" ");
-                            
+
                             Console.WriteLine("^");
                             Console.WriteLine(ex.GenerateMessage("<stdin>"));
                         }

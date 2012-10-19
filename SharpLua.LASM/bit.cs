@@ -7,8 +7,11 @@ namespace SharpLua.LASM
         //new = function(str)
         //	return tonumber(str, 2)
         //end,
-
-        public static long Get(long num, int n)
+        /*
+        Broken :(
+        Lets use the Lua API Instead...
+        
+        public static int Get(long num, int n)
         {
             double pn = Math.Pow(2, (n - 1));
             return (num % (pn + pn) >= pn) ? 1 : 0;
@@ -18,10 +21,12 @@ namespace SharpLua.LASM
         {
             long total = 0;
             long digitn = 0;
-            for (int i = n; i < n2; i++)
+            for (int i = n; i </ *=* / n2; i++)
             {
-                total = total + (long)Math.Pow(2, digitn * Bit.Get(num, i));
-                digitn = digitn + 1;
+                Console.WriteLine(">" + i);
+                //total += (long)Math.Pow(2, digitn * Bit.Get(num, i));
+                total += (long)Math.Pow(2, digitn) * Bit.Get(num, i);
+                digitn++;
             }
             return total;
         }
@@ -43,7 +48,7 @@ namespace SharpLua.LASM
                 str = str + Bit.Get(num, i) + (i == 1 ? "" : sep);
             return str;
         }
-
+        */
         public static readonly int[] p2 = new int[] { 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072 };
         public static long keep(long x, int n)
         {

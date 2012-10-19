@@ -216,6 +216,7 @@ System = luanet.namespace(""System"")
         public const string InitExtLib = @" -- Ext lib - a bunch of extension functions
 
 -- _G.arg -> _G['...']
+arg = { 'a', 'b', 'aFILEname' }
 if arg then
     _G['...'] = { }
     for k, v in pairs(arg) do
@@ -257,6 +258,14 @@ function table.pack(...)
     local t = { ... }
     t.n = #t
     return t
+end
+
+function table.removeitem(t, i)
+    t[i] = nil
+end
+
+function set(t, k, v)
+    t[k] = v
 end
 
 -- Courtesy of lua-users.org and metalua

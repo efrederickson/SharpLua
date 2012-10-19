@@ -970,7 +970,7 @@ namespace SharpLua
             if (data is LoadS)
             {
                 LoadS d = data as LoadS;
-                if (d.size > 0 && d.s.ToString()[0] != 27)
+                if (d.size > 0 && d.s.ToString()[0] != 27) // if its not binary
                 {
                     Lexer l = new Lexer();
                     try
@@ -999,14 +999,14 @@ namespace SharpLua
                 while (lf.f.Position < lf.f.Length)
                     ms.WriteByte((byte)lf.f.ReadByte());
                 ms.Position = 0;
-                if (ms.ReadByte() != 27)
+                if (ms.ReadByte() != 27) // if its not binary
                 {
                     // not binary file 
-                    ms.Position = 0; 
+                    ms.Position = 0;
                     StringBuilder sb = new StringBuilder();
                     while (ms.Position < ms.Length)
                         sb.Append((char)ms.ReadByte());
-                    
+
                     try
                     {
                         Lexer l = new Lexer();

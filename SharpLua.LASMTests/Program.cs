@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using SharpLua.LASM;
+using System.Diagnostics;
 
 namespace SharpLua.LASMTests
 {
@@ -22,14 +23,20 @@ namespace SharpLua.LASMTests
             string code = file.Compile();
             try
             {
+                LuaFile f = Disassembler.Disassemble(code);
                 System.IO.FileStream fs = new System.IO.FileStream("lasm.luac", System.IO.FileMode.Create);
-                foreach (char c in code)
+                //foreach (char c in code)
+                foreach (char c in f.Compile())
                     fs.WriteByte((byte)c);
                 fs.Close();
 
-                LuaFile f = Disassembler.Disassemble(code);
+
+                //Debug.Assert(f.Compile() == file.Compile());
+                string s2 = f.Compile();
+                LuaRuntime.Run(s2);
                 LuaRuntime.Run(code);
                 Console.WriteLine("The above line should say 'Hello'. If it doesn't there is an error.");
+                Console.WriteLine(LASMDecompiler.Decompile(file));
             }
             catch (System.Exception ex)
             {

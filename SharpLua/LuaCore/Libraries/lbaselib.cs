@@ -470,6 +470,23 @@ namespace SharpLua
             return 1;
         }
 
+        /// <summary>
+        /// Waits milliseconds. If the second arg is a bool and true, it waits seconds
+        /// </summary>
+        /// <param name="L"></param>
+        /// <returns></returns>
+        static int luaB_wait(LuaState L)
+        {
+            int wait = luaL_checkint(L, 1);
+            if (lua_isboolean(L, 2))
+            {
+                if (lua_toboolean(L, 2) == 1)
+                    wait *= 1000;
+            }
+            System.Threading.Thread.Sleep(wait);
+            return 0;
+        }
+
         private readonly static luaL_Reg[] base_funcs = {
 		  new luaL_Reg("assert", luaB_assert),
 		  new luaL_Reg("collectgarbage", luaB_collectgarbage),
@@ -496,6 +513,8 @@ namespace SharpLua
 		  new luaL_Reg("unpack", luaB_unpack),
 		  new luaL_Reg("xpcall", luaB_xpcall),
           new luaL_Reg("decompile", decompileFunction),
+          new luaL_Reg("wait", luaB_wait),
+          new luaL_Reg("sleep", luaB_wait),
 		  new luaL_Reg(null, null)
 		};
 

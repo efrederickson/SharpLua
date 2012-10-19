@@ -554,6 +554,9 @@ namespace SharpLua
                 lua_assert(base_ <= L.top && ((L.top - L.stack) <= L.stacksize));
                 lua_assert(L.top == L.ci.top || (luaG_checkopenop(i) != 0));
                 //Dump(pc.pc, i);
+
+                raiseOnOpcodeRun(i);
+
                 switch (GET_OPCODE(i))
                 {
                     case OpCode.OP_MOVE:
@@ -1058,5 +1061,13 @@ namespace SharpLua
             }
         }
 
+        static void raiseOnOpcodeRun(Instruction i)
+        {
+            if (OnOpcodeRun != null)
+                OnOpcodeRun(i);
+        }
+
+        public delegate void OpcodeRan(Instruction opcode);
+        public static event OpcodeRan OnOpcodeRun = null;
     }
 }

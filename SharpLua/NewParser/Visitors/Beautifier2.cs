@@ -13,15 +13,42 @@ namespace SharpLua.Visitors
     /// It assumes the input Ast token streams are well-formed. It may not fail on 
     /// malformed token streams, but it will generate invalid code.
     /// </summary>
-    public class ExactReconstruction
+    public class Beautifier2
     {
         Beautifier beautifier = new Beautifier();
+
+        internal int indent = 0;
+        string nlindent()
+        {
+            indent++;
+            return EOL + writeIndent();
+        }
+
+        string nldedent()
+        {
+            indent--;
+            return EOL + writeIndent();
+        }
+
+        string nl()
+        {
+            return EOL + writeIndent();
+        }
+
+        string writeIndent()
+        {
+            StringBuilder s = new StringBuilder();
+            for (int i = 0; i < indent; i++)
+                s.Append(Tab);
+            return s.ToString();
+        }
 
         string fromToken(Token t, Scope s)
         {
             StringBuilder sb = new StringBuilder();
             foreach (Token t2 in t.Leading)
-                sb.Append(t2.Data);
+                if (t2.Type == TokenType.LongComment || t2.Type == TokenType.ShortComment)
+                    sb.Append(t2.Data);
 
             if (t.Type == TokenType.DoubleQuoteString)
                 sb.Append("\"" + t.Data + "\"");
@@ -329,6 +356,11 @@ namespace SharpLua.Visitors
                     sb.Append(fromToken(s.ScannedTokens[i++], s.Scope)); // 'function' 
                     sb.Append(fromToken(s.ScannedTokens[i++], s.Scope)); // <name>
                     sb.Append(fromToken(s.ScannedTokens[i++], s.Scope)); // '('
+                    for (int i2 = 0; i2 < f.Arguments.Count; i2++)
+                    {
+                        sb.Append(DoExpr(f.Arguments[i2], s.ScannedTokens, ref i, s.Scope));
+
+                    }
                     sb.Append(fromToken(s.ScannedTokens[i++], s.Scope)); // ')'
 
                     sb.Append(DoChunk(f.Body));

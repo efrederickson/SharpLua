@@ -6,21 +6,30 @@ SharpLua TODO
 - set "..." to command line args in _G
 - Lists
 - new icon
-- set              - set (table, key, value)
-- table.removeitem - removes an item from a table
+X set              - set (table, key, value)
+X table.removeitem - removes an item from a table
 
 Parser
      - option to continue parsing after a parse error (add to error list)
      - allow embedded LASM (?)
 
 X Modify exact reconstructor to check Expressions before reconstructing
- then work exact reconstructor comment/ws logic into the other reconstructors
+     - then work exact reconstructor comment/ws logic into the other reconstructors
 
-Port LuaAssemblyTools to c# and use in #lua (SharpLua.LASM)
+X Port LuaAssemblyTools to c# and use in #lua (SharpLua.LASM)
 
 (some of the following is for an SD/VS/Standalone ide thing, other stuff isn't. its not sorted well) 
 Supported files:
  LASM, #Lua, Lua, MetaLua, [S]Luac (LASM Editor?)
+ 
+- Virtual Project
+     - saves files into <projectname>.vpdata as XML[1]
+     ? Property option for file type, so extensions aren't necessary
+     - options to convert to/from a VP
+     - .lvpproj ? Or just .luaproj with VPProj option... Or automatic detection and loading of VPProj data files in any project type...
+     - automatic basic version control, all changes to files are logged and you can revert to a previous or future (if reverted) version painlessly.
+     -
+ [1] - XML with binary data? Hmm... Might need a different or custom format. zip with actual files inside? Maybe.
  
 Supported Compilers/Debuggers
      - Standard SharpLua compiler
@@ -79,6 +88,7 @@ Supported Compilers/Debuggers
      - minify/beautify/create Lua compatible output Lua files
      - XFuscate output
      ? generate exe
+     - generate luarocks file
  - Have .net file dependencies
  - Watch window/variables window
  - Comment/String spell checker
@@ -100,6 +110,14 @@ Supported Compilers/Debuggers
  - view/edit LASM of running Lua project
  - Rip Scripts/LocalScripts from rbxm/rbxl files
  - XFUSCATOR
+  - Zip/Rar/7z/Tar.Gz project
+ - compare files
+     - exclude white space (for reconstruction/beautifying debugging purposes)
+     - line by line comparison
+     - exclude comments
+ - "Smart sort" file extensions in dialogs
+ - Surround with
+     - surround selection, block, line
  
 
 - Documentation files
@@ -151,4 +169,8 @@ Class:
      end,
  }
  setmetatable(<name>, { __index = <super/base class> })
- 
+ --[[
+ Example usage:
+ local c = Class:new()
+ print(c:DoSomething())
+ ]]

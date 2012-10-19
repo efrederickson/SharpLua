@@ -12,6 +12,7 @@ namespace SharpLua.Visitors
     // - augmented operators          -> expanded form (a += 1 -> a = a + (1))
     // - inline functions             -> Anonymous functions
     // - using                        -> do/end
+    // - '!' unary operator           -> "not"
 
     public class LuaCompatibleOutput
     {
@@ -205,6 +206,8 @@ namespace SharpLua.Visitors
             else if (e is UnOpExpr)
             {
                 string op = (e as UnOpExpr).Op;
+                if (op == "!")
+                    op = "not";
                 string s = op;
                 if (s.Length != 1)
                     s += " ";

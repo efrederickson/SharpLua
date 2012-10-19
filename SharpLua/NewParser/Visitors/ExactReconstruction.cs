@@ -15,7 +15,7 @@ namespace SharpLua.Visitors
     /// </summary>
     public class ExactReconstruction
     {
-        Beautifier beautifier = new Beautifier();
+        BasicBeautifier beautifier = new BasicBeautifier();
 
         string fromToken(Token t, Scope s)
         {
@@ -64,10 +64,17 @@ namespace SharpLua.Visitors
                 AnonymousFunctionExpr f = e as AnonymousFunctionExpr;
                 StringBuilder sb = new StringBuilder();
 
-                int i = 0;
-                sb.Append(fromToken(tok[i++], s)); // 'function' 
-                sb.Append(fromToken(tok[i++], s)); // '('
-                sb.Append(fromToken(tok[i++], s)); // ')'
+                sb.Append(fromToken(tok[index++], s)); // 'function' 
+                sb.Append(fromToken(tok[index++], s)); // '('
+                for (int i2 = 0; i2 < f.Arguments.Count; i2++)
+                {
+                    sb.Append(fromToken(tok[index++], s));
+                    if (i2 != f.Arguments.Count - 1 || f.IsVararg)
+                        sb.Append(fromToken(tok[index++], s));
+                }
+                if (f.IsVararg)
+                    sb.Append(fromToken(tok[index++], s));
+                sb.Append(fromToken(tok[index++], s)); // ')'
 
                 sb.Append(DoChunk(f.Body));
                 sb.Append(fromToken(tok[tok.Count - 1], s)); // <end>
@@ -281,6 +288,7 @@ namespace SharpLua.Visitors
                     GenericForStatement g = s as GenericForStatement;
                     StringBuilder sb = new StringBuilder();
                     int i = 0;
+                    sb.Append(fromToken(g.ScannedTokens[i++], s.Scope)); // 'for'
                     for (int x = 0; x < g.VariableList.Count; x++)
                     {
                         sb.Append(fromToken(s.ScannedTokens[i++], s.Scope));
@@ -329,6 +337,14 @@ namespace SharpLua.Visitors
                     sb.Append(fromToken(s.ScannedTokens[i++], s.Scope)); // 'function' 
                     sb.Append(fromToken(s.ScannedTokens[i++], s.Scope)); // <name>
                     sb.Append(fromToken(s.ScannedTokens[i++], s.Scope)); // '('
+                    for (int i2 = 0; i2 < f.Arguments.Count; i2++)
+                    {
+                        sb.Append(fromToken(s.ScannedTokens[i++], s.Scope));
+                        if (i2 != f.Arguments.Count - 1 || f.IsVararg)
+                            sb.Append(fromToken(s.ScannedTokens[i++], s.Scope));
+                    }
+                    if (f.IsVararg)
+                        sb.Append(fromToken(s.ScannedTokens[i++], s.Scope));
                     sb.Append(fromToken(s.ScannedTokens[i++], s.Scope)); // ')'
 
                     sb.Append(DoChunk(f.Body));

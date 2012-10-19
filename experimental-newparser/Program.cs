@@ -32,7 +32,7 @@ namespace SharpLua
                     Chunk c = p.Parse();
                     //dump(c.Body);
                     Console.WriteLine("- Beautified -");
-                    Visitors.Beautifier b = new Visitors.Beautifier();
+                    Visitors.BasicBeautifier b = new Visitors.BasicBeautifier();
                     Console.WriteLine(b.Beautify(c));
                     Console.WriteLine("- Lua Compatible -");
                     Visitors.LuaCompatibleOutput lco = new Visitors.LuaCompatibleOutput();
@@ -41,6 +41,8 @@ namespace SharpLua
                     Console.WriteLine(new Visitors.ExactReconstruction().Reconstruct(c));
                     Console.WriteLine("- Minified -");
                     Console.WriteLine(new Visitors.Minifier().Minify(c));
+                    Console.WriteLine("- Beautifier2 -");
+                    Console.WriteLine(new Visitors.Beautifier().Beautify(c));
                 }
                 catch (LuaSourceException ex)
                 {
@@ -65,7 +67,7 @@ namespace SharpLua
             Chunk c = p.Parse();
             c.Scope.RenameVariable("a", "b");
             c.Scope.RenameVariable("c", "testfunc");
-            Visitors.Beautifier e = new Visitors.Beautifier();
+            Visitors.BasicBeautifier e = new Visitors.BasicBeautifier();
             Console.WriteLine(e.Beautify(c));
             Visitors.ExactReconstruction e2 = new Visitors.ExactReconstruction();
             Console.WriteLine(e2.Reconstruct(c));

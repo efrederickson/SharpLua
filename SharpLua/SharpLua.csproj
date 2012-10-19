@@ -152,8 +152,9 @@
     <Compile Include="NewParser\StringExt.cs" />
     <Compile Include="NewParser\Token.cs" />
     <Compile Include="NewParser\TokenReader.cs" />
+    <Compile Include="NewParser\Visitors\BasicBeautifier.cs" />
     <Compile Include="NewParser\Visitors\Beautifier.cs" />
-    <Compile Include="NewParser\Visitors\Beautifier2.cs" />
+    <Compile Include="NewParser\Visitors\FormattingOptions.cs" />
     <Compile Include="NewParser\Visitors\Minifier.cs" />
     <Compile Include="NewParser\Visitors\ExactReconstruction.cs" />
     <Compile Include="NewParser\Visitors\LuaCompatibleOutput.cs" />

@@ -10,11 +10,11 @@ X set              - set (table, key, value)
 X table.removeitem - removes an item from a table
 
 Parser
-     - option to continue parsing after a parse error (add to error list)
+     X option to continue parsing after a parse error (add to error list)
      - allow embedded LASM (?)
 
 X Modify exact reconstructor to check Expressions before reconstructing
-     - then work exact reconstructor comment/ws logic into the other reconstructors
+     X then work exact reconstructor comment/ws logic into the other reconstructors
 
 X Port LuaAssemblyTools to c# and use in #lua (SharpLua.LASM)
 

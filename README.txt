@@ -11,6 +11,7 @@ SharpLua.LuaInterface class or the SharpLua.LuaRuntime, SharpLua.Lua is the raw 
 
 Features Lua 5.1.5 doesn't have:
 - table.unpack (similar to _G.unpack)
+- a large extension library
 - clr library (allows .NET object access)
 - Syntax extensions
     - ! (not)
@@ -25,6 +26,7 @@ SharpLua                     The SharpLua core
 SharpLua.Interactive         SharpLua REPL
 SharpLua.InterfacingTests    SharpLua interfacing tests. As apposed to using the raw Lua API.
 SharpLua.Compiler            SharpLua bytecode compiler
+SharpLua.LASM                SharpLua LASM things
 
 Future projects:
 SharpLua.Decompiler          SharpLua bytecode decompiler

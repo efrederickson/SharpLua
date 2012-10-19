@@ -14,6 +14,9 @@ namespace SharpLua.Visitors
     // - using                        -> do/end
     // - '!' unary operator           -> "not"
 
+    /// <summary>
+    /// Needs to be updated...
+    /// </summary>
     public class LuaCompatibleOutput
     {
         //StringBuilder sb = new StringBuilder();

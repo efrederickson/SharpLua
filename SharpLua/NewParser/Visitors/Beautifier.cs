@@ -13,32 +13,31 @@ namespace SharpLua.Visitors
     public class Beautifier
     {
         BasicBeautifier beautifier = new BasicBeautifier();
-
-        public string EOL = "\r\n";
-        public string Tab = "    ";
+        public FormattingOptions options = new FormattingOptions();
+        
         internal int indent = 0;
         string nlindent()
         {
             indent++;
-            return EOL + writeIndent();
+            return options.EOL + writeIndent();
         }
 
         string nldedent()
         {
             indent--;
-            return EOL + writeIndent();
+            return options.EOL + writeIndent();
         }
 
         string nl()
         {
-            return EOL + writeIndent();
+            return options.EOL + writeIndent();
         }
 
         string writeIndent()
         {
             StringBuilder s = new StringBuilder();
             for (int i = 0; i < indent; i++)
-                s.Append(Tab);
+                s.Append(options.Tab);
             return s.ToString();
         }
 
@@ -115,7 +114,7 @@ namespace SharpLua.Visitors
 
                 if (f.Body.Count > 1)
                 {
-                    sb.Append(EOL);
+                    sb.Append(options.EOL);
                     indent++;
                     sb.Append(DoChunk(f.Body));
                     sb.Append(nldedent());
@@ -137,7 +136,7 @@ namespace SharpLua.Visitors
             }
             else if (e is BinOpExpr)
             {
-                int i = 0;
+                //int i = 0;
                 string left = DoExpr((e as BinOpExpr).Lhs, tok, ref index, s);
                 string op = fromToken(tok[index++], s);
                 string right = DoExpr((e as BinOpExpr).Rhs, tok, ref index, s);
@@ -380,7 +379,7 @@ namespace SharpLua.Visitors
                     DoStatement d = s as DoStatement;
                     StringBuilder sb = new StringBuilder();
                     sb.Append(fromToken(d.ScannedTokens[0], s.Scope)); // 'do'
-                    sb.Append(EOL);
+                    sb.Append(options.EOL);
                     indent++;
                     sb.Append(DoChunk(d.Body));
                     sb.Append(nldedent());
@@ -417,7 +416,7 @@ namespace SharpLua.Visitors
                     }
                     sb.Append(" ");
                     sb.Append(fromToken(g.ScannedTokens[i++], s.Scope)); // 'do'
-                    sb.Append(EOL);
+                    sb.Append(options.EOL);
                     indent++;
                     sb.Append(DoChunk(g.Body));
                     sb.Append(nldedent());
@@ -449,7 +448,7 @@ namespace SharpLua.Visitors
                         sb.Append(" ");
                     }
                     sb.Append(fromToken(n.ScannedTokens[i++], s.Scope)); // 'do'
-                    sb.Append(EOL);
+                    sb.Append(options.EOL);
                     indent++;
                     sb.Append(DoChunk(n.Body));
                     sb.Append(nldedent());
@@ -478,7 +477,7 @@ namespace SharpLua.Visitors
                     if (f.IsVararg)
                         sb.Append(fromToken(s.ScannedTokens[i++], s.Scope));
                     sb.Append(fromToken(s.ScannedTokens[i++], s.Scope)); // ')'
-                    sb.Append(EOL);
+                    sb.Append(options.EOL);
                     indent++;
                     sb.Append(DoChunk(f.Body));
                     sb.Append(nldedent());
@@ -509,7 +508,7 @@ namespace SharpLua.Visitors
                             sb.Append(DoExpr(c.Condition, c.ScannedTokens, ref i3, c.Scope));
                             sb.Append(" ");
                             sb.Append(fromToken(c.ScannedTokens[i3++], s.Scope)); // 'then'
-                            sb.Append(EOL);
+                            sb.Append(options.EOL);
                             indent++;
                             sb.Append(DoChunk(clause.Body));
                             sb.Append(nldedent());
@@ -517,7 +516,7 @@ namespace SharpLua.Visitors
                         else if (clause is ElseStmt)
                         {
                             sb.Append(fromToken(clause.ScannedTokens[i3++], s.Scope)); // if/elseif
-                            sb.Append(EOL);
+                            sb.Append(options.EOL);
                             indent++;
                             sb.Append(DoChunk(clause.Body));
                             sb.Append(nldedent());
@@ -538,7 +537,7 @@ namespace SharpLua.Visitors
                     RepeatStatement r = s as RepeatStatement;
                     StringBuilder sb = new StringBuilder();
                     sb.Append(fromToken(r.ScannedTokens[0], s.Scope));
-                    sb.Append(EOL);
+                    sb.Append(options.EOL);
                     indent++;
                     sb.Append(DoChunk(r.Body));
                     sb.Append(nldedent());
@@ -607,7 +606,7 @@ namespace SharpLua.Visitors
                     }
                     sb.Append(" ");
                     sb.Append(fromToken(s.ScannedTokens[i++], s.Scope)); // 'do'
-                    sb.Append(EOL);
+                    sb.Append(options.EOL);
                     indent++;
                     sb.Append(DoChunk(u.Body));
                     sb.Append(nldedent());
@@ -624,7 +623,7 @@ namespace SharpLua.Visitors
                     sb.Append(DoExpr(w.Condition, w.ScannedTokens, ref i, s.Scope));
                     sb.Append(" ");
                     sb.Append(fromToken(s.ScannedTokens[i++], s.Scope)); // 'do'
-                    sb.Append(EOL);
+                    sb.Append(options.EOL);
                     indent++;
                     sb.Append(DoChunk(w.Body));
                     sb.Append(nldedent());
@@ -646,8 +645,8 @@ namespace SharpLua.Visitors
                 sb.Append(writeIndent());
                 string ss = DoStatement(s);
                 sb.Append(ss);
-                if (ss.EndsWith(EOL) == false)
-                    sb.Append(EOL);
+                if (ss.EndsWith(options.EOL) == false)
+                    sb.Append(options.EOL);
                 if (s.HasSemicolon)
                     sb.Append(fromToken(s.SemicolonToken, s.Scope));
             }

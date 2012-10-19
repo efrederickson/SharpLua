@@ -10,19 +10,41 @@ namespace SharpLua.Visitors
 {
     /// <summary>
     /// Not entirely exact, it checks variable renaming...
-    /// It assumes the input Ast token streams are well-formed. It may not fail on 
+    /// It assumes the input Ast token streams are well-formed. It may not fail on
     /// malformed token streams, but it will generate invalid code.
     /// </summary>
     public class ExactReconstruction
     {
         BasicBeautifier beautifier = new BasicBeautifier();
+        public FormattingOptions options = new FormattingOptions();
 
         string fromToken(Token t, Scope s)
         {
             StringBuilder sb = new StringBuilder();
-            foreach (Token t2 in t.Leading)
-                sb.Append(t2.Data);
-
+            for (int i = 0; i < t.Leading.Count; i++)
+            {
+                Token t2 = t.Leading[i];
+                if (t2.Type == TokenType.WhitespaceTab && options.TabsToSpaces)
+                    sb.Append(options.Tab);
+                else if (t2.Type == TokenType.WhitespaceR || t2.Type == TokenType.WhitespaceN)
+                {
+                    if (options.ConvertNewLines)
+                    {
+                        string nLine = options.EOL;
+                        if (t2.Type ==TokenType.WhitespaceR && t.Leading.Count > i + 1 && t.Leading[i + 1].Type == TokenType.WhitespaceN)
+                        {
+                            // \r\n new line
+                            i++;
+                            sb.Append(options.EOL);
+                        }
+                        else
+                            // \n or \r new line
+                            sb.Append(nLine);
+                    }
+                    else
+                        sb.Append(t2.Data);
+                }
+            }
             if (t.Type == TokenType.DoubleQuoteString)
                 sb.Append("\"" + t.Data + "\"");
             else if (t.Type == TokenType.SingleQuoteString)
@@ -64,7 +86,7 @@ namespace SharpLua.Visitors
                 AnonymousFunctionExpr f = e as AnonymousFunctionExpr;
                 StringBuilder sb = new StringBuilder();
 
-                sb.Append(fromToken(tok[index++], s)); // 'function' 
+                sb.Append(fromToken(tok[index++], s)); // 'function'
                 sb.Append(fromToken(tok[index++], s)); // '('
                 for (int i2 = 0; i2 < f.Arguments.Count; i2++)
                 {
@@ -83,7 +105,7 @@ namespace SharpLua.Visitors
             }
             else if (e is BinOpExpr)
             {
-                int i = 0;
+                //int i = 0;
                 string left = DoExpr((e as BinOpExpr).Lhs, tok, ref index, s);
                 string op = fromToken(tok[index++], s);
                 string right = DoExpr((e as BinOpExpr).Rhs, tok, ref index, s);
@@ -98,7 +120,7 @@ namespace SharpLua.Visitors
                 CallExpr c = e as CallExpr;
                 StringBuilder sb = new StringBuilder();
                 sb.Append(DoExpr(c.Base, tok, ref index, s) // <base>
-                    + fromToken(tok[index++], s)); // '('
+                          + fromToken(tok[index++], s)); // '('
                 for (int i = 0; i < c.Arguments.Count; i++)
                 {
                     sb.Append(DoExpr(c.Arguments[i], tok, ref index, s));
@@ -217,7 +239,7 @@ namespace SharpLua.Visitors
 
         internal string DoStatement(Statement s)
         {
-            // If the statement contains a body, we cant just fromTokens it, as it's body might not be 
+            // If the statement contains a body, we cant just fromTokens it, as it's body might not be
             // fully tokenized input. Therefore, we run DoChunk on Body's
 
             if (s.ScannedTokens != null && s.ScannedTokens.Count > 0)
@@ -334,7 +356,7 @@ namespace SharpLua.Visitors
                     StringBuilder sb = new StringBuilder();
 
                     int i = 0;
-                    sb.Append(fromToken(s.ScannedTokens[i++], s.Scope)); // 'function' 
+                    sb.Append(fromToken(s.ScannedTokens[i++], s.Scope)); // 'function'
                     sb.Append(fromToken(s.ScannedTokens[i++], s.Scope)); // <name>
                     sb.Append(fromToken(s.ScannedTokens[i++], s.Scope)); // '('
                     for (int i2 = 0; i2 < f.Arguments.Count; i2++)
@@ -400,10 +422,10 @@ namespace SharpLua.Visitors
                     int i = -1;
                     for (int k = r.ScannedTokens.Count - 1; k > 0; k--)
                         if (r.ScannedTokens[k].Type == TokenType.Keyword && r.ScannedTokens[k].Data == "until")
-                        {
-                            i = k;
-                            break;
-                        }
+                    {
+                        i = k;
+                        break;
+                    }
                     sb.Append(fromToken(r.ScannedTokens[i++], r.Scope));
                     sb.Append(DoExpr(r.Condition, r.ScannedTokens, ref i, r.Scope));
                     return sb.ToString();

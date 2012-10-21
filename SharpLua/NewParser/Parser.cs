@@ -147,12 +147,22 @@ namespace SharpLua
                 Variable var = c.GetLocal(id.Data);
                 if (var == null)
                 {
-                    v.IsGlobal = true;
-                    v.Var = new Variable { Name = id.Data };
+                    var = c.GetGlobal(id.Data);
+                    if (var == null)
+                    {
+                        v.Var = c.CreateGlobal(id.Data);
+                    }
+                    else
+                    {
+                        v.Var = var;
+                        v.Var.References++;
+                    }
                 }
                 else
+                {
                     v.Var = var;
-
+                    v.Var.References++;
+                }
                 return v;
             }
             else
@@ -378,7 +388,7 @@ namespace SharpLua
                     else if (tok.ConsumeSymbol("..."))
                     {
                         isVarArg = true;
-                        if (!tok.ConsumeSymbol(')'))
+                        if (!tok.ConsumeSymbol('|'))
                             error("'...' must be the last argument of a function");
                         break;
                     }

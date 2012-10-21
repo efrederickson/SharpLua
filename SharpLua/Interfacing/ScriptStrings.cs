@@ -148,11 +148,13 @@ clr.load = luanet.load_assembly
 
 clr.create = function(a, ...)
     local arg = { ... }
-    local a,b = pcall(function() return luanet.import_type(a, unpack(arg))(unpack(arg)) end)
-    if a then return b end
+    local a2,b2 = pcall(function() return luanet.import_type(a) end)
+print(a2,b2)
+    if a2 and b2 then return b2(...) end
     for k, ns in pairs(clr.ns) do
-        local a,b = pcall(function() return luanet.import_type(ns .. ""."" .. a, unpack(arg))(unpack(arg)) end)
-        if a then return b end
+        local a3,b3 = pcall(function() return luanet.import_type(ns .. ""."" .. a) end)
+print(a3,b3)
+        if a3 and b3 then return b3(...) end
     end
 end
 
@@ -179,7 +181,7 @@ clr.call = function(f, ...)
     end
 end
 
-clr.import = function(ns)
+clr.usingns = function(ns)
     table.insert(clr.ns, ns)
 end
 

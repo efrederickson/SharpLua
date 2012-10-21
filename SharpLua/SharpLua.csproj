@@ -148,7 +148,10 @@
     <Compile Include="NewParser\Lexer.cs" />
     <Compile Include="NewParser\LuaSourceException.cs" />
     <Compile Include="NewParser\Parser.cs" />
-    <None Include="NewParser\Program.cs" />
+    <Compile Include="NewParser\Refactoring\AddDependency.cs" />
+    <Compile Include="NewParser\Refactoring\FindMisspelledVariables.cs" />
+    <Compile Include="NewParser\Refactoring\FindUnusedVariables.cs" />
+    <Compile Include="NewParser\Refactoring\InlineFunction.cs" />
     <Compile Include="NewParser\StringExt.cs" />
     <Compile Include="NewParser\Token.cs" />
     <Compile Include="NewParser\TokenReader.cs" />

@@ -4,15 +4,16 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{150CED9A-888B-4783-8ACA-57599A3A43EF}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <ProjectGuid>{960FBA54-AFA9-41CA-99E1-C315CED963BF}</ProjectGuid>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SharpLua.LASM</RootNamespace>
-    <AssemblyName>SharpLua.LASM</AssemblyName>
+    <RootNamespace>CSharpExampleProject</RootNamespace>
+    <AssemblyName>CSharpExampleProject</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -22,6 +23,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -39,27 +41,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Enums.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="LASM.txt" />
-    <Content Include="Readme.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="bit.cs" />
-    <Compile Include="Chunk.cs" />
-    <Compile Include="LASMDecompiler.cs" />
-    <Compile Include="Disassembler.cs" />
-    <None Include="Dumper.cs_" />
-    <Compile Include="Instruction.cs" />
-    <Compile Include="LasmParser.cs" />
-    <Compile Include="LuaFile.cs" />
-    <Compile Include="PlatformConfig.cs" />
-    <Compile Include="Verifier.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\SharpLua\SharpLua.csproj">
+    <ProjectReference Include="..\..\SharpLua\SharpLua.csproj">
       <Project>{90a9c907-11ad-4754-8b70-51ccb3a6c98a}</Project>
       <Name>SharpLua</Name>
     </ProjectReference>

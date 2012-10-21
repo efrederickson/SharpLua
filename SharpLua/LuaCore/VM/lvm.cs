@@ -445,7 +445,7 @@ namespace SharpLua
             }
         }
 
-        internal static void Dump(int pc, Instruction i)
+        public static void Dump(int pc, Instruction i)
         {
             int A = GETARG_A(i);
             int B = GETARG_B(i);

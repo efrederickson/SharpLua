@@ -29,6 +29,7 @@ namespace SharpLua.Visitors
             if (e is AnonymousFunctionExpr) // function() ... end
             {
                 // TODO: optimize into InlineFunctionExpr?
+                // it would be much smaller than function() return <...> end 
 
                 AnonymousFunctionExpr f = e as AnonymousFunctionExpr;
                 StringBuilder sb = new StringBuilder();

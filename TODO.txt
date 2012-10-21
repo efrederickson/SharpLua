@@ -52,24 +52,24 @@ Supported Compilers/Debuggers
  
  ? bundle MetaLua with SDAddIn
 
- ! Rename variables/functions (options for in comments/strings also)
+ X Rename variables/functions (options for in comments/strings also)
      - do a regex check to see if it worked. If it didn't, prompt user to send report data.
-     ! - global variables (e.g. function a() end) are not renamed
 
- - Find unused variables
- - Find misspelled variables(only used once, similar to other var names)
+ X Find unused variables
+ ! Find misspelled variables(only used once, similar to other var names)
+     ! (not fully working hello and helko would return both (Hello, Helko) and (Helko, Hello)
  - Goto Definition
  - Find eternal loops
- - Optimize simple functions to inline functions
+ X Optimize simple functions to inline functions
  - Find functions with only some return paths
  - Find code that will never be run
- - Find All References
- - Change line breaks (\n, \r, \r\n)
+ - Find All References (to a variable)
+ X Change line breaks (\n, \r, \r\n) (In FormattingOptions)
  -  Comment documentation/intellisense
      - LuaDoc
      - LDoc
      - ExpLua
-     - SharpLua comment (XML/.net)
+     - SharpLua comment (XML/.net style)
  - Indentation/formatting
      - minfied
      - beautified
@@ -110,11 +110,12 @@ Supported Compilers/Debuggers
  - view/edit LASM of running Lua project
  - Rip Scripts/LocalScripts from rbxm/rbxl files
  - XFUSCATOR
-  - Zip/Rar/7z/Tar.Gz project
+ - Zip/Rar/7z/Tar.Gz project
  - compare files
      - exclude white space (for reconstruction/beautifying debugging purposes)
      - line by line comparison
      - exclude comments
+     - compare Ast's
  - "Smart sort" file extensions in dialogs
  - Surround with
      - surround selection, block, line

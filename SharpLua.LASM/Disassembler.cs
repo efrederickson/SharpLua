@@ -76,17 +76,12 @@ namespace SharpLua.LASM
                 : s;
         }
 
-        static uint MASK1(int n, int p)
-        {
-            return (uint)((~((~0) << n)) << p);
-        }
-
         static Chunk ReadFunction()
         {
             Chunk c = new Chunk();
             c.Name = ReadString();
             c.FirstLine = (uint)ReadInt32();
-            c.LastLine = ReadInt32();
+            c.LastLine = (ulong)ReadInt32();
             c.UpvalueCount = ReadInt8(); // Upvalues
             c.ArgumentCount = ReadInt8();
             c.Vararg = ReadInt8();
@@ -99,30 +94,8 @@ namespace SharpLua.LASM
                 uint op = (uint)ReadInt32();
                 int opcode = (int)Lua.GET_OPCODE(op);
                 //(int)Bit.Get(op, 1, 6);
-                Instruction instr = new Instruction(opcode, i);
-                if (instr.OpcodeType == OpcodeType.ABC)
-                {
-                    instr.A = Lua.GETARG_A(op);
-                    instr.B = Lua.GETARG_B(op);
-                    instr.C = Lua.GETARG_C(op);
-                    //instr.A = Bit.Get(op, 7, 14);
-                    //instr.B = Bit.Get(op, 24, 32);
-                    //instr.C = Bit.Get(op, 15, 23);
-                }
-                else if (instr.OpcodeType == OpcodeType.ABx)
-                {
-                    instr.A = Lua.GETARG_A(op);
-                    instr.Bx = Lua.GETARG_Bx(op);
-                    //instr.A = Bit.Get(op, 7, 14);
-                    //instr.Bx = Bit.Get(op, 15, 32);
-                }
-                else if (instr.OpcodeType == OpcodeType.AsBx)
-                {
-                    instr.A = Lua.GETARG_A(op);
-                    instr.sBx = Lua.GETARG_sBx(op);
-                    //instr.A = Bit.Get(op, 7, 14);
-                    //instr.sBx = Bit.Get(op, 15, 32) - 131071;
-                }
+                Instruction instr = Instruction.From(op);
+                instr.Number = i;
                 c.Instructions.Add(instr);
             }
 
@@ -183,9 +156,17 @@ namespace SharpLua.LASM
             return c;
         }
 
-        public static LuaFile Disassemble(string chunk)
+        /// <summary>
+        /// Returns a disassembled LuaFile
+        /// </summary>
+        /// <param name="c"></param>
+        /// <returns></returns>
+        public static LuaFile Disassemble(string c)
         {
-            Disassembler.chunk = chunk;
+            chunk = c;
+            index = 0;
+            file = new LuaFile();
+            Disassembler.loadNumber = null;
             if (chunk == null || string.IsNullOrWhiteSpace(chunk))
                 throw new Exception("chunk is empty");
 
@@ -213,6 +194,22 @@ namespace SharpLua.LASM
                 throw new Exception("Unsupported instruction size '" + file.InstructionSize + "', expected '4'");
             file.Main = ReadFunction();
             return file;
+        }
+        
+        /// <summary>
+        /// Returns a decompiled chunk, with info based upon a default LuaFile
+        /// </summary>
+        /// <param name="chunk"></param>
+        /// <returns></returns>
+        public static Chunk DisassembleChunk(string c)
+        {
+            chunk = c;
+            index = 0;
+            file = new LuaFile();
+            loadNumber = PlatformConfig.GetNumberTypeConvertFrom(file);
+            if (chunk == null || string.IsNullOrWhiteSpace(chunk))
+                throw new Exception("chunk is empty");
+            return ReadFunction();
         }
     }
 }

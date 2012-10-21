@@ -14,7 +14,7 @@ namespace SharpLua.Visitors
     {
         BasicBeautifier beautifier = new BasicBeautifier();
         public FormattingOptions options = new FormattingOptions();
-        
+
         internal int indent = 0;
         string nlindent()
         {
@@ -648,7 +648,10 @@ namespace SharpLua.Visitors
                 if (ss.EndsWith(options.EOL) == false)
                     sb.Append(options.EOL);
                 if (s.HasSemicolon)
-                    sb.Append(fromToken(s.SemicolonToken, s.Scope));
+                    if (s.SemicolonToken != null)
+                        sb.Append(fromToken(s.SemicolonToken, s.Scope));
+                    else
+                        sb.Append(";");
             }
             return sb.ToString();
         }

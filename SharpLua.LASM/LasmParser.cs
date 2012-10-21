@@ -154,7 +154,7 @@ namespace SharpLua.LASM
             else if (ll.Substring(0, 4) == ".end")
             {
                 Chunk f = funcStack.Pop();
-                func.LastLine = lineNumber;
+                func.LastLine = (ulong)lineNumber;
                 Instruction instr1 = func.Instructions.Count > 0 ? func.Instructions[func.Instructions.Count - 1] : null;
                 Instruction instr2 = new Instruction("RETURN");
                 instr2.A = 0;

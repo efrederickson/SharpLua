@@ -14,7 +14,14 @@ namespace SharpLua.LASM
         public int NumberSize = 8;
         public bool IsFloatingPointNumbers = true;
         public Chunk Main = new Chunk();
-
+        
+        public LuaFile() { }
+        
+        public LuaFile(Lua.Proto p)
+        {
+            Main = new Chunk(p);
+        }
+        
         public string Compile()
         {
             string c = "";
@@ -43,5 +50,6 @@ namespace SharpLua.LASM
             if (Main != null)
                 Main.Verify();
         }
+        
     }
 }

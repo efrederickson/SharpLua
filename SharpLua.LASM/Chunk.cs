@@ -2,21 +2,105 @@ using System;
 using System.Collections.Generic;
 namespace SharpLua.LASM
 {
+    /// <summary>
+    /// A Function/Proto/Chunk
+    /// </summary>
     public class Chunk
     {
+        /// <summary>
+        /// The Chunk's name
+        /// </summary>
         public string Name = "";
+        /// <summary>
+        /// The first line
+        /// </summary>
         public uint FirstLine = 1;
-        public long LastLine = 1;
+        /// <summary>
+        /// The last line
+        /// </summary>
+        public ulong LastLine = 1;
+        /// <summary>
+        /// The number of upvalues in the chunk
+        /// </summary>
         public int UpvalueCount = 0;
+        /// <summary>
+        /// The number of arguments this function/chunk recieves
+        /// </summary>
         public int ArgumentCount = 0;
+        /// <summary>
+        /// The vararg flag of the chunk
+        /// </summary>
         public int Vararg = 0;
+        /// <summary>
+        /// The Maximum stack size for this chunk
+        /// </summary>
         public uint MaxStackSize = 10;
+        /// <summary>
+        /// The instructions in this chunk
+        /// </summary>
         public List<Instruction> Instructions = new List<Instruction>();
+        /// <summary>
+        /// The constants in this chunk
+        /// </summary>
         public List<Constant> Constants = new List<Constant>();
+        /// <summary>
+        /// The functions/protos in the chunk
+        /// </summary>
         public List<Chunk> Protos = new List<Chunk>();
+        /// <summary>
+        /// The locals in the chunk
+        /// </summary>
         public List<Local> Locals = new List<Local>();
+        /// <summary>
+        /// The upvalues in the chunk
+        /// </summary>
         public List<Upvalue> Upvalues = new List<Upvalue>();
-
+        
+        /// <summary>
+        /// Creates a new empty chunk
+        /// </summary>
+        public Chunk() { }
+        
+        /// <summary>
+        /// Creates a chunk from a Lua proto
+        /// </summary>
+        /// <param name="p"></param>
+        public Chunk(Lua.Proto p)
+        {
+            Name = p.source.str.ToString();
+            MaxStackSize = p.maxstacksize;
+            Vararg = p.is_vararg;
+            ArgumentCount = p.numparams;
+            UpvalueCount = p.nups;
+            LastLine = (ulong)p.lastlinedefined;
+            FirstLine = (uint)p.linedefined;
+            
+            foreach (uint instr in p.code)
+                Instructions.Add(Instruction.From(instr));
+            
+            foreach (Lua.lua_TValue k in p.k)
+            {
+                if (k.tt == Lua.LUA_TNIL)
+                    Constants.Add(new Constant(ConstantType.Nil, null));
+                else if (k.tt == Lua.LUA_TBOOLEAN)
+                    Constants.Add(new Constant(ConstantType.Bool, (int)k.value.p != 0));
+                else if (k.tt == Lua.LUA_TNUMBER)
+                    Constants.Add(new Constant(ConstantType.Number, k.value.n));
+                else if (k.tt == Lua.LUA_TSTRING)
+                    Constants.Add(new Constant(ConstantType.String, k.value.p.ToString()));
+            }
+            
+            foreach (Lua.Proto p2 in p.protos)
+                Protos.Add(new Chunk(p2));
+            
+            foreach (Lua.LocVar l in p.locvars)
+                Locals.Add(new Local(l.varname.str.ToString(), l.startpc, l.endpc));
+            
+            foreach (Lua.TString upval in p.upvalues)
+                Upvalues.Add(new Upvalue(upval.str.ToString()));
+                
+        }
+        
         public string Compile(LuaFile file)
         {
             Func<double, string> DumpNumber = PlatformConfig.GetNumberTypeConvertTo(file);

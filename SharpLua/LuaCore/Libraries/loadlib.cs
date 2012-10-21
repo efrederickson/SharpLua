@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
+using System.Reflection;
 
 namespace SharpLua
 {
@@ -429,6 +430,18 @@ namespace SharpLua
             return 1;  /* library loaded successfully */
         }
 
+        private static int loader_CLRModule(LuaState L)
+        {
+            CharPtr funcname;
+            CharPtr name = luaL_checkstring(L, 1);
+            CharPtr filename = findfile(L, name, "cpath");
+            if (filename == null)
+                return 1;  /* library not found in this path */
+            Assembly a = Assembly.LoadFrom(filename);
+            foreach (Type t in a.GetTypes())
+                L.Interface.RegisterModule(t);
+            return 0;
+        }
 
         private static int loader_Croot(LuaState L)
         {
@@ -656,7 +669,14 @@ namespace SharpLua
         };
 
 
-        public readonly static lua_CFunction[] loaders = { loader_preload, loader_Lua, loader_C, loader_Croot, null };
+        public readonly static lua_CFunction[] loaders = { 
+            loader_preload, 
+            loader_Lua, 
+            loader_C, 
+            loader_Croot, 
+            loader_CLRModule,
+            null 
+        };
 
 
         public static int luaopen_package(LuaState L)
@@ -691,7 +711,10 @@ namespace SharpLua
             else
                 lpath = LUA_PATH_DEFAULT;
             setpath(L, "path", LUA_PATH, lpath);  /* set field `path' */
-            setpath(L, "cpath", LUA_CPATH, LUA_CPATH_DEFAULT); /* set field `cpath' */
+            string cpath = Environment.GetEnvironmentVariable(LUA_CPATH);
+            if (cpath != null && !string.IsNullOrWhiteSpace(cpath))
+                cpath = cpath + ";" + LUA_CPATH_DEFAULT;
+            setpath(L, "cpath", LUA_CPATH, cpath); /* set field `cpath' */
             /* store config information */
             lua_pushliteral(L, LUA_DIRSEP + "\n" + LUA_PATHSEP + "\n" + LUA_PATH_MARK + "\n" +
                             LUA_EXECDIR + "\n" + LUA_IGMARK);

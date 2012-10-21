@@ -31,7 +31,7 @@ namespace SharpLua.Visitors
                     if (options.ConvertNewLines)
                     {
                         string nLine = options.EOL;
-                        if (t2.Type ==TokenType.WhitespaceR && t.Leading.Count > i + 1 && t.Leading[i + 1].Type == TokenType.WhitespaceN)
+                        if (t2.Type == TokenType.WhitespaceR && t.Leading.Count > i + 1 && t.Leading[i + 1].Type == TokenType.WhitespaceN)
                         {
                             // \r\n new line
                             i++;
@@ -44,6 +44,8 @@ namespace SharpLua.Visitors
                     else
                         sb.Append(t2.Data);
                 }
+                else
+                    sb.Append(t2.Data);
             }
             if (t.Type == TokenType.DoubleQuoteString)
                 sb.Append("\"" + t.Data + "\"");
@@ -356,6 +358,8 @@ namespace SharpLua.Visitors
                     StringBuilder sb = new StringBuilder();
 
                     int i = 0;
+                    if (f.IsLocal)
+                        sb.Append(fromToken(s.ScannedTokens[i++], s.Scope)); // 'local'
                     sb.Append(fromToken(s.ScannedTokens[i++], s.Scope)); // 'function'
                     sb.Append(fromToken(s.ScannedTokens[i++], s.Scope)); // <name>
                     sb.Append(fromToken(s.ScannedTokens[i++], s.Scope)); // '('
@@ -422,10 +426,10 @@ namespace SharpLua.Visitors
                     int i = -1;
                     for (int k = r.ScannedTokens.Count - 1; k > 0; k--)
                         if (r.ScannedTokens[k].Type == TokenType.Keyword && r.ScannedTokens[k].Data == "until")
-                    {
-                        i = k;
-                        break;
-                    }
+                        {
+                            i = k;
+                            break;
+                        }
                     sb.Append(fromToken(r.ScannedTokens[i++], r.Scope));
                     sb.Append(DoExpr(r.Condition, r.ScannedTokens, ref i, r.Scope));
                     return sb.ToString();
@@ -501,7 +505,8 @@ namespace SharpLua.Visitors
             {
                 sb.Append(DoStatement(s));
                 if (s.HasSemicolon)
-                    sb.Append(fromToken(s.SemicolonToken, s.Scope));
+                    if (s.SemicolonToken != null)
+                        sb.Append(fromToken(s.SemicolonToken, s.Scope));
             }
             return sb.ToString();
         }

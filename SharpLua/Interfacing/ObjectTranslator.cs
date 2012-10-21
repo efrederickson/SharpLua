@@ -22,7 +22,6 @@ namespace SharpLua
         public readonly Dictionary<object, int> objectsBackMap = new Dictionary<object, int>();
         internal LuaInterface interpreter;
         private MetaFunctions metaFunctions;
-        private List<Assembly> assemblies;
         private SharpLua.Lua.lua_CFunction registerTableFunction, unregisterTableFunction, getMethodSigFunction,
             getConstructorSigFunction, importTypeFunction, loadAssemblyFunction, ctypeFunction, enumFromIntFunction;
 
@@ -33,7 +32,6 @@ namespace SharpLua
             this.interpreter = interpreter;
             typeChecker = new CheckType(this);
             metaFunctions = new MetaFunctions(this);
-            assemblies = new List<Assembly>();
 
             importTypeFunction = new SharpLua.Lua.lua_CFunction(this.importType);
             loadAssemblyFunction = new SharpLua.Lua.lua_CFunction(this.loadAssembly);
@@ -212,10 +210,6 @@ namespace SharpLua
                     assembly = Assembly.Load(AssemblyName.GetAssemblyName(assemblyName));
                 }
 
-                if (assembly != null && !assemblies.Contains(assembly))
-                {
-                    assemblies.Add(assembly);
-                }
             }
             catch (Exception e)
             {
@@ -227,7 +221,7 @@ namespace SharpLua
 
         internal Type FindType(string className)
         {
-            foreach (Assembly assembly in assemblies)
+            foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
             {
                 Type klass = assembly.GetType(className);
                 if (klass != null)

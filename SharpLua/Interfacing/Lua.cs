@@ -759,7 +759,7 @@ namespace SharpLua
                 foreach (MethodInfo mi in t.GetMethods())
                 {
                     LuaFunctionAttribute[] a2 = (LuaFunctionAttribute[])mi.GetCustomAttributes(typeof(LuaFunctionAttribute), false);
-                    if (a2.Length > 0)
+                    if (a2.Length > 0 && mi.IsStatic)
                     {
                         if (a2[0].FunctionName == "")
                             a2[0].FunctionName = mi.Name;

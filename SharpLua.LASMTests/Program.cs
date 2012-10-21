@@ -29,14 +29,18 @@ namespace SharpLua.LASMTests
                 foreach (char c in f.Compile())
                     fs.WriteByte((byte)c);
                 fs.Close();
-
-
-                //Debug.Assert(f.Compile() == file.Compile());
+                
+                // Test chunk compiling/loading
+                string s = f.Main.Compile(f);
+                Chunk chnk = Disassembler.DisassembleChunk(s);
+                
+                // Test execution of code
                 string s2 = f.Compile();
                 LuaRuntime.Run(s2);
                 LuaRuntime.Run(code);
                 Console.WriteLine("The above line should say 'Hello'. If it doesn't there is an error.");
                 Console.WriteLine(LASMDecompiler.Decompile(file));
+                
             }
             catch (System.Exception ex)
             {

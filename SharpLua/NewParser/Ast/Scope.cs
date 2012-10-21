@@ -8,8 +8,10 @@ namespace SharpLua.Ast
     public class Scope
     {
         public List<Variable> Locals = new List<Variable>();
+        public List<Variable> Globals = new List<Variable>();
         public Scope Parent = null;
         Dictionary<string, Variable> oldNamesMap = new Dictionary<string, Variable>();
+        public List<Scope> Children = new List<Scope>();
 
         public Scope()
         {
@@ -19,6 +21,7 @@ namespace SharpLua.Ast
         public Scope(Scope parent)
         {
             Parent = parent;
+            Parent.Children.Add(this);
         }
 
         public void AddLocal(Variable v)
@@ -32,7 +35,7 @@ namespace SharpLua.Ast
             if (x != null)
                 return x;
 
-            Locals.Add(new Variable { Name = name });
+            Locals.Add(new Variable { Name = name, References = 1 });
 
             foreach (Variable v in Locals)
                 if (v.Name == name)
@@ -87,6 +90,72 @@ namespace SharpLua.Ast
             string nm = oldName.Name;
             GetLocal(oldName.Name).Name = newName;
             map(nm, GetLocal(newName));
+        }
+
+        /// <summary>
+        /// Returns ALL Variables (both local and global), including ones in parent scopes
+        /// </summary>
+        /// <returns></returns>
+        public List<Variable> GetAllVariables()
+        {
+            List<Variable> v = getVars(true); // Down
+            v.AddRange(getVars(false));       // up
+            return v;
+        }
+
+        List<Variable> getVars(bool top)
+        {
+            List<Variable> v = new List<Variable>();
+            if (top == true)
+            {
+                v.AddRange(Locals);
+                v.AddRange(Globals);
+            }
+            if (Parent != null && top == false)
+                v.AddRange(Parent.getVars(false));
+
+            if (top)
+            {
+                foreach (Scope c in Children)
+                {
+                    v.AddRange(c.getVars(true));
+                }
+            }
+            return v;
+        }
+
+        public Variable CreateGlobal(string name)
+        {
+            Variable v = new Variable();
+            v.Name = name;
+            v.IsGlobal = true;
+            Globals.Add(v);
+            v.References = 1;
+            return v;
+        }
+
+        public Variable GetGlobal(string name)
+        {
+            foreach (Variable v in Globals)
+                if (v.Name == name)
+                    return v;
+            if (Parent != null)
+                return Parent.GetGlobal(name);
+            return null;
+        }
+
+        /// <summary>
+        /// Returns either Local or Global variable
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public Variable GetVariable(string name)
+        {
+            Variable v = GetLocal(name);
+            if (v != null)
+                return v;
+            v = GetGlobal(name);
+            return v;
         }
     }
 }

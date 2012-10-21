@@ -4,87 +4,87 @@ namespace SharpLua.LASM
     public class Instruction
     {
         public static readonly string[] LuaOpName = new string[]
-{
-"MOVE",
-"LOADK",
-"LOADBOOL",
-"LOADNIL",
-"GETUPVAL",
-"GETGLOBAL",
-"GETTABLE",
-"SETGLOBAL",
-"SETUPVAL",
-"SETTABLE",
-"NEWTABLE",
-"SELF",
-"ADD",
-"SUB",
-"MUL",
-"DIV",
-"MOD",
-"POW",
-"UNM",
-"NOT",
-"LEN",
-"CONCAT",
-"JMP",
-"EQ",
-"LT",
-"LE",
-"TEST",
-"TESTSET",
-"CALL",
-"TAILCALL",
-"RETURN",
-"FORLOOP",
-"FORPREP",
-"TFORLOOP",
-"SETLIST",
-"CLOSE",
-"CLOSURE",
-"VARARG"
-};
+        {
+            "MOVE",
+            "LOADK",
+            "LOADBOOL",
+            "LOADNIL",
+            "GETUPVAL",
+            "GETGLOBAL",
+            "GETTABLE",
+            "SETGLOBAL",
+            "SETUPVAL",
+            "SETTABLE",
+            "NEWTABLE",
+            "SELF",
+            "ADD",
+            "SUB",
+            "MUL",
+            "DIV",
+            "MOD",
+            "POW",
+            "UNM",
+            "NOT",
+            "LEN",
+            "CONCAT",
+            "JMP",
+            "EQ",
+            "LT",
+            "LE",
+            "TEST",
+            "TESTSET",
+            "CALL",
+            "TAILCALL",
+            "RETURN",
+            "FORLOOP",
+            "FORPREP",
+            "TFORLOOP",
+            "SETLIST",
+            "CLOSE",
+            "CLOSURE",
+            "VARARG"
+        };
 
         public static readonly OpcodeType[] LuaOpTypeLookup = new OpcodeType[]{
-OpcodeType.ABC,
-OpcodeType.ABx,
-OpcodeType.ABC,
-OpcodeType.ABC,
-OpcodeType.ABC,
-OpcodeType.ABx,
-OpcodeType.ABC,
-OpcodeType.ABx,
-OpcodeType.ABC,
-OpcodeType.ABC,
-OpcodeType.ABC,
-OpcodeType.ABC, //self = xLEGOx's Question (ABC works)
-OpcodeType.ABC,
-OpcodeType.ABC,
-OpcodeType.ABC,
-OpcodeType.ABC,
-OpcodeType.ABC,
-OpcodeType.ABC,
-OpcodeType.ABC,
-OpcodeType.ABC,
-OpcodeType.ABC,
-OpcodeType.ABC,
-OpcodeType.AsBx,
-OpcodeType.ABC,
-OpcodeType.ABC,
-OpcodeType.ABC,
-OpcodeType.ABC,
-OpcodeType.ABC,
-OpcodeType.ABC,
-OpcodeType.ABC,
-OpcodeType.ABC,
-OpcodeType.AsBx,
-OpcodeType.AsBx,
-OpcodeType.ABC,
-OpcodeType.ABC,
-OpcodeType.ABC,
-OpcodeType.ABx,
-OpcodeType.ABC
-};
+            OpcodeType.ABC,
+            OpcodeType.ABx,
+            OpcodeType.ABC,
+            OpcodeType.ABC,
+            OpcodeType.ABC,
+            OpcodeType.ABx,
+            OpcodeType.ABC,
+            OpcodeType.ABx,
+            OpcodeType.ABC,
+            OpcodeType.ABC,
+            OpcodeType.ABC,
+            OpcodeType.ABC, //self = xLEGOx's Question (ABC works)
+            OpcodeType.ABC,
+            OpcodeType.ABC,
+            OpcodeType.ABC,
+            OpcodeType.ABC,
+            OpcodeType.ABC,
+            OpcodeType.ABC,
+            OpcodeType.ABC,
+            OpcodeType.ABC,
+            OpcodeType.ABC,
+            OpcodeType.ABC,
+            OpcodeType.AsBx,
+            OpcodeType.ABC,
+            OpcodeType.ABC,
+            OpcodeType.ABC,
+            OpcodeType.ABC,
+            OpcodeType.ABC,
+            OpcodeType.ABC,
+            OpcodeType.ABC,
+            OpcodeType.ABC,
+            OpcodeType.AsBx,
+            OpcodeType.AsBx,
+            OpcodeType.ABC,
+            OpcodeType.ABC,
+            OpcodeType.ABC,
+            OpcodeType.ABx,
+            OpcodeType.ABC
+        };
 
         // Parameter types (likely to change):
         // Unused/Arbitrary  = 0
@@ -92,48 +92,72 @@ OpcodeType.ABC
         // Constant 		 = 2
         // Constant/Register = 3
         // Upvalue 			 = 4
-        // Jump Distace 	 = 5
-        /*
-    local LuaOpcodeParams = {
-    ["MOVE"] = {1, 1, 0},
-    ["LOADK"] = {1, 2, 0},
-    ["LOADBOOL"] = {1, 0, 0},
-    ["LOADNIL"] = {1, 1, 1},
-    ["GETUPVAL"] = {1, 4, 5},
-    ["GETGLOBAL"] = {1, 2, 0},
-    ["GETTABLE"] = {1, 1, 3},
-    ["SETGLOBAL"] = {1, 2, 0},
-    ["SETUPVAL"] = {1, 4, 5},
-    ["SETTABLE"] = {1, 3, 3},
-    ["NEWTABLE"] = {1, 0, 0},
-    ["SELF"] = {1, 1, 3},
-    ["ADD"] = {1, 1, 3},
-    ["SUB"] = {1, 1, 3},
-    ["MUL"] = {1, 1, 3},
-    ["DIV"] = {1, 1, 3},
-    ["MOD"] = {1, 1, 3},
-    ["POW"] = {1, 1, 3},
-    ["UNM"] = {1, 1, 0},
-    ["NOT"] = {1, 1, 0},
-    ["LEN"] = {1, 1, 0},
-    ["CONCAT"] = {1, 1, 1},
-    ["JMP"] = {0, 5, 0},
-    ["EQ"] = {1, 3, 3},
-    ["LT"] = {1, 3, 3},
-    ["LE"] = {1, 3, 3},
-    ["TEST"] = {1, 0, 1},
-    ["TESTSET"] = {1, 1, 1},
-    ["CALL"] = {1, 0, 0},
-    ["TAILCALL"] = {1, 0, 0},
-    ["RETURN"] = {1, 0, 0},
-    ["FORLOOP"] = {1, 5, 0},
-    ["FORPREP"] = {1, 5, 0},
-    ["TFORLOOP"] = {1, 5, 0},
-    ["SETLIST"] = {1, 0, 0},
-    ["CLOSE"] = {1, 0, 0},
-    ["CLOSURE"] = {1, 0, 0},
-    ["VARARG"] = {1, 1, 0},
-    }*/
+        // Jump Distance 	 = 5
+
+        public enum ParameterType
+        {
+            Unused = 0,
+            Register = 1,
+            Consant = 2,
+            ConstantOrRegister = 3,
+            Upvalue = 4,
+            JumpDistance = 5
+        }
+
+        public class Params
+        {
+            public ParameterType A, B, C;
+
+            public Params(int a, int b, int c)
+            {
+                A = (ParameterType)a;
+                B = (ParameterType)b;
+                C = (ParameterType)c;
+            }
+        }
+
+        public static readonly Params[] LuaOpcodeParams = new Params[]
+        {
+            new Params(1, 1, 0), // move
+            new Params(1, 2, 0), // loadk
+            new Params(1, 0, 0), // loadbool
+            new Params(1, 1, 1), // loadnil
+            new Params(1, 4, 5), // getupval
+            new Params(1, 2, 0), // getglobal
+            new Params(1, 1, 3), // gettable
+            new Params(1, 2, 0), // setglobal
+            new Params(1, 4, 5), // setupval
+            new Params(1, 3, 3), // settable
+            new Params(1, 0, 0), // newtable
+            new Params(1, 1, 3), // self
+            new Params(1, 1, 3), // add
+            new Params(1, 1, 3), // sub
+            new Params(1, 1, 3), // mul
+            new Params(1, 1, 3), // div
+            new Params(1, 1, 3), // mod
+            new Params(1, 1, 3), // pow
+            new Params(1, 1, 0), // unm
+            new Params(1, 1, 0), // not
+            new Params(1, 1, 0), // len
+            new Params(1, 1, 1), // concat
+            new Params(0, 5, 0), // jmp
+            new Params(1, 3, 3), // eq
+            new Params(1, 3, 3), // lt
+            new Params(1, 3, 3), // le
+            new Params(1, 0, 1), // test
+            new Params(1, 1, 1), // testset
+            new Params(1, 0, 0), // call
+            new Params(1, 0, 1), // test
+            new Params(1, 0, 0), // tailcall
+            new Params(1, 0, 0), // return
+            new Params(1, 5, 0), // forloop
+            new Params(1, 5, 0), // forprep
+            new Params(1, 5, 0), // tforloop
+            new Params(1, 0, 0), // setlist
+            new Params(1, 0, 0), // close
+            new Params(1, 0, 0), // closure
+            new Params(1, 1, 0), // vararg
+        };
 
         public enum LuaOp
         {
@@ -205,6 +229,14 @@ OpcodeType.ABC
 
         public int Number, LineNumber;
 
+        public Params OpcodeParams
+        {
+            get
+            {
+                return LuaOpcodeParams[OpcodeNumber];
+            }
+        }
+
         public Instruction(int opcode, int num = 0)
         {
             A = 0;
@@ -222,6 +254,37 @@ OpcodeType.ABC
         public Instruction(string name, int num = 0)
             : this((int)(LuaOp)Enum.Parse(typeof(LuaOp), name, true), num)
         {
+        }
+
+        public static Instruction From(uint binary)
+        {
+            int opcode = (int)Lua.GET_OPCODE(binary);
+            //(int)Bit.Get(op, 1, 6);
+            Instruction instr = new Instruction(opcode, 0);
+            if (instr.OpcodeType == OpcodeType.ABC)
+            {
+                instr.A = Lua.GETARG_A(binary);
+                instr.B = Lua.GETARG_B(binary);
+                instr.C = Lua.GETARG_C(binary);
+                //instr.A = Bit.Get(op, 7, 14);
+                //instr.B = Bit.Get(op, 24, 32);
+                //instr.C = Bit.Get(op, 15, 23);
+            }
+            else if (instr.OpcodeType == OpcodeType.ABx)
+            {
+                instr.A = Lua.GETARG_A(binary);
+                instr.Bx = Lua.GETARG_Bx(binary);
+                //instr.A = Bit.Get(op, 7, 14);
+                //instr.Bx = Bit.Get(op, 15, 32);
+            }
+            else if (instr.OpcodeType == OpcodeType.AsBx)
+            {
+                instr.A = Lua.GETARG_A(binary);
+                instr.sBx = Lua.GETARG_sBx(binary);
+                //instr.A = Bit.Get(op, 7, 14);
+                //instr.sBx = Bit.Get(op, 15, 32) - 131071;
+            }
+            return instr;
         }
     }
 

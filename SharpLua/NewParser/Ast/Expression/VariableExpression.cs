@@ -8,6 +8,5 @@ namespace SharpLua.Ast.Expression
     public class VariableExpression : Expression
     {
         public Variable Var;
-        public bool IsGlobal = false;
     }
 }

@@ -223,7 +223,7 @@ namespace SharpLua
         {
             foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
             {
-                Type klass = assembly.GetType(className);
+                Type klass = assembly.GetType(className, false, true);
                 if (klass != null)
                 {
                     return klass;

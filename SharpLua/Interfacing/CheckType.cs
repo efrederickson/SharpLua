@@ -114,6 +114,14 @@ namespace SharpLua
                 else if (luatype == LuaTypes.LUA_TNIL)
                     return extractNetObject; // kevinh - silently convert nil to a null string pointer
             }
+            else if (paramType == typeof(char))
+            // string -> char support
+            {
+                if (LuaDLL.lua_isstring(luaState, stackPos))
+                    return extractValues[runtimeHandleValue];
+                else if (luatype == LuaTypes.LUA_TNIL)
+                    return extractNetObject;
+            }
             else if (paramType == typeof(LuaTable))
             {
                 if (luatype == LuaTypes.LUA_TTABLE)
@@ -225,6 +233,18 @@ namespace SharpLua
         }
         private object getAsChar(SharpLua.Lua.LuaState luaState, int stackPos)
         {
+            if (LuaDLL.lua_isstring(luaState, stackPos))
+            {
+                string s = LuaDLL.lua_tostring(luaState, stackPos);
+                if (s.Length == 0) // return a null char
+                    return '\0';
+                else
+                {
+                    if (s.Length > 1)
+                        System.Diagnostics.Debug.WriteLine("String Length was greater than 1! Truncating...");
+                    return s[0];
+                }
+            }
             char retVal = (char)LuaDLL.lua_tonumber(luaState, stackPos);
             if (retVal == 0 && !LuaDLL.lua_isnumber(luaState, stackPos)) return null;
             return retVal;

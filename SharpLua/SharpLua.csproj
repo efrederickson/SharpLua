@@ -145,12 +145,16 @@
     <Compile Include="NewParser\Compiler\Compiler.cs" />
     <Compile Include="NewParser\Compiler\K2Reg.cs" />
     <Compile Include="NewParser\Compiler\Var2Reg.cs" />
+    <Compile Include="NewParser\ExtractDocumentationComments.cs" />
     <Compile Include="NewParser\Lexer.cs" />
+    <Compile Include="NewParser\Location.cs" />
     <Compile Include="NewParser\LuaSourceException.cs" />
     <Compile Include="NewParser\Parser.cs" />
     <Compile Include="NewParser\Refactoring\AddDependency.cs" />
     <Compile Include="NewParser\Refactoring\FindMisspelledVariables.cs" />
+    <Compile Include="NewParser\Refactoring\FindReferences.cs" />
     <Compile Include="NewParser\Refactoring\FindUnusedVariables.cs" />
+    <Compile Include="NewParser\Refactoring\FindImplementation.cs" />
     <Compile Include="NewParser\Refactoring\InlineFunction.cs" />
     <Compile Include="NewParser\StringExt.cs" />
     <Compile Include="NewParser\Token.cs" />

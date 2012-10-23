@@ -31,7 +31,7 @@ namespace SharpLua
                 if (c == '\n')
                 {
                     ln++;
-                    col = 1;
+                    col = 0; // incremented 2 lines down
                 }
                 col++;
                 p++;
@@ -191,7 +191,7 @@ namespace SharpLua
             }
             string content = src.Substring(start, p - start);
             for (int i = 0; i < numEquals + 2; i++) // read closing ](=*)]
-                if (peek() == '=' || peek() == ']') 
+                if (peek() == '=' || peek() == ']')
                     read();
                 else
                     break;
@@ -216,6 +216,9 @@ namespace SharpLua
         {
             List<Token> tokens = new List<Token>();
             src = s;
+            p = 0;
+            ln = 1;
+            col = 1;
 
             while (true)
             {
@@ -256,8 +259,10 @@ namespace SharpLua
                             //read();
                             //if (peek() == '\n') // e.g. \r\n
                             //    read();
-
-                            leading.Add(new Token { Type = TokenType.ShortComment, Data = comment });
+                            if (comment.Length >= 3 && comment.Substring(0, 3) == "---")
+                                leading.Add(new Token { Type = TokenType.DocumentationComment, Data = comment });
+                            else
+                                leading.Add(new Token { Type = TokenType.ShortComment, Data = comment });
                         }
                         else
                         {

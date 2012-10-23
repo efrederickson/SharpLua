@@ -47,7 +47,9 @@ namespace SharpLua.Visitors
             int cnt = 0;
             foreach (Token t2 in t.Leading)
             {
-                if (t2.Type == TokenType.LongComment || t2.Type == TokenType.ShortComment)
+                if (t2.Type == TokenType.LongComment
+                    || t2.Type == TokenType.ShortComment
+                    || t2.Type == TokenType.DocumentationComment)
                 {
                     sb.Append(t2.Data);
                     cnt++;
@@ -65,7 +67,7 @@ namespace SharpLua.Visitors
                 sb.Append("'" + t.Data + "'");
             else if (t.Type == TokenType.Ident)
             {
-                Variable v = s.GetOldLocal(t.Data);
+                Variable v = s.GetOldVariable(t.Data);
                 if (v != null)
                     sb.Append(v.Name);
                 else

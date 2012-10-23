@@ -800,7 +800,11 @@ namespace SharpLua
         {
             LuaState L = lua_newstate(l_alloc, null);
             if (L != null)
+            {
+                L.initializing = true;
                 lua_atpanic(L, panic);
+                L.initializing = false;
+            }
             return L;
         }
     }

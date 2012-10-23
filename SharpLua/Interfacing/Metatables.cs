@@ -56,6 +56,7 @@ namespace SharpLua
             classIndexFunction = new SharpLua.Lua.lua_CFunction(this.getClassMethod);
             classNewindexFunction = new SharpLua.Lua.lua_CFunction(this.setClassFieldOrProperty);
             execDelegateFunction = new SharpLua.Lua.lua_CFunction(this.runFunctionDelegate);
+            //new String()
         }
 
         /*
@@ -775,7 +776,7 @@ namespace SharpLua
 
         /*
          * Matches a method against its arguments in the Lua stack. Returns
-         * if the match was succesful. It it was also returns the information
+         * if the match was succesful. It was also returns the information
          * necessary to invoke the method.
          */
         internal bool matchParameters(SharpLua.Lua.LuaState luaState, MethodBase method, ref MethodCache methodCache)

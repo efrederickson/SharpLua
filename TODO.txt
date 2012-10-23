@@ -9,12 +9,14 @@ SharpLua TODO
 X set              - set (table, key, value)
 X table.removeitem - removes an item from a table
 
-Parser
+Parser/Lexer
      X option to continue parsing after a parse error (add to error list)
      - allow embedded LASM (?)
+     - Link tokens together? (Next/Previous)
 
 X Modify exact reconstructor to check Expressions before reconstructing
-     X then work exact reconstructor comment/ws logic into the other reconstructors
+     ! then work exact reconstructor comment/ws logic into the other reconstructors
+        ! - not in the LuaCompat
 
 X Port LuaAssemblyTools to c# and use in #lua (SharpLua.LASM)
 
@@ -27,9 +29,14 @@ Supported files:
      ? Property option for file type, so extensions aren't necessary
      - options to convert to/from a VP
      - .lvpproj ? Or just .luaproj with VPProj option... Or automatic detection and loading of VPProj data files in any project type...
-     - automatic basic version control, all changes to files are logged and you can revert to a previous or future (if reverted) version painlessly.
-     -
- [1] - XML with binary data? Hmm... Might need a different or custom format. zip with actual files inside? Maybe.
+     - automatic git version control, all changes to files are logged and you can revert to a previous or future (if reverted) version painlessly.
+     Directory structure:
+        .git
+            <git repo>
+        .MAIN
+            <files>
+            [when a file is added, changed, removed, etc. automatically update git]
+ [1] - XML with binary data? Hmm... Might need a different or custom format. A zip with actual files inside? Maybe.
  
 Supported Compilers/Debuggers
      - Standard SharpLua compiler
@@ -58,7 +65,7 @@ Supported Compilers/Debuggers
  X Find unused variables
  ! Find misspelled variables(only used once, similar to other var names)
      ! (not fully working hello and helko would return both (Hello, Helko) and (Helko, Hello)
- - Goto Definition
+ X Goto Definition
  - Find eternal loops
  X Optimize simple functions to inline functions
  - Find functions with only some return paths

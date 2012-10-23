@@ -19,6 +19,14 @@ namespace SharpLua
         public string Data;
         public int Line, Column;
 
+        public Location Location
+        {
+            get
+            {
+                return new Location() { Line = Line, Column = Column };
+            }
+        }
+
         public Token()
         {
             Line = 0;
@@ -52,6 +60,7 @@ namespace SharpLua
         WhitespaceN,     // \n
         WhitespaceR,     // \r
         ShortComment,
+        DocumentationComment,
         LongComment,
         Shebang,
 

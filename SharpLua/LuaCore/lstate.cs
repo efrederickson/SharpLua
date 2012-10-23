@@ -177,39 +177,388 @@ namespace SharpLua
             public TString[] tmname = new TString[(int)TMS.TM_N];  /* array with tag-method names */
         };
 
-
-        /*
-         ** `per thread' state
-         */
+        /// <summary>
+        /// 'Per thread' state
+        /// </summary>
         public class LuaState : GCObject
         {
+            // MWAHAHA WE HAZ INTERFACES THROUGH EPIK HAX
 
-            public lu_byte status;
-            public StkId top;  /* first free slot in the stack */
-            public StkId base_;  /* base of current function */
-            public GlobalState l_G;
-            public CallInfo ci;  /* call info for current function */
-            public InstructionPtr savedpc = new InstructionPtr();  /* `savedpc' of current function */
-            public StkId stack_last;  /* last free slot in the stack */
-            public StkId[] stack;  /* stack base */
-            public CallInfo end_ci;  /* points after end of ci array*/
-            public CallInfo[] base_ci;  /* array of CallInfo's */
-            public int stacksize;
-            public int size_ci;  /* size of array `base_ci' */
-            public ushort nCcalls;  /* number of nested C calls */
-            public ushort baseCcalls;  /* nested C calls when resuming coroutine */
-            public lu_byte hookmask;
-            public lu_byte allowhook;
-            public int basehookcount;
-            public int hookcount;
-            public lua_Hook hook;
-            public TValue l_gt = new TValue();  /* table of globals */
-            public TValue env = new TValue();  /* temporary place for environments */
-            public GCObject openupval;  /* list of open upvalues in this stack */
-            public GCObject gclist;
-            public lua_longjmp errorJmp;  /* current error recover point */
-            public ptrdiff_t errfunc;  /* current error handling function (stack index) */
-            
+            internal lu_byte _status;
+            public lu_byte status
+            {
+                get
+                {
+                    CheckInterface();
+                    return _status;
+                }
+                set
+                {
+                    CheckInterface();
+                    _status = value;
+                }
+            }
+
+            internal StkId _top;
+            public StkId top  /* first free slot in the stack */
+            {
+                get
+                {
+                    CheckInterface();
+                    return _top;
+                }
+                set
+                {
+                    CheckInterface();
+                    _top = value;
+                }
+            }
+
+            internal StkId _base_;
+            public StkId base_  /* base of current function */
+            {
+                get
+                {
+                    CheckInterface();
+                    return _base_;
+                }
+                set
+                {
+                    CheckInterface();
+                    _base_ = value;
+                }
+            }
+
+            internal GlobalState _l_G;
+            public GlobalState l_G
+            {
+                get
+                {
+                    CheckInterface();
+                    return _l_G;
+                }
+                set
+                {
+                    CheckInterface();
+                    _l_G = value;
+                }
+            }
+
+            internal CallInfo _ci;
+            public CallInfo ci  /* call info for current function */
+            {
+                get
+                {
+                    CheckInterface();
+                    return _ci;
+                }
+                set
+                {
+                    CheckInterface();
+                    _ci = value;
+                }
+            }
+
+            internal InstructionPtr _savedpc = new InstructionPtr();
+            public InstructionPtr savedpc  /* `savedpc' of current function */
+            {
+                get
+                {
+                    CheckInterface();
+                    return _savedpc;
+                }
+                set
+                {
+                    CheckInterface();
+                    _savedpc = value;
+                }
+            }
+
+            internal StkId _stack_last;
+            public StkId stack_last  /* last free slot in the stack */
+            {
+                get
+                {
+                    CheckInterface();
+                    return _stack_last;
+                }
+                set
+                {
+                    CheckInterface();
+                    _stack_last = value;
+                }
+            }
+
+            internal StkId[] _stack;
+            public StkId[] stack  /* stack base */
+            {
+                get
+                {
+                    CheckInterface();
+                    return _stack;
+                }
+                set
+                {
+                    CheckInterface();
+                    _stack = value;
+                }
+            }
+
+            internal CallInfo _end_ci;
+            public CallInfo end_ci  /* points after end of ci array*/
+            {
+                get
+                {
+                    CheckInterface();
+                    return _end_ci;
+                }
+                set
+                {
+                    CheckInterface();
+                    _end_ci = value;
+                }
+            }
+
+            internal CallInfo[] _base_ci;
+            public CallInfo[] base_ci  /* array of CallInfo's */
+            {
+                get
+                {
+                    CheckInterface();
+                    return _base_ci;
+                }
+                set
+                {
+                    CheckInterface();
+                    _base_ci = value;
+                }
+            }
+
+            internal int _stacksize;
+            public int stacksize
+            {
+                get
+                {
+                    CheckInterface();
+                    return _stacksize;
+                }
+                set
+                {
+                    CheckInterface();
+                    _stacksize = value;
+                }
+            }
+
+            internal int _size_ci;
+            public int size_ci  /* size of array `base_ci' */
+            {
+                get
+                {
+                    CheckInterface();
+                    return _size_ci;
+                }
+                set
+                {
+                    CheckInterface();
+                    _size_ci = value;
+                }
+            }
+
+            internal ushort _nCcalls;
+            public ushort nCcalls  /* number of nested C calls */
+            {
+                get
+                {
+                    CheckInterface();
+                    return _nCcalls;
+                }
+                set
+                {
+                    CheckInterface();
+                    _nCcalls = value;
+                }
+            }
+
+            internal ushort _base_Ccalls;
+            public ushort baseCcalls  /* nested C calls when resuming coroutine */
+            {
+                get
+                {
+                    CheckInterface();
+                    return _base_Ccalls;
+                }
+                set
+                {
+                    CheckInterface();
+                    _base_Ccalls = value;
+                }
+            }
+
+            internal lu_byte _hookmask;
+            public lu_byte hookmask
+            {
+                get
+                {
+                    CheckInterface();
+                    return _hookmask;
+                }
+                set
+                {
+                    CheckInterface();
+                    _hookmask= value;
+                }
+            }
+
+            internal lu_byte _allowhook;
+            public lu_byte allowhook
+            {
+                get
+                {
+                    CheckInterface();
+                    return _allowhook;
+                }
+                set
+                {
+                    CheckInterface();
+                    _allowhook = value;
+                }
+            }
+
+            internal int _basehookcount;
+            public int basehookcount
+            {
+                get
+                {
+                    CheckInterface();
+                    return _basehookcount;
+                }
+                set
+                {
+                    CheckInterface();
+                    _basehookcount = value;
+                }
+            }
+
+            internal int _hookcount;
+            public int hookcount
+            {
+                get
+                {
+                    CheckInterface();
+                    return _hookcount;
+                }
+                set
+                {
+                    CheckInterface();
+                    _hookcount = value;
+                }
+            }
+
+            internal lua_Hook _hook;
+            public lua_Hook hook
+            {
+                get
+                {
+                    CheckInterface();
+                    return _hook;
+                }
+                set
+                {
+                    CheckInterface();
+                    _hook = value;
+                }
+            }
+
+            internal TValue _l_gt = new TValue();
+            public TValue l_gt  /* table of globals */
+            {
+                get
+                {
+                    CheckInterface();
+                    return _l_gt;
+                }
+                set
+                {
+                    CheckInterface();
+                    _l_gt = value;
+                }
+            }
+
+            internal TValue _env = new TValue();
+            public TValue env  /* temporary place for environments */
+            {
+                get
+                {
+                    CheckInterface();
+                    return _env;
+                }
+                set
+                {
+                    CheckInterface();
+                    _env = value;
+                }
+            }
+
+            internal GCObject _openupval;
+            public GCObject openupval  /* list of open upvalues in this stack */
+            {
+                get
+                {
+                    CheckInterface();
+                    return _openupval;
+                }
+                set
+                {
+                    CheckInterface();
+                    _openupval = value;
+                }
+            }
+
+            internal GCObject _gclist;
+            public GCObject gclist
+            {
+                get
+                {
+                    CheckInterface();
+                    return _gclist;
+                }
+                set
+                {
+                    CheckInterface();
+                    _gclist = value;
+                }
+            }
+
+            internal lua_longjmp _errorJmp;
+            public lua_longjmp errorJmp  /* current error recover point */
+            {
+                get
+                {
+                    CheckInterface();
+                    return _errorJmp;
+                }
+                set
+                {
+                    CheckInterface();
+                    _errorJmp = value;
+                }
+            }
+
+            internal ptrdiff_t _errfunc;
+            public ptrdiff_t errfunc  /* current error handling function (stack index) */
+            {
+                get
+                {
+                    CheckInterface();
+                    return _errfunc;
+                }
+                set
+                {
+                    CheckInterface();
+                    _errfunc = value;
+                }
+            }
+
             LuaInterface _interface;
             public LuaInterface Interface
             {
@@ -226,12 +575,12 @@ namespace SharpLua
                 // Creates all sorts of issues...
                 //_interface = new LuaInterface(this);
             }
-            
+
             public LuaState(LuaInterface i)
             {
                 _interface = i;
             }
-            
+
             /// <summary>
             /// Set a LuaInterface to use with this LuaState. Throws an exception if there
             /// already is one.
@@ -243,6 +592,15 @@ namespace SharpLua
                     _interface = li;
                 else
                     throw new Exception("A LuaInterface is already attached to this LuaState");
+            }
+
+            internal bool initializing = false;
+
+            public void CheckInterface()
+            {
+                if (initializing == false)
+                    if (_interface == null)
+                        _interface = new LuaInterface(this);
             }
         };
 
@@ -403,13 +761,13 @@ namespace SharpLua
             /* initialize stack array */
             L1.stack = luaM_newvector<TValue>(L, BASIC_STACK_SIZE + EXTRA_STACK);
             L1.stacksize = BASIC_STACK_SIZE + EXTRA_STACK;
-            L1.top = L1.stack[0];
+            L1._top = L1.stack[0];
             L1.stack_last = L1.stack[L1.stacksize - EXTRA_STACK - 1];
             /* initialize first ci */
-            L1.ci.func = L1.top;
-            setnilvalue(StkId.inc(ref L1.top));  /* `function' entry for this `ci' */
-            L1.base_ = L1.ci.base_ = L1.top;
-            L1.ci.top = L1.top + LUA_MINSTACK;
+            L1.ci.func = L1._top;
+            setnilvalue(StkId.inc(ref L1._top));  /* `function' entry for this `ci' */
+            L1.base_ = L1.ci.base_ = L1._top;
+            L1.ci.top = L1._top + LUA_MINSTACK;
         }
 
 
@@ -512,6 +870,7 @@ namespace SharpLua
             object l = f(typeof(LG));
             if (l == null) return null;
             L = tostate(l);
+            ((LuaState)L).initializing = true;
             g = (L as LG).g;
             L.next = null;
             L.tt = LUA_TTHREAD;
@@ -554,6 +913,8 @@ namespace SharpLua
             }
             else
                 luai_userstateopen(L);
+            if (L != null)
+                ((LuaState)L).initializing = false;
             return L;
         }
 
@@ -575,7 +936,7 @@ namespace SharpLua
             do
             {  /* repeat until no more errors */
                 L.ci = L.base_ci[0];
-                L.base_ = L.top = L.ci.base_;
+                L.base_ = L._top = L.ci.base_;
                 L.nCcalls = L.baseCcalls = 0;
             } while (luaD_rawrunprotected(L, callallgcTM, null) != 0);
             lua_assert(G(L).tmudata == null);

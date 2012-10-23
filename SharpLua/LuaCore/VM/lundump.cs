@@ -197,7 +197,7 @@ namespace SharpLua
 		 Proto f;
 		 if (++S.L.nCcalls > LUAI_MAXCCALLS) error(S,"code too deep");
 		 f=luaF_newproto(S.L);
-		 setptvalue2s(S.L,S.L.top,f); incr_top(S.L);
+		 setptvalue2s(S.L,S.L._top,f); incr_top(S.L);
 		 f.source=LoadString(S); if (f.source==null) f.source=p;
 		 f.linedefined=LoadInt(S);
 		 f.lastlinedefined=LoadInt(S);
@@ -209,7 +209,7 @@ namespace SharpLua
 		 LoadConstants(S,f);
 		 LoadDebug(S,f);
 		 IF (luaG_checkcode(f)==0 ? 1 : 0, "bad code");
-		 StkId.dec(ref S.L.top);
+		 StkId.dec(ref S.L._top);
 		 S.L.nCcalls--;
 		 return f;
 		}

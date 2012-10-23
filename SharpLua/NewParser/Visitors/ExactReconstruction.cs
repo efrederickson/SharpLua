@@ -53,7 +53,7 @@ namespace SharpLua.Visitors
                 sb.Append("'" + t.Data + "'");
             else if (t.Type == TokenType.Ident)
             {
-                Variable v = s.GetOldLocal(t.Data);
+                Variable v = s.GetOldVariable(t.Data);
                 if (v != null)
                     sb.Append(v.Name);
                 else

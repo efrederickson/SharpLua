@@ -28,11 +28,12 @@ namespace SharpLua.Interactive
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             LuaRuntime.PrintBanner();
+
+#if DEBUG
             LuaRuntime.RegisterModule(typeof(TestModule));
             LuaRuntime.RegisterModule(typeof(TestModule2));
 
             // how to handle errors
-#if DEBUG
             LuaRuntime.SetVariable("DEBUG", true);
 #else
             LuaRuntime.SetVariable("DEBUG", false);
@@ -40,10 +41,11 @@ namespace SharpLua.Interactive
 
             Prompt = "> ";
 
-            LuaRuntime.GetLua().NewTable("arg");
-            LuaTable t = LuaRuntime.GetLua().GetTable("arg");
+            LuaTable t = LuaRuntime.GetLua().NewTable("arg");
             for (int i = 0; i < args.Length; i++)
                 t[i] = args[i];
+            t[-1] = System.Windows.Forms.Application.ExecutablePath;
+            t["n"] = args.Length - 1;
 
             // check command line args
             if (args.Length > 0)
@@ -112,12 +114,15 @@ namespace SharpLua.Interactive
                         }
                         catch (LuaSourceException ex)
                         {
-                            for (int i = 0; i < ex.Column; i++)
+                            for (int i = 1; i < ex.Column; i++)
                                 Console.Write(" ");
 
                             // Offset for prompt
-                            for (int i = 0; i < Prompt.Length - 1; i++)
+                            for (int i = 0; i < Prompt.Length; i++)
+                            {
+                                //Console.WriteLine(i);
                                 Console.Write(" ");
+                            }
 
                             Console.WriteLine("^");
                             Console.WriteLine(ex.GenerateMessage("<stdin>"));
@@ -131,6 +136,11 @@ namespace SharpLua.Interactive
                             // doesnt work :(
                             //LuaRuntime.Run("pcall(function() print(debug.traceback()) end)");
                             //Console.WriteLine();
+                            
+                            //Lua.LuaState l = LuaRuntime.GetLua().LuaState;
+                            //LuaRuntime.GetLua().traceback(l);
+                            //Lua.lua_getglobal(l, "print");
+                            //Lua.lua_call(l, 1, 0);
 
                             object dbg = LuaRuntime.GetVariable("DEBUG");
 

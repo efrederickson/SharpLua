@@ -100,7 +100,8 @@ namespace SharpLua
         public const string LUA_CDIR = "!\\";
         public const string LUA_PATH_DEFAULT =
                 ".\\?.lua;" + LUA_LDIR + "?.lua;" + LUA_LDIR + "?\\init.lua;"
-                             + LUA_CDIR + "?.lua;" + LUA_CDIR + "?\\init.lua";
+                             + LUA_CDIR + "?.lua;" + LUA_CDIR + "?\\init.lua;"
+                             + "?;?.lua"; // allow for something like C:\dir\file.lua
         public const string LUA_CPATH_DEFAULT =
             ".\\?.dll;" + LUA_CDIR + "?.dll;" + LUA_CDIR + "loadall.dll";
 

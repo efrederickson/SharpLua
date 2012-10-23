@@ -123,7 +123,7 @@ namespace SharpLua
                 return name;  /* is a local variable in a Lua function */
             else
             {
-                StkId limit = (ci == L.ci) ? L.top : (ci + 1).func;
+                StkId limit = (ci == L.ci) ? L._top : (ci + 1).func;
                 if (limit - ci.base_ >= n && n > 0)  /* is 'n' inside 'ci' stack? */
                     return "(*temporary)";
                 else
@@ -150,8 +150,8 @@ namespace SharpLua
             CharPtr name = findlocal(L, ci, n);
             lua_lock(L);
             if (name != null)
-                setobjs2s(L, ci.base_[n - 1], L.top - 1);
-            StkId.dec(ref L.top);  /* pop value */
+                setobjs2s(L, ci.base_[n - 1], L._top - 1);
+            StkId.dec(ref L._top);  /* pop value */
             lua_unlock(L);
             return name;
         }
@@ -192,7 +192,7 @@ namespace SharpLua
         {
             if (f == null || (f.c.isC != 0))
             {
-                setnilvalue(L.top);
+                setnilvalue(L._top);
             }
             else
             {
@@ -201,7 +201,7 @@ namespace SharpLua
                 int i;
                 for (i = 0; i < f.l.p.sizelineinfo; i++)
                     setbvalue(luaH_setnum(L, t, lineinfo[i]), 1);
-                sethvalue(L, L.top, t);
+                sethvalue(L, L._top, t);
             }
             incr_top(L);
         }
@@ -263,11 +263,11 @@ namespace SharpLua
             lua_lock(L);
             if (what == '>')
             {
-                StkId func = L.top - 1;
+                StkId func = L._top - 1;
                 luai_apicheck(L, ttisfunction(func));
                 what = what.next();  /* skip the '>' */
                 f = clvalue(func);
-                StkId.dec(ref L.top);  /* pop function */
+                StkId.dec(ref L._top);  /* pop function */
             }
             else if (ar.i_ci != 0)
             {  /* no tail call? */
@@ -278,8 +278,8 @@ namespace SharpLua
             status = auxgetinfo(L, what, ar, f, ci);
             if (strchr(what, 'f') != null)
             {
-                if (f == null) setnilvalue(L.top);
-                else setclvalue(L, L.top, f);
+                if (f == null) setnilvalue(L._top);
+                else setclvalue(L, L._top, f);
                 incr_top(L);
             }
             if (strchr(what, 'L') != null)
@@ -711,10 +711,10 @@ namespace SharpLua
             {  /* is there an error handling function? */
                 StkId errfunc = restorestack(L, L.errfunc);
                 if (!ttisfunction(errfunc)) luaD_throw(L, LUA_ERRERR);
-                setobjs2s(L, L.top, L.top - 1);  /* move argument */
-                setobjs2s(L, L.top - 1, errfunc);  /* push function */
+                setobjs2s(L, L._top, L._top - 1);  /* move argument */
+                setobjs2s(L, L._top - 1, errfunc);  /* push function */
                 incr_top(L);
-                luaD_call(L, L.top - 2, 1);  /* call it */
+                luaD_call(L, L._top - 2, 1);  /* call it */
             }
             luaD_throw(L, LUA_ERRRUN);
         }

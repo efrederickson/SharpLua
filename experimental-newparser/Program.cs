@@ -13,6 +13,9 @@ namespace SharpLua
         {
             TestRename();
             TestInline();
+            TestFindImpl();
+            TestFindRef();
+            TestExtractDocComments();
 
             while (true)
             {
@@ -92,10 +95,67 @@ namespace SharpLua
             }
         }
 
+        private static void TestExtractDocComments()
+        {
+            Lexer l = new Lexer();
+            Parser p = new Parser(l.Lex(@"
+---<summary>
+--- somefin
+---</summary>
+---<returns>nothing</returns>
+function a()
+
+end
+
+---<summary>
+--- a var
+---</summary>
+---<returns>wut?</returns>
+x = 1
+"));
+            Chunk c = p.Parse();
+            List<DocumentationComment> docs = ExtractDocumentationComments.Extract(c);
+            foreach (DocumentationComment d in docs)
+            {
+                Console.WriteLine("Documentation comment: " + d.Text + "Var: " + (d.Ident == null ? "<none>" : d.Ident.Data));
+            }
+            if (docs.Count == 0)
+                Console.WriteLine("No doc comments. Wut?");
+        }
+
+        private static void TestFindRef()
+        {
+            string s = @"local a = 1
+local b = 2
+local x, y, z = 1, 2, 3
+print(a, b)
+a += 3
+b += a
+print(b, a)
+";
+            Lexer l = new Lexer();
+            Parser p = new Parser(l.Lex(s));
+            Chunk c = p.Parse();
+            Console.WriteLine(s);
+            try
+            {
+                List<Location> l1 = Refactoring.FindReferences(c, c.Scope.GetVariable("a"));
+                foreach (Location l2 in l1)
+                    Console.WriteLine("Reference of 'a': " + l2.Line + ":" + l2.Column);
+                l1 = Refactoring.FindReferences(c, c.Scope.GetVariable("b"));
+                foreach (Location l2 in l1)
+                    Console.WriteLine("Reference of 'b': " + l2.Line + ":" + l2.Column);
+            }
+            catch (System.Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+
         private static void TestRename()
         {
             Lexer l = new Lexer();
-            Parser p = new Parser(l.Lex("local a = 5; local function c() print(a) end c()"));
+            Parser p = new Parser(l.Lex("local a = 5; function c() print(a) end c()"));
             Chunk c = p.Parse();
             c.Scope.RenameVariable("a", "b");
             c.Scope.RenameVariable("c", "testfunc");
@@ -117,6 +177,34 @@ namespace SharpLua
             Console.WriteLine(e.Beautify(c));
             Visitors.ExactReconstruction e2 = new Visitors.ExactReconstruction();
             Console.WriteLine(e2.Reconstruct(c));
+        }
+
+        static void TestFindImpl()
+        {
+            string s = @"local a = 1
+local b = 2
+local x, y, z = 1, 2, 3
+print(a, b)
+x += 1
+print(z)
+function print2(...)
+    _G.print(...)
+end
+";
+            Lexer l = new Lexer();
+            Parser p = new Parser(l.Lex(s));
+            Chunk c = p.Parse();
+            Console.WriteLine(s);
+            Location l1 = Refactoring.FindImplementation(c, c.Scope.GetVariable("a"));
+            Console.WriteLine("impl of 'a': " + l1.Line + ":" + l1.Column);
+            l1 = Refactoring.FindImplementation(c, c.Scope.GetVariable("b"));
+            Console.WriteLine("impl of 'b': " + l1.Line + ":" + l1.Column);
+            l1 = Refactoring.FindImplementation(c, c.Scope.GetVariable("x"));
+            Console.WriteLine("impl of 'x': " + l1.Line + ":" + l1.Column);
+            l1 = Refactoring.FindImplementation(c, c.Scope.GetVariable("z"));
+            Console.WriteLine("impl of 'z': " + l1.Line + ":" + l1.Column);
+            l1 = Refactoring.FindImplementation(c, c.Scope.GetVariable("print2"));
+            Console.WriteLine("impl of 'print2': " + l1.Line + ":" + l1.Column);
         }
 
         static void dump(List<Statement> s)

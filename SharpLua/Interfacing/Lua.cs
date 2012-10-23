@@ -1,4 +1,3 @@
-
 namespace SharpLua
 {
     using System;
@@ -20,6 +19,10 @@ namespace SharpLua
      * - removed all Open*Lib() functions
      * - all libs automatically open in the Lua class constructor (just assign nil to unwanted libs)
      * */
+
+    /// <summary>
+    /// The main interface to Lua. Provides a much more user-friendly API than the raw Lua API.
+    /// </summary>
     public class LuaInterface : IDisposable
     {
         /*readonly */
@@ -36,6 +39,7 @@ namespace SharpLua
         public LuaInterface()
         {
             luaState = LuaDLL.luaL_newstate();	// steffenj: Lua 5.1.1 API change (lua_open is gone)
+            luaState.initializing = true;
             //LuaDLL.luaopen_base(luaState);	// steffenj: luaopen_* no longer used
             LuaDLL.luaL_openlibs(luaState);		// steffenj: Lua 5.1.1 API change (luaopen_base is gone, just open all libs right here)
             LuaDLL.lua_pushstring(luaState, "LUAINTERFACE LOADED");
@@ -63,17 +67,19 @@ namespace SharpLua
 
             LuaDLL.luaL_dostring(luaState, ScriptStrings.InitClrLib);
             LuaDLL.luaL_dostring(luaState, ScriptStrings.InitExtLib);
-
+            luaState.initializing = false;
             luaState.SetInterface(this);
         }
 
         private bool _StatePassed;
 
-        /*
-         * CAUTION: LuaInterface.Lua instances can't share the same lua state!
-         */
+        /// <summary>
+        /// CAUTION: LuaInterface's can't share the same lua state!
+        /// </summary>
+        /// <param name="lState"></param>
         public LuaInterface(SharpLua.Lua.LuaState lState)
         {
+            lState.initializing = true;
             LuaDLL.lua_pushstring(lState, "LUAINTERFACE LOADED");
             LuaDLL.lua_gettable(lState, (int)LuaIndexes.LUA_REGISTRYINDEX);
 
@@ -103,6 +109,7 @@ namespace SharpLua
                 LuaDLL.luaL_dostring(luaState, ScriptStrings.InitExtLib);
             }
             _StatePassed = true;
+            lState.initializing = false;
         }
 
         public void Close()
@@ -585,7 +592,7 @@ namespace SharpLua
          * Creates a new table as a global variable or as a field
          * inside an existing table
          */
-        public void NewTable(string fullPath)
+        public LuaTable NewTable(string fullPath)
         {
             string[] path = fullPath.Split(new char[] { '.' });
             int oldTop = LuaDLL.lua_gettop(luaState);
@@ -607,6 +614,7 @@ namespace SharpLua
                 LuaDLL.lua_settable(luaState, -3);
             }
             LuaDLL.lua_settop(luaState, oldTop);
+            return GetTable(fullPath);
         }
 
         public ListDictionary GetTableDict(LuaTable table)

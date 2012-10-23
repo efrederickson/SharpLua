@@ -432,7 +432,6 @@ namespace SharpLua
 
         private static int loader_CLRModule(LuaState L)
         {
-            CharPtr funcname;
             CharPtr name = luaL_checkstring(L, 1);
             CharPtr filename = findfile(L, name, "cpath");
             if (filename == null)

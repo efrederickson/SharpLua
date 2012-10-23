@@ -36,8 +36,8 @@ namespace SharpLua
         //#include "lstring.h"
         //#include "lundump.h"
 
-        static Lua.CharPtr PROGNAME = "luac";		/* default program name */
-        static Lua.CharPtr OUTPUT = PROGNAME + ".out"; /* default output file */
+        static Lua.CharPtr PROGNAME = "compiled";		/* default program name */
+        static Lua.CharPtr OUTPUT = PROGNAME + ".sluac"; /* default output file */
 
         static int listing = 0;			/* list bytecodes? */
         static int dumping = 1;			/* dump bytecodes? */

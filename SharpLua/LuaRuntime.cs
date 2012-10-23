@@ -103,9 +103,10 @@ namespace SharpLua
         {
             _interface = i;
         }
+
         public static void SetLua(Lua.LuaState lua)
         {
-            _interface = new LuaInterface(lua);
+            _interface = lua.Interface;
         }
     }
 }

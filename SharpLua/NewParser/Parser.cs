@@ -13,16 +13,16 @@ namespace SharpLua
         public List<LuaSourceException> Errors = new List<LuaSourceException>();
         public bool ThrowParsingErrors = true;
 
-        TokenReader tok;
+        TokenReader reader;
 
         public Parser(TokenReader tr)
         {
-            tok = tr;
+            reader = tr;
         }
 
         void error(string msg)
         {
-            LuaSourceException ex = new LuaSourceException(tok.Peek().Line, tok.Peek().Column, msg + ", got '" + tok.Peek().Data + "'");
+            LuaSourceException ex = new LuaSourceException(reader.Peek().Line, reader.Peek().Column, msg + ", got '" + reader.Peek().Data + "'");
             Errors.Add(ex);
             if (ThrowParsingErrors)
                 throw ex;
@@ -33,30 +33,30 @@ namespace SharpLua
             AnonymousFunctionExpr func = new AnonymousFunctionExpr();
             func.Scope = new Scope(scope);
 
-            if (tok.ConsumeSymbol('(') == false)
+            if (reader.ConsumeSymbol('(') == false)
                 error("'(' expected");
 
             // arg list
             List<Variable> arglist = new List<Variable>();
             bool isVarArg = false;
-            while (tok.ConsumeSymbol(')') == false)
+            while (reader.ConsumeSymbol(')') == false)
             {
-                if (tok.Is(TokenType.Ident))
+                if (reader.Is(TokenType.Ident))
                 {
                     Variable arg = new Variable();
-                    arg.Name = tok.Get().Data;
+                    arg.Name = reader.Get().Data;
                     func.Scope.AddLocal(arg);
                     arglist.Add(arg);
-                    if (!tok.ConsumeSymbol(','))
-                        if (tok.ConsumeSymbol(')'))
+                    if (!reader.ConsumeSymbol(','))
+                        if (reader.ConsumeSymbol(')'))
                             break;
                         else
                             error("')' expected");
                 }
-                else if (tok.ConsumeSymbol("..."))
+                else if (reader.ConsumeSymbol("..."))
                 {
                     isVarArg = true;
-                    if (!tok.ConsumeSymbol(')'))
+                    if (!reader.ConsumeSymbol(')'))
                         error("'...' must be the last argument of a function");
                     break;
                 }
@@ -67,7 +67,7 @@ namespace SharpLua
             // body
             List<Statement> body = ParseStatementList(func.Scope);
             // end
-            if (!tok.ConsumeKeyword("end"))
+            if (!reader.ConsumeKeyword("end"))
                 error("'end' expected after function body");
 
             //nodeFunc.AstType = AstType.Function;
@@ -82,30 +82,30 @@ namespace SharpLua
         {
             FunctionStatement func = new FunctionStatement(scope);
 
-            if (tok.ConsumeSymbol('(') == false)
+            if (reader.ConsumeSymbol('(') == false)
                 error("'(' expected");
 
             // arg list
             List<Variable> arglist = new List<Variable>();
             bool isVarArg = false;
-            while (tok.ConsumeSymbol(')') == false)
+            while (reader.ConsumeSymbol(')') == false)
             {
-                if (tok.Is(TokenType.Ident))
+                if (reader.Is(TokenType.Ident))
                 {
                     Variable arg = new Variable();
-                    arg.Name = tok.Get().Data;
+                    arg.Name = reader.Get().Data;
                     func.Scope.AddLocal(arg);
                     arglist.Add(arg);
-                    if (!tok.ConsumeSymbol(','))
-                        if (tok.ConsumeSymbol(')'))
+                    if (!reader.ConsumeSymbol(','))
+                        if (reader.ConsumeSymbol(')'))
                             break;
                         else
                             error("')' expected");
                 }
-                else if (tok.ConsumeSymbol("..."))
+                else if (reader.ConsumeSymbol("..."))
                 {
                     isVarArg = true;
-                    if (!tok.ConsumeSymbol(')'))
+                    if (!reader.ConsumeSymbol(')'))
                         error("'...' must be the last argument of a function");
                     break;
                 }
@@ -116,7 +116,7 @@ namespace SharpLua
             // body
             List<Statement> body = ParseStatementList(func.Scope);
             // end
-            if (!tok.ConsumeKeyword("end"))
+            if (!reader.ConsumeKeyword("end"))
                 error("'end' expected after function body");
 
             //nodeFunc.AstType = AstType.Function;
@@ -130,19 +130,19 @@ namespace SharpLua
         Expression ParsePrimaryExpr(Scope c)
         {
             //Console.WriteLine(tok.Peek().Type + " " + tok.Peek().Data);
-            if (tok.ConsumeSymbol('('))
+            if (reader.ConsumeSymbol('('))
             {
                 Expression ex = ParseExpr(c);
-                if (!tok.ConsumeSymbol(')'))
+                if (!reader.ConsumeSymbol(')'))
                     error("')' expected");
 
                 // save the information about parenthesized expressions somewhere
                 ex.ParenCount = ex.ParenCount + 1;
                 return ex;
             }
-            else if (tok.Is(TokenType.Ident))
+            else if (reader.Is(TokenType.Ident))
             {
-                Token id = tok.Get();
+                Token id = reader.Get();
                 VariableExpression v = new VariableExpression();
                 Variable var = c.GetLocal(id.Data);
                 if (var == null)
@@ -178,14 +178,14 @@ namespace SharpLua
 
             while (true)
             {
-                if (tok.IsSymbol('.') || tok.IsSymbol(':'))
+                if (reader.IsSymbol('.') || reader.IsSymbol(':'))
                 {
-                    string symb = tok.Get().Data; // '.' or ':'
+                    string symb = reader.Get().Data; // '.' or ':'
                     // TODO: should we allow keywords?
-                    if (!tok.Is(TokenType.Ident))
+                    if (!reader.Is(TokenType.Ident))
                         error("<Ident> expected");
 
-                    Token id = tok.Get();
+                    Token id = reader.Get();
                     MemberExpr m = new MemberExpr();
                     m.Base = prim;
                     m.Indexer = symb;
@@ -193,11 +193,11 @@ namespace SharpLua
 
                     prim = m;
                 }
-                else if (!onlyDotColon && tok.ConsumeSymbol('['))
+                else if (!onlyDotColon && reader.ConsumeSymbol('['))
                 {
                     Expression ex = ParseExpr(scope);
 
-                    if (!tok.ConsumeSymbol(']'))
+                    if (!reader.ConsumeSymbol(']'))
                         error("']' expected");
 
                     IndexExpr i = new IndexExpr();
@@ -206,16 +206,16 @@ namespace SharpLua
 
                     prim = i;
                 }
-                else if (!onlyDotColon && tok.ConsumeSymbol('('))
+                else if (!onlyDotColon && reader.ConsumeSymbol('('))
                 {
                     List<Expression> args = new List<Expression>();
-                    while (!tok.ConsumeSymbol(')'))
+                    while (!reader.ConsumeSymbol(')'))
                     {
                         Expression ex = ParseExpr(scope);
 
                         args.Add(ex);
-                        if (!tok.ConsumeSymbol(','))
-                            if (tok.ConsumeSymbol(')'))
+                        if (!reader.ConsumeSymbol(','))
+                            if (reader.ConsumeSymbol(')'))
                                 break;
                             else
                                 error("')' expected");
@@ -227,19 +227,19 @@ namespace SharpLua
                     prim = c;
                 }
                 else if (!onlyDotColon &&
-                        (tok.Is(TokenType.SingleQuoteString) ||
-                        tok.Is(TokenType.DoubleQuoteString) ||
-                        tok.Is(TokenType.LongString)))
+                        (reader.Is(TokenType.SingleQuoteString) ||
+                        reader.Is(TokenType.DoubleQuoteString) ||
+                        reader.Is(TokenType.LongString)))
                 {
                     //string call
 
                     StringCallExpr e = new StringCallExpr();
                     e.Base = prim;
-                    e.Arguments = new List<Expression> { new StringExpr(tok.Peek().Data) { StringType = tok.Peek().Type } };
-                    tok.Get();
+                    e.Arguments = new List<Expression> { new StringExpr(reader.Peek().Data) { StringType = reader.Peek().Type } };
+                    reader.Get();
                     prim = e;
                 }
-                else if (!onlyDotColon && tok.IsSymbol('{'))
+                else if (!onlyDotColon && reader.IsSymbol('{'))
                 {
                     // table call
                     Expression ex = ParseExpr(scope);
@@ -258,39 +258,39 @@ namespace SharpLua
 
         Expression ParseSimpleExpr(Scope scope)
         {
-            if (tok.Is(TokenType.Number))
-                return new NumberExpr { Value = tok.Get().Data };
-            else if (tok.Is(TokenType.DoubleQuoteString) || tok.Is(TokenType.SingleQuoteString) || tok.Is(TokenType.LongString))
+            if (reader.Is(TokenType.Number))
+                return new NumberExpr { Value = reader.Get().Data };
+            else if (reader.Is(TokenType.DoubleQuoteString) || reader.Is(TokenType.SingleQuoteString) || reader.Is(TokenType.LongString))
             {
                 StringExpr s = new StringExpr
                 {
-                    Value = tok.Peek().Data,
-                    StringType = tok.Peek().Type
+                    Value = reader.Peek().Data,
+                    StringType = reader.Peek().Type
                 };
-                tok.Get();
+                reader.Get();
                 return s;
             }
-            else if (tok.ConsumeKeyword("nil"))
+            else if (reader.ConsumeKeyword("nil"))
                 return new NilExpr();
-            else if (tok.IsKeyword("false") || tok.IsKeyword("true"))
-                return new BoolExpr { Value = tok.Get().Data == "true" };
-            else if (tok.ConsumeSymbol("..."))
+            else if (reader.IsKeyword("false") || reader.IsKeyword("true"))
+                return new BoolExpr { Value = reader.Get().Data == "true" };
+            else if (reader.ConsumeSymbol("..."))
                 return new VarargExpr();
-            else if (tok.ConsumeSymbol('{'))
+            else if (reader.ConsumeSymbol('{'))
             {
                 TableConstructorExpr v = new TableConstructorExpr();
                 while (true)
                 {
-                    if (tok.IsSymbol('['))
+                    if (reader.IsSymbol('['))
                     {
                         // key
-                        tok.Get(); // eat '['
+                        reader.Get(); // eat '['
                         Expression key = ParseExpr(scope);
 
-                        if (!tok.ConsumeSymbol(']'))
+                        if (!reader.ConsumeSymbol(']'))
                             error("']' expected");
 
-                        if (!tok.ConsumeSymbol('='))
+                        if (!reader.ConsumeSymbol('='))
                             error("'=' Expected");
 
                         Expression value = ParseExpr(scope);
@@ -301,15 +301,15 @@ namespace SharpLua
                             Value = value,
                         });
                     }
-                    else if (tok.Is(TokenType.Ident))
+                    else if (reader.Is(TokenType.Ident))
                     {
                         // value or key
-                        Token lookahead = tok.Peek(1);
+                        Token lookahead = reader.Peek(1);
                         if (lookahead.Type == TokenType.Symbol && lookahead.Data == "=")
                         {
                             // we are a key
-                            Token key = tok.Get();
-                            if (!tok.ConsumeSymbol('='))
+                            Token key = reader.Get();
+                            if (!reader.ConsumeSymbol('='))
                                 error("'=' Expected");
 
                             Expression value = ParseExpr(scope);
@@ -332,7 +332,7 @@ namespace SharpLua
 
                         }
                     }
-                    else if (tok.ConsumeSymbol('}'))
+                    else if (reader.ConsumeSymbol('}'))
                         break;
                     else
                     {
@@ -344,26 +344,26 @@ namespace SharpLua
                         });
                     }
 
-                    if (tok.ConsumeSymbol(';') || tok.ConsumeSymbol(','))
+                    if (reader.ConsumeSymbol(';') || reader.ConsumeSymbol(','))
                     {
                         // I could have used just an empty ';' here, 
                         // but that leaves a warning, which clutters up the output
                         // other than that, all is good
                     }
-                    else if (tok.ConsumeSymbol('}'))
+                    else if (reader.ConsumeSymbol('}'))
                         break;
                     else
                         error("'}' or table entry Expected");
                 }
                 return v;
             }
-            else if (tok.ConsumeKeyword("function"))
+            else if (reader.ConsumeKeyword("function"))
             {
                 AnonymousFunctionExpr func = ParseExprFunctionArgsAndBody(scope);
                 //func.IsLocal = true;
                 return func;
             }
-            else if (tok.ConsumeSymbol('|'))
+            else if (reader.ConsumeSymbol('|'))
             {
                 // inline function... |<arg list>| -> <expr>, <expr>
                 InlineFunctionExpression func = new InlineFunctionExpression();
@@ -371,35 +371,35 @@ namespace SharpLua
                 // arg list
                 List<Variable> arglist = new List<Variable>();
                 bool isVarArg = false;
-                while (tok.ConsumeSymbol('|') == false)
+                while (reader.ConsumeSymbol('|') == false)
                 {
-                    if (tok.Is(TokenType.Ident))
+                    if (reader.Is(TokenType.Ident))
                     {
                         Variable arg = new Variable();
-                        arg.Name = tok.Get().Data;
+                        arg.Name = reader.Get().Data;
                         func.Scope.AddLocal(arg);
                         arglist.Add(arg);
-                        if (!tok.ConsumeSymbol(','))
-                            if (tok.ConsumeSymbol('|'))
+                        if (!reader.ConsumeSymbol(','))
+                            if (reader.ConsumeSymbol('|'))
                                 break;
                             else
                                 error("'|' expected");
                     }
-                    else if (tok.ConsumeSymbol("..."))
+                    else if (reader.ConsumeSymbol("..."))
                     {
                         isVarArg = true;
-                        if (!tok.ConsumeSymbol('|'))
+                        if (!reader.ConsumeSymbol('|'))
                             error("'...' must be the last argument of a function");
                         break;
                     }
                     else
                         error("Argument name or '...' expected");
                 }
-                if (!tok.ConsumeSymbol("->"))
+                if (!reader.ConsumeSymbol("->"))
                     error("'->' expected");
                 // body
                 List<Expression> body = new List<Expression> { ParseExpr(func.Scope) };
-                while (tok.ConsumeSymbol(','))
+                while (reader.ConsumeSymbol(','))
                     body.Add(ParseExpr(func.Scope));
                 // end
 
@@ -472,10 +472,10 @@ namespace SharpLua
         {
             // base item, possibly with unop prefix
             Expression exp = null;
-            if (isUnOp(tok.Peek().Data) &&
-                (tok.Peek().Type == TokenType.Symbol || tok.Peek().Type == TokenType.Keyword))
+            if (isUnOp(reader.Peek().Data) &&
+                (reader.Peek().Type == TokenType.Symbol || reader.Peek().Type == TokenType.Keyword))
             {
-                string op = tok.Get().Data;
+                string op = reader.Get().Data;
                 exp = ParseSubExpr(scope, unopprio);
                 exp = new UnOpExpr { Rhs = exp, Op = op };
             }
@@ -488,10 +488,10 @@ namespace SharpLua
             // next items in chain
             while (true)
             {
-                priority_ prio = getpriority(tok.Peek().Data);
+                priority_ prio = getpriority(reader.Peek().Data);
                 if (prio != null && prio.l > level)
                 {
-                    string op = tok.Get().Data;
+                    string op = reader.Get().Data;
                     Expression rhs = ParseSubExpr(scope, prio.r);
 
                     BinOpExpr binOpExpr = new BinOpExpr();
@@ -513,10 +513,10 @@ namespace SharpLua
 
         Statement ParseStatement(Scope scope)
         {
-            int startP = tok.p;
+            int startP = reader.p;
             Statement stat = null;
             // print(tok.Peek().Print())
-            if (tok.ConsumeKeyword("if"))
+            if (reader.ConsumeKeyword("if"))
             {
                 //setup
                 IfStmt _if = new IfStmt();
@@ -524,17 +524,17 @@ namespace SharpLua
                 //clauses
                 do
                 {
-                    int sP = tok.p;
+                    int sP = reader.p;
                     Expression nodeCond = ParseExpr(scope);
 
-                    if (!tok.ConsumeKeyword("then"))
+                    if (!reader.ConsumeKeyword("then"))
                         error("'then' expected");
 
                     List<Statement> nodeBody = ParseStatementList(scope);
 
                     List<Token> range = new List<Token>();
-                    range.Add(tok.tokens[sP - 1]);
-                    range.AddRange(tok.Range(sP, tok.p));
+                    range.Add(reader.tokens[sP - 1]);
+                    range.AddRange(reader.Range(sP, reader.p));
 
                     _if.Clauses.Add(new ElseIfStmt(scope)
                     {
@@ -543,16 +543,16 @@ namespace SharpLua
                         ScannedTokens = range
                     });
                 }
-                while (tok.ConsumeKeyword("elseif"));
+                while (reader.ConsumeKeyword("elseif"));
 
                 // else clause
-                if (tok.ConsumeKeyword("else"))
+                if (reader.ConsumeKeyword("else"))
                 {
-                    int sP = tok.p;
+                    int sP = reader.p;
                     List<Statement> nodeBody = ParseStatementList(scope);
                     List<Token> range = new List<Token>();
-                    range.Add(tok.tokens[sP - 1]);
-                    range.AddRange(tok.Range(sP, tok.p));
+                    range.Add(reader.tokens[sP - 1]);
+                    range.AddRange(reader.Range(sP, reader.p));
 
                     _if.Clauses.Add(new ElseStmt(scope)
                     {
@@ -562,12 +562,12 @@ namespace SharpLua
                 }
 
                 // end
-                if (!tok.ConsumeKeyword("end"))
+                if (!reader.ConsumeKeyword("end"))
                     error("'end' expected");
 
                 stat = _if;
             }
-            else if (tok.ConsumeKeyword("while"))
+            else if (reader.ConsumeKeyword("while"))
             {
                 WhileStatement w = new WhileStatement(scope);
 
@@ -575,14 +575,14 @@ namespace SharpLua
                 Expression nodeCond = ParseExpr(scope);
 
                 // do
-                if (!tok.ConsumeKeyword("do"))
+                if (!reader.ConsumeKeyword("do"))
                     error("'do' expected");
 
                 // body
                 List<Statement> body = ParseStatementList(scope);
 
                 //end
-                if (!tok.ConsumeKeyword("end"))
+                if (!reader.ConsumeKeyword("end"))
                     error("'end' expected");
 
 
@@ -591,24 +591,24 @@ namespace SharpLua
                 w.Body = body;
                 stat = w;
             }
-            else if (tok.ConsumeKeyword("do"))
+            else if (reader.ConsumeKeyword("do"))
             {
                 // do block
                 List<Statement> b = ParseStatementList(scope);
 
-                if (!tok.ConsumeKeyword("end"))
+                if (!reader.ConsumeKeyword("end"))
                     error("'end' expected");
 
                 stat = new DoStatement(scope) { Body = b };
             }
-            else if (tok.ConsumeKeyword("for"))
+            else if (reader.ConsumeKeyword("for"))
             {
                 //for block
-                if (!tok.Is(TokenType.Ident))
+                if (!reader.Is(TokenType.Ident))
                     error("<ident> expected");
 
-                Token baseVarName = tok.Get();
-                if (tok.ConsumeSymbol('='))
+                Token baseVarName = reader.Get();
+                if (reader.ConsumeSymbol('='))
                 {
                     //numeric for
                     NumericForStatement forL = new NumericForStatement(scope);
@@ -617,23 +617,23 @@ namespace SharpLua
 
                     Expression startEx = ParseExpr(scope);
 
-                    if (!tok.ConsumeSymbol(','))
+                    if (!reader.ConsumeSymbol(','))
                         error("',' expected");
 
                     Expression endEx = ParseExpr(scope);
 
                     Expression stepEx = null;
-                    if (tok.ConsumeSymbol(','))
+                    if (reader.ConsumeSymbol(','))
                     {
                         stepEx = ParseExpr(scope);
                     }
-                    if (!tok.ConsumeKeyword("do"))
+                    if (!reader.ConsumeKeyword("do"))
                         error("'do' expected");
 
 
                     List<Statement> body = ParseStatementList(forL.Scope);
 
-                    if (!tok.ConsumeKeyword("end"))
+                    if (!reader.ConsumeKeyword("end"))
                         error("'end' expected");
 
 
@@ -650,31 +650,31 @@ namespace SharpLua
                     GenericForStatement forL = new GenericForStatement(scope);
 
                     List<Variable> varList = new List<Variable> { forL.Scope.CreateLocal(baseVarName.Data) };
-                    while (tok.ConsumeSymbol(','))
+                    while (reader.ConsumeSymbol(','))
                     {
-                        if (!tok.Is(TokenType.Ident))
+                        if (!reader.Is(TokenType.Ident))
                             error("for variable expected");
 
-                        varList.Add(forL.Scope.CreateLocal(tok.Get().Data));
+                        varList.Add(forL.Scope.CreateLocal(reader.Get().Data));
                     }
-                    if (!tok.ConsumeKeyword("in"))
+                    if (!reader.ConsumeKeyword("in"))
                         error("'in' expected");
 
                     List<Expression> generators = new List<Expression>();
                     Expression first = ParseExpr(scope);
 
                     generators.Add(first);
-                    while (tok.ConsumeSymbol(','))
+                    while (reader.ConsumeSymbol(','))
                     {
                         Expression gen = ParseExpr(scope);
                         generators.Add(gen);
                     }
-                    if (!tok.ConsumeKeyword("do"))
+                    if (!reader.ConsumeKeyword("do"))
                         error("'do' expected");
 
                     List<Statement> body = ParseStatementList(forL.Scope);
 
-                    if (!tok.ConsumeKeyword("end"))
+                    if (!reader.ConsumeKeyword("end"))
                         error("'end' expected");
 
                     forL.VariableList = varList;
@@ -683,11 +683,11 @@ namespace SharpLua
                     stat = forL;
                 }
             }
-            else if (tok.ConsumeKeyword("repeat"))
+            else if (reader.ConsumeKeyword("repeat"))
             {
                 List<Statement> body = ParseStatementList(scope);
 
-                if (!tok.ConsumeKeyword("until"))
+                if (!reader.ConsumeKeyword("until"))
                     error("'until' expected");
 
                 Expression cond = ParseExpr(scope);
@@ -697,9 +697,9 @@ namespace SharpLua
                 r.Body = body;
                 stat = r;
             }
-            else if (tok.ConsumeKeyword("function"))
+            else if (reader.ConsumeKeyword("function"))
             {
-                if (!tok.Is(TokenType.Ident))
+                if (!reader.Is(TokenType.Ident))
                     error("function name expected");
 
                 Expression name = ParseSuffixedExpr(scope, true);
@@ -711,26 +711,26 @@ namespace SharpLua
                 func.Name = name;
                 stat = func;
             }
-            else if (tok.ConsumeKeyword("local"))
+            else if (reader.ConsumeKeyword("local"))
             {
-                if (tok.Is(TokenType.Ident))
+                if (reader.Is(TokenType.Ident))
                 {
-                    List<string> varList = new List<string> { tok.Get().Data };
-                    while (tok.ConsumeSymbol(','))
+                    List<string> varList = new List<string> { reader.Get().Data };
+                    while (reader.ConsumeSymbol(','))
                     {
-                        if (!tok.Is(TokenType.Ident))
+                        if (!reader.Is(TokenType.Ident))
                             error("local variable name expected");
-                        varList.Add(tok.Get().Data);
+                        varList.Add(reader.Get().Data);
                     }
 
                     List<Expression> initList = new List<Expression>();
-                    if (tok.ConsumeSymbol('='))
+                    if (reader.ConsumeSymbol('='))
                     {
                         do
                         {
                             Expression ex = ParseExpr(scope);
                             initList.Add(ex);
-                        } while (tok.ConsumeSymbol(','));
+                        } while (reader.ConsumeSymbol(','));
                     }
 
                     //now patch var list
@@ -749,11 +749,11 @@ namespace SharpLua
                     l.IsLocal = true;
                     stat = l;
                 }
-                else if (tok.ConsumeKeyword("function"))
+                else if (reader.ConsumeKeyword("function"))
                 {
-                    if (!tok.Is(TokenType.Ident))
+                    if (!reader.Is(TokenType.Ident))
                         error("Function name expected");
-                    string name = tok.Get().Data;
+                    string name = reader.Get().Data;
                     Variable localVar = scope.CreateLocal(name);
 
                     FunctionStatement func = ParseFunctionArgsAndBody(scope);
@@ -765,27 +765,27 @@ namespace SharpLua
                 else
                     error("local variable or function definition expected");
             }
-            else if (tok.ConsumeSymbol("::"))
+            else if (reader.ConsumeSymbol("::"))
             {
-                if (!tok.Is(TokenType.Ident))
+                if (!reader.Is(TokenType.Ident))
                     error("label name expected");
 
-                string label = tok.Get().Data;
-                if (!tok.ConsumeSymbol("::"))
+                string label = reader.Get().Data;
+                if (!reader.ConsumeSymbol("::"))
                     error("'::' expected");
 
                 LabelStatement l = new LabelStatement();
                 l.Label = label;
                 stat = l;
             }
-            else if (tok.ConsumeKeyword("return"))
+            else if (reader.ConsumeKeyword("return"))
             {
                 List<Expression> exprList = new List<Expression>();
-                if (!tok.IsKeyword("end"))
+                if (!reader.IsKeyword("end"))
                 {
                     Expression firstEx = ParseExpr(scope);
                     exprList.Add(firstEx);
-                    while (tok.ConsumeSymbol(','))
+                    while (reader.ConsumeSymbol(','))
                     {
                         Expression ex = ParseExpr(scope);
                         exprList.Add(ex);
@@ -795,40 +795,40 @@ namespace SharpLua
                 r.Arguments = exprList;
                 stat = r;
             }
-            else if (tok.ConsumeKeyword("break"))
+            else if (reader.ConsumeKeyword("break"))
             {
                 stat = new BreakStatement();
             }
-            else if (tok.ConsumeKeyword("goto"))
+            else if (reader.ConsumeKeyword("goto"))
             {
-                if (!tok.Is(TokenType.Ident))
+                if (!reader.Is(TokenType.Ident))
                     error("label expected");
 
-                string label = tok.Get().Data;
+                string label = reader.Get().Data;
                 GotoStatement g = new GotoStatement();
                 g.Label = label;
                 stat = g;
             }
-            else if (tok.ConsumeKeyword("using"))
+            else if (reader.ConsumeKeyword("using"))
             {
                 // using <a, b = 1, x()> do <statements> end
                 UsingStatement us = new UsingStatement(scope);
                 us.Scope = new Scope(scope);
 
                 List<Expression> lhs = new List<Expression> { ParseExpr(us.Scope) };
-                while (tok.ConsumeSymbol(','))
+                while (reader.ConsumeSymbol(','))
                 {
                     lhs.Add(ParseSuffixedExpr(us.Scope));
                 }
 
                 // equals
-                if (!tok.ConsumeSymbol('='))
+                if (!reader.ConsumeSymbol('='))
                     error("'=' expected");
 
                 //rhs
                 List<Expression> rhs = new List<Expression>();
                 rhs.Add(ParseExpr(us.Scope));
-                while (tok.ConsumeSymbol(','))
+                while (reader.ConsumeSymbol(','))
                 {
                     rhs.Add(ParseExpr(scope));
                 }
@@ -837,12 +837,12 @@ namespace SharpLua
                 a.Lhs = lhs;
                 a.Rhs = rhs;
 
-                if (!tok.ConsumeKeyword("do"))
+                if (!reader.ConsumeKeyword("do"))
                     error("'do' expected");
 
                 List<Statement> block = ParseStatementList(us.Scope);
 
-                if (!tok.ConsumeKeyword("end"))
+                if (!reader.ConsumeKeyword("end"))
                     error("'end' expected");
 
                 us.Vars = a;
@@ -854,7 +854,7 @@ namespace SharpLua
                 // statementParseExpr
                 Expression suffixed = ParseSuffixedExpr(scope);
                 // assignment or call?
-                if (tok.IsSymbol(',') || tok.IsSymbol('='))
+                if (reader.IsSymbol(',') || reader.IsSymbol('='))
                 {
                     // check that it was not parenthesized, making it not an lvalue
                     if (suffixed.ParenCount > 0)
@@ -862,19 +862,19 @@ namespace SharpLua
 
                     // more processing needed
                     List<Expression> lhs = new List<Expression> { suffixed };
-                    while (tok.ConsumeSymbol(','))
+                    while (reader.ConsumeSymbol(','))
                     {
                         lhs.Add(ParseSuffixedExpr(scope));
                     }
 
                     // equals
-                    if (!tok.ConsumeSymbol('='))
+                    if (!reader.ConsumeSymbol('='))
                         error("'=' expected");
 
                     //rhs
                     List<Expression> rhs = new List<Expression>();
                     rhs.Add(ParseExpr(scope));
-                    while (tok.ConsumeSymbol(','))
+                    while (reader.ConsumeSymbol(','))
                     {
                         rhs.Add(ParseExpr(scope));
                     }
@@ -884,12 +884,12 @@ namespace SharpLua
                     a.Rhs = rhs;
                     stat = a;
                 }
-                else if (isAugmentedAssignment(tok.Peek()))
+                else if (isAugmentedAssignment(reader.Peek()))
                 {
                     AugmentedAssignmentStatement aas = new AugmentedAssignmentStatement();
                     Expression left = suffixed;
                     Expression right = null;
-                    string augmentedOp = tok.Get().Data;
+                    string augmentedOp = reader.Get().Data;
                     right = ParseExpr(scope);
                     BinOpExpr nRight = new BinOpExpr();
                     nRight.Lhs = left;
@@ -913,11 +913,11 @@ namespace SharpLua
                     error("assignment statement expected");
             }
 
-            stat.ScannedTokens = tok.Range(startP, tok.p);
-            if (tok.Peek().Data == ";" && tok.Peek().Type == TokenType.Symbol)
+            stat.ScannedTokens = reader.Range(startP, reader.p);
+            if (reader.Peek().Data == ";" && reader.Peek().Type == TokenType.Symbol)
             {
                 stat.HasSemicolon = true;
-                stat.SemicolonToken = tok.Get();
+                stat.SemicolonToken = reader.Get();
             }
             if (stat.Scope == null)
                 stat.Scope = scope;
@@ -959,7 +959,7 @@ namespace SharpLua
         {
             List<Statement> c = new List<Statement>();
 
-            while (!isClosing(tok.Peek().Data) && !tok.IsEof())
+            while (!isClosing(reader.Peek().Data) && !reader.IsEof())
             {
                 Statement nodeStatement = ParseStatement(scope);
                 //stats[#stats+1] = nodeStatement
@@ -972,7 +972,12 @@ namespace SharpLua
         public Chunk Parse()
         {
             Scope s = new Scope();
-            return new Chunk { Body = ParseStatementList(s), Scope = s };
+            return new Chunk
+            {
+                Body = ParseStatementList(s),
+                Scope = s,
+                ScannedTokens = reader.tokens
+            };
         }
     }
 }

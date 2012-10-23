@@ -2,6 +2,6 @@
 - Test it more
 - EmptyStatement (empty semicolon statement)
 - Ast2code
-  - Write comments in Beautifier and LuaCompliantOutput
+  - Write comments in LuaCompliantOutput
   - Add a LuaCompliantMiniOutput
 - Compiler

@@ -5,6 +5,9 @@ using System.Text;
 
 namespace SharpLua
 {
+    /// <summary>
+    /// Lua scripts ran in LuaInterface as extension functions and clr libraries
+    /// </summary>
     class ScriptStrings
     {
 
@@ -142,18 +145,18 @@ end
 
 local clr = { }
 
-clr.ns = { ""System"", ""System.IO"", ""System.Windows.Forms"" }
+clr.ns = { ""System"", ""System.IO"", ""System.Windows.Forms"", ""System.Collections.Generic"", ""System.Text"" }
 
 clr.load = luanet.load_assembly
 
 clr.create = function(a, ...)
     local arg = { ... }
     local a2,b2 = pcall(function() return luanet.import_type(a) end)
-print(a2,b2)
+--print(a2,b2)
     if a2 and b2 then return b2(...) end
     for k, ns in pairs(clr.ns) do
         local a3,b3 = pcall(function() return luanet.import_type(ns .. ""."" .. a) end)
-print(a3,b3)
+--print(a3,b3)
         if a3 and b3 then return b3(...) end
     end
 end
@@ -238,13 +241,16 @@ end
 -- override base type
 rawtype = type
 function type(o)
-    local mt = getmetatable(o)
-    local t = rawtype(o)
-    if rawtype(mt) == 'table' then   
-        t = o.__type or mt.__type or mt._NAME or mt.ClassName
-        if rawtype(t) == 'function' then t = t() end
-    end
-    return t
+    local a, b = pcall(function()
+        local mt = getmetatable(o)
+        local t = rawtype(o)
+        if rawtype(mt) == 'table' then   
+            t = o.__type or mt.__type or mt._NAME or mt.ClassName
+            if rawtype(t) == 'function' then t = t() end
+        end 
+        return t
+    end)
+    return a and b or rawtype(o)
 end
 
 -- table.invert
@@ -269,6 +275,52 @@ end
 function set(t, k, v)
     t[k] = v
 end
+
+local mt = getmetatable(table) or { }
+-- create an empty table
+mt.__call = function(t, ...) 
+    local arg = { ... }
+    arg[1] = arg[1] or 0
+    arg[2] = arg[2] or 1
+    arg[3] = arg[3] or 1
+
+    local t = { }
+    for i = arg[2], arg[1], arg[3] do
+        if arg[i] then
+            t[i] = arg[i]
+        else
+            if arg[4] then
+                if type(arg[4]) == ""table"" then
+                    t[i] = arg[4][i] or 0
+                end
+            else
+                t[i] = 0
+            end
+        end
+    end
+    return t
+end
+setmetatable(table, mt)
+
+Lua = { }
+Lua.Parser = { }
+
+Lua.Parser.Lex = function(code)
+    local lexer = clr.create""SharpLua.Lexer""
+    return lexer:Lex(code)
+end
+
+Lua.Parser.Parse = function(code)
+    if type(code) == ""string"" then code = Lua.Parser.Lex(code) end
+    local parser = clr.create(""SharpLua.Parser"", code)
+    return parser:Parse()
+end
+
+Lua.CLR = clr
+Lua.Clr = Lua.CLR
+--Lua.String = System.String
+
+SharpLua = luanet.namespace""SharpLua""
 
 -- Courtesy of lua-users.org and metalua
 

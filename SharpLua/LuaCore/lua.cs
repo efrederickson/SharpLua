@@ -260,7 +260,7 @@ namespace SharpLua
             lua_Number n;
             lua_lock(L);
             n = (((u) <= (lua_Unsigned)int.MaxValue) ? (lua_Number)(int)(u) : (lua_Number)(u));
-            setnvalue(L.top, n);
+            setnvalue(L._top, n);
             api_incr_top(L);
             lua_unlock(L);
         }

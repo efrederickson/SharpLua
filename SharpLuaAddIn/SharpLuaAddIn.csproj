@@ -99,6 +99,7 @@
   <ItemGroup>
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\AstExtractor.cs" />
+    <Compile Include="Src\BracketSearcher.cs" />
     <Compile Include="Src\CodeCompletion.cs" />
     <Compile Include="Src\Common.cs" />
     <Compile Include="Src\CompletionDatas.cs" />

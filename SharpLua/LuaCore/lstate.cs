@@ -405,7 +405,7 @@ namespace SharpLua
                 set
                 {
                     CheckInterface();
-                    _hookmask= value;
+                    _hookmask = value;
                 }
             }
 
@@ -573,7 +573,9 @@ namespace SharpLua
             public LuaState()
             {
                 // Creates all sorts of issues...
+                //initializing = true;
                 //_interface = new LuaInterface(this);
+                //initializing = false;
             }
 
             public LuaState(LuaInterface i)

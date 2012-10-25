@@ -1,7 +1,7 @@
 ﻿<AddIn name        = "SharpLua.SharpDevelop.AddIn"
        author      = "Elijah Frederickson"
        description = "Create and Edit #Lua Scripts in SharpDevelop"
-       copyright   = "none"
+       copyright   = "LGPL"
        url         = "https://github.com/mlnlover11/SharpLua"
 >
     

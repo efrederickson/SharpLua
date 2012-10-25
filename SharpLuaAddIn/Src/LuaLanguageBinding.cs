@@ -20,7 +20,28 @@ namespace SharpLuaAddIn
 
         public override ICSharpCode.SharpDevelop.Editor.IFormattingStrategy FormattingStrategy
         {
-            get { return new SharpLuaFormattingStrategy(); }
+            get
+            {
+                return new SharpLuaFormattingStrategy();
+            }
         }
+
+        public override ICSharpCode.SharpDevelop.Editor.IBracketSearcher BracketSearcher
+        {
+            get
+            {
+                return new BracketSearcher();
+                //return base.BracketSearcher;
+            }
+        }
+
+        public override ICSharpCode.SharpDevelop.Dom.LanguageProperties Properties
+        {
+            get
+            {
+                return base.Properties;
+            }
+        }
+
     }
 }

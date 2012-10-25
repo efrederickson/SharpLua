@@ -24,6 +24,7 @@ namespace SharpLua
         {
             LuaSourceException ex = new LuaSourceException(reader.Peek().Line, reader.Peek().Column, msg + ", got '" + reader.Peek().Data + "'");
             Errors.Add(ex);
+            //Console.WriteLine(ex.GenerateMessage("sd"));
             if (ThrowParsingErrors)
                 throw ex;
         }
@@ -48,10 +49,13 @@ namespace SharpLua
                     func.Scope.AddLocal(arg);
                     arglist.Add(arg);
                     if (!reader.ConsumeSymbol(','))
+                    {
                         if (reader.ConsumeSymbol(')'))
                             break;
                         else
                             error("')' expected");
+                        break;
+                    }
                 }
                 else if (reader.ConsumeSymbol("..."))
                 {
@@ -61,7 +65,10 @@ namespace SharpLua
                     break;
                 }
                 else
+                {
                     error("Argument name or '...' expected");
+                    break;
+                }
             }
 
             // body
@@ -97,10 +104,13 @@ namespace SharpLua
                     func.Scope.AddLocal(arg);
                     arglist.Add(arg);
                     if (!reader.ConsumeSymbol(','))
+                    {
                         if (reader.ConsumeSymbol(')'))
                             break;
                         else
                             error("')' expected");
+                        break;
+                    }
                 }
                 else if (reader.ConsumeSymbol("..."))
                 {
@@ -110,7 +120,10 @@ namespace SharpLua
                     break;
                 }
                 else
+                {
                     error("Argument name or '...' expected");
+                    break;
+                }
             }
 
             // body
@@ -215,10 +228,13 @@ namespace SharpLua
 
                         args.Add(ex);
                         if (!reader.ConsumeSymbol(','))
+                        {
                             if (reader.ConsumeSymbol(')'))
                                 break;
                             else
                                 error("')' expected");
+                            break;
+                        }
                     }
                     CallExpr c = new CallExpr();
                     c.Base = prim;
@@ -288,10 +304,16 @@ namespace SharpLua
                         Expression key = ParseExpr(scope);
 
                         if (!reader.ConsumeSymbol(']'))
+                        {
                             error("']' expected");
+                            break;
+                        }
 
                         if (!reader.ConsumeSymbol('='))
+                        {
                             error("'=' Expected");
+                            break;
+                        }
 
                         Expression value = ParseExpr(scope);
 
@@ -353,7 +375,10 @@ namespace SharpLua
                     else if (reader.ConsumeSymbol('}'))
                         break;
                     else
+                    {
                         error("'}' or table entry Expected");
+                        break;
+                    }
                 }
                 return v;
             }
@@ -380,10 +405,17 @@ namespace SharpLua
                         func.Scope.AddLocal(arg);
                         arglist.Add(arg);
                         if (!reader.ConsumeSymbol(','))
+                        {
                             if (reader.ConsumeSymbol('|'))
+                            {
                                 break;
+                            }
                             else
+                            {
                                 error("'|' expected");
+                                break;
+                            }
+                        }
                     }
                     else if (reader.ConsumeSymbol("..."))
                     {
@@ -393,7 +425,10 @@ namespace SharpLua
                         break;
                     }
                     else
+                    {
                         error("Argument name or '...' expected");
+                        break;
+                    }
                 }
                 if (!reader.ConsumeSymbol("->"))
                     error("'->' expected");
@@ -703,7 +738,7 @@ namespace SharpLua
                     error("function name expected");
 
                 Expression name = ParseSuffixedExpr(scope, true);
-                // true => only dots and colons
+                // true: only dots and colons
 
                 FunctionStatement func = ParseFunctionArgsAndBody(scope);
 

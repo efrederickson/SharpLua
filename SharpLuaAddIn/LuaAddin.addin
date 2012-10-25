@@ -1,0 +1,59 @@
+﻿<AddIn name        = "SharpLua.SharpDevelop.AddIn"
+       author      = "Elijah Frederickson"
+       description = "Create and Edit #Lua Scripts in SharpDevelop"
+       copyright   = "none"
+       url         = "https://github.com/mlnlover11/SharpLua"
+>
+    
+    <Runtime>
+        <Import assembly = "SharpLuaAddIn.dll"/>
+    </Runtime>
+    
+    <Manifest>
+        <Identity name = "SharpLua.SharpDevelop.AddIn"/>
+    </Manifest>
+    
+    <Path name = "/SharpDevelop/Workbench/Pads">
+        <Pad id       = "Lua Pad"
+             category = "Main"
+             title    = "About Lua"
+             icon     = "PadIcons.Output"
+             shortcut = "Control|Alt|L"
+             class    = "SharpLuaAddIn.TestPad"/>
+    </Path>
+    
+    <Path name="/SharpDevelop/Workbench/LanguageBindings">
+		<LanguageBinding
+			id="SharpLua"
+		    class="SharpLuaAddIn.SharpLuaLanguageBinding"
+		    extensions=".slua;.lua" />
+	</Path>
+    
+    <Path name = "/SharpDevelop/BackendBindings/Templates">
+        <Directory id = "Lua" path = "./Templates" />
+    </Path>
+    
+    <Path name = "/SharpDevelop/ViewContent/AvalonEdit/SyntaxModes">
+        <SyntaxMode id         = "SharpLua Syntax Mode"
+                    name       = "SharpLua"
+                    extensions = ".slua;.lua"
+                    resource   = "SharpLuaAddIn.Resources.SharpLua.xshd" />
+    </Path>
+    
+    <Path name = "/SharpDevelop/Workbench/FileFilter">
+        <FileFilter id = "Lua Script"
+                    insertbefore="AllFiles"
+                    name = "SharpLua Script File (*.slua; *.lua)"
+                    extensions = "*.slua;*.lua"/>
+    </Path>
+    
+    <Path name = "/Workspace/Icons">
+        <Icon id         = "LuaFile"
+              extensions = ".slua;.lua"
+              resource   = "C++.FileIcon"/>
+    </Path>
+    
+    <Path name = "/AddIns/DefaultTextEditor/CodeCompletion">
+        <CodeCompletionBinding id = "SharpLua" extensions = ".lua;.slua" class = "SharpLuaAddIn.CodeCompletion"/>
+    </Path>
+</AddIn>

@@ -1,0 +1,39 @@
+﻿<?xml version="1.0"?>
+<Template author="Elijah Frederickson" version="1.0">
+    
+    <Config
+        name        = "SharpLua Class Script"
+        icon        = "C++.File.EmptyFile"
+        category    = "Lua"
+        defaultname = "SharpLua Script ${Number}.slua"
+        language    = "Lua"/>
+    
+    <Description>A #Lua Script with a class</Description>
+    
+    <Files>
+        <File name="${FullName}" language="SharpLua">
+            <![CDATA[--[[
+ ${res:XML.StandardHeader.User} ${USER}
+ ${res:XML.StandardHeader.Date} ${DATE}
+ ${res:XML.StandardHeader.Time} ${TIME}
+ Copyright (C) 2012
+]]
+
+
+class1 = {
+    new = function(self)
+        return setmetatable({
+            
+            }, { __index = self })
+    end,
+    
+    
+}
+
+-- want a superclass?
+-- setmetatable(class1, { __index = <superclass table> })
+]]></File>
+    </Files>
+    <AdditionalOptions/>
+</Template>
+

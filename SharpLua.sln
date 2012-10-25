@@ -1,5 +1,5 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
+Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Old", "Old", "{937488AD-919D-484A-B175-76AA86F0CC82}"
 EndProject
@@ -55,6 +55,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpExampleProject", "Example Projects\CSharpExampleProject\CSharpExampleProject.csproj", "{960FBA54-AFA9-41CA-99E1-C315CED963BF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestModule", "Example Projects\TestModule\TestModule.csproj", "{B5976A83-EA56-4F4E-9C81-47DC47BC923F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpLuaAddIn", "SharpLuaAddIn\SharpLuaAddIn.csproj", "{7B8A39BF-176B-4276-A1BA-1BCE4511FF4A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -368,6 +370,20 @@ Global
 		{B5976A83-EA56-4F4E-9C81-47DC47BC923F}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{B5976A83-EA56-4F4E-9C81-47DC47BC923F}.Release|Win32.ActiveCfg = Release|Any CPU
 		{B5976A83-EA56-4F4E-9C81-47DC47BC923F}.Release|x86.ActiveCfg = Release|Any CPU
+		{7B8A39BF-176B-4276-A1BA-1BCE4511FF4A}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{7B8A39BF-176B-4276-A1BA-1BCE4511FF4A}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{7B8A39BF-176B-4276-A1BA-1BCE4511FF4A}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{7B8A39BF-176B-4276-A1BA-1BCE4511FF4A}.Debug|Win32.ActiveCfg = Debug|x86
+		{7B8A39BF-176B-4276-A1BA-1BCE4511FF4A}.Debug|Win32.Build.0 = Debug|x86
+		{7B8A39BF-176B-4276-A1BA-1BCE4511FF4A}.Debug|x86.ActiveCfg = Debug|x86
+		{7B8A39BF-176B-4276-A1BA-1BCE4511FF4A}.Debug|x86.Build.0 = Debug|x86
+		{7B8A39BF-176B-4276-A1BA-1BCE4511FF4A}.Release|Any CPU.ActiveCfg = Release|x86
+		{7B8A39BF-176B-4276-A1BA-1BCE4511FF4A}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{7B8A39BF-176B-4276-A1BA-1BCE4511FF4A}.Release|Mixed Platforms.Build.0 = Release|x86
+		{7B8A39BF-176B-4276-A1BA-1BCE4511FF4A}.Release|Win32.ActiveCfg = Release|x86
+		{7B8A39BF-176B-4276-A1BA-1BCE4511FF4A}.Release|Win32.Build.0 = Release|x86
+		{7B8A39BF-176B-4276-A1BA-1BCE4511FF4A}.Release|x86.ActiveCfg = Release|x86
+		{7B8A39BF-176B-4276-A1BA-1BCE4511FF4A}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -322,7 +322,7 @@ namespace SharpLua
                     {
                         num = c.ToString();
                         bool dec = false;
-                        while (char.IsDigit(peek()))
+                        while (char.IsDigit(peek()) || peek() == '.')
                         {
                             num += read();
                             if (peek() == '.')

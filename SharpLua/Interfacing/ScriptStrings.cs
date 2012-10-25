@@ -322,6 +322,10 @@ Lua.Clr = Lua.CLR
 
 SharpLua = luanet.namespace""SharpLua""
 
+function math.round(x)
+    return math.floor(x + 0.5)
+end
+
 -- Courtesy of lua-users.org and metalua
 
 function string.split(str, pat)

@@ -45,6 +45,7 @@ namespace SharpLua.Visitors
         {
             StringBuilder sb = new StringBuilder();
             int cnt = 0;
+            bool shortComment = false;
             foreach (Token t2 in t.Leading)
             {
                 if (t2.Type == TokenType.LongComment
@@ -53,12 +54,22 @@ namespace SharpLua.Visitors
                 {
                     sb.Append(t2.Data);
                     cnt++;
+                    if (t2.Type == TokenType.ShortComment || t2.Type == TokenType.DocumentationComment)
+                        shortComment = true;
                 }
             }
             if (cnt > 0)
             {
-                sb.Insert(0, " ");
-                sb.Append(" ");
+                if (shortComment)
+                {
+                    sb.Append(options.EOL);
+                    sb.Append(writeIndent());
+                }
+                else
+                {
+                    sb.Insert(0, " ");
+                    sb.Append(" ");
+                }
             }
 
             if (t.Type == TokenType.DoubleQuoteString)
@@ -482,7 +493,8 @@ namespace SharpLua.Visitors
                     sb.Append(options.EOL);
                     indent++;
                     sb.Append(DoChunk(f.Body));
-                    sb.Append(nldedent());
+                    indent--;
+                    sb.Append(writeIndent());
                     sb.Append(fromToken(s.ScannedTokens[s.ScannedTokens.Count - 1], s.Scope)); // <end>
 
                     return sb.ToString();

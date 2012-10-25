@@ -92,7 +92,8 @@ namespace SharpLua
             object obj = translator.getRawNetObject(luaState, 1);
             if (obj != null)
             {
-                translator.push(luaState, obj.ToString() + ": " + obj.GetHashCode());
+                //translator.push(luaState, obj.ToString() + ": " + obj.GetHashCode());
+		translator.push(luaState, obj.ToString());
             }
             else LuaDLL.lua_pushnil(luaState);
             return 1;

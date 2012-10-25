@@ -23,6 +23,8 @@ X Port LuaAssemblyTools to c# and use in #lua (SharpLua.LASM)
 (some of the following is for an SD/VS/Standalone ide thing, other stuff isn't. its not sorted well) 
 Supported files:
  LASM, #Lua, Lua, MetaLua, [S]Luac (LASM Editor?)
+
+- Show Variables based on scope
  
 - Virtual Project
      - saves files into <projectname>.vpdata as XML[1]

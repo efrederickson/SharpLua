@@ -23,8 +23,8 @@ namespace SharpLua
         /// <returns></returns>
         public override string ToString()
         {
-            return UnderlyingSystemType.FullName;
-            //return "ProxyType(" + UnderlyingSystemType + ")";
+            //return UnderlyingSystemType.FullName;
+            return "ProxyType(" + UnderlyingSystemType + ")";
         }
 
 

@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>SharpLua</id>
+    <version>2.1.0.0</version>
+    <authors>mlnlover11</authors>
+    <owners>mlnlover11</owners>
+    <projectUrl>https://github.com/mlnlover11/SharpLua</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Lua implementation in C#</description>
+    <releaseNotes>Major upgrade</releaseNotes>
+    <copyright>Copyright 2012 LoDC</copyright>
+    <tags>Lua</tags>
+  </metadata>
+</package>

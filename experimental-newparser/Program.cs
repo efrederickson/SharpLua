@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using SharpLua.Ast;
 using SharpLua.Ast.Statement;
+using SharpLua.XmlDocumentation;
 
 namespace SharpLua
 {
@@ -97,7 +98,7 @@ namespace SharpLua
 
         private static void TestExtractDocComments()
         {
-            string str = /*@"
+            string str = @"
 ---<summary>
 --- somefin
 ---</summary>
@@ -105,20 +106,20 @@ namespace SharpLua
 function a()
 
 end
-*/@"
+
 ---<summary>
 --- ugh.
 ---</summary>
 function tbl.dosomething()
 
 end
-";/*
+
 ---<summary>
 --- a var
 ---</summary>
 ---<returns>wut?</returns>
 x = 1
-";*/
+";
 
             Lexer l = new Lexer();
             Parser p = new Parser(l.Lex(str));
@@ -126,8 +127,11 @@ x = 1
             List<DocumentationComment> docs = ExtractDocumentationComments.Extract(c);
             foreach (DocumentationComment d in docs)
             {
-                Console.WriteLine("Documentation comment: " + d.Text + "Var: " + (d.Ident == null ? "<none>" : d.Ident.Data));
+                Console.WriteLine("Documentation comment: " + d.Text + "Var: " + (d.Ident == null ? "<none>" : d.Ident));
             }
+            string s = Documentation.Write(docs);
+            Console.WriteLine(s);
+            Console.WriteLine(Documentation.Read(s).Count);
             if (docs.Count == 0)
                 Console.WriteLine("No doc comments. Wut?");
         }

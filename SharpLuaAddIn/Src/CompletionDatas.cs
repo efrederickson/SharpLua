@@ -127,7 +127,7 @@ namespace SharpLuaAddIn
         public CompletionItem(string text)
         {
             Text = text;
-            Description = "";
+            Description = DocumentationManager.GetDocumentation(text);
             Image = null;
         }
 

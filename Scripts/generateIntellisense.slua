@@ -12,6 +12,8 @@ scanned = {
     PrintHi = true,
     TestModule2 = true,
     test = true,
+    DEBUG = true,
+    scanned = true,
 }
 
 for k, v in pairs(_G) do

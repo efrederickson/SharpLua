@@ -104,6 +104,7 @@
     <Compile Include="Src\Common.cs" />
     <Compile Include="Src\CompletionDatas.cs" />
     <Compile Include="Src\CompletionList.cs" />
+    <Compile Include="Src\DocumentationManager.cs" />
     <Compile Include="Src\LuaLanguageBinding.cs" />
     <Compile Include="Src\LuaPad.cs">
       <SubType>UserControl</SubType>
@@ -146,6 +147,11 @@
     <Import Include="System" />
     <Import Include="System.Collections" />
     <Import Include="System.Windows.Forms" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Documentation.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

@@ -89,6 +89,7 @@ namespace SharpLua.Interactive
 
             if (GoInteractive)
             {
+                LuaRuntime.SetVariable("_WORKDIR", Path.GetDirectoryName(typeof(Program).Assembly.Location));
                 while (true)
                 {
                     Console.Write(Prompt);

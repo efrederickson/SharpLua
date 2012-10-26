@@ -47,6 +47,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpLua.LASMTests", "Sharp
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{BAB533D5-5E42-4D68-8EB5-30F937D6008C}"
 	ProjectSection(SolutionItems) = preProject
+		Scripts\Documentation.slua = Scripts\Documentation.slua
 		Scripts\generateIntellisense.slua = Scripts\generateIntellisense.slua
 		Scripts\XFuscator.lua = Scripts\XFuscator.lua
 	EndProjectSection
@@ -58,6 +59,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestModule", "Example Projects\TestModule\TestModule.csproj", "{B5976A83-EA56-4F4E-9C81-47DC47BC923F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpLuaAddIn", "SharpLuaAddIn\SharpLuaAddIn.csproj", "{7B8A39BF-176B-4276-A1BA-1BCE4511FF4A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenerateDocumentation", "GenerateDocumentation\GenerateDocumentation.csproj", "{FAF8A29B-0CCC-4B27-A320-BAD05EE7D4FC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -385,6 +388,18 @@ Global
 		{7B8A39BF-176B-4276-A1BA-1BCE4511FF4A}.Release|Win32.Build.0 = Release|x86
 		{7B8A39BF-176B-4276-A1BA-1BCE4511FF4A}.Release|x86.ActiveCfg = Release|x86
 		{7B8A39BF-176B-4276-A1BA-1BCE4511FF4A}.Release|x86.Build.0 = Release|x86
+		{FAF8A29B-0CCC-4B27-A320-BAD05EE7D4FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FAF8A29B-0CCC-4B27-A320-BAD05EE7D4FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FAF8A29B-0CCC-4B27-A320-BAD05EE7D4FC}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{FAF8A29B-0CCC-4B27-A320-BAD05EE7D4FC}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{FAF8A29B-0CCC-4B27-A320-BAD05EE7D4FC}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{FAF8A29B-0CCC-4B27-A320-BAD05EE7D4FC}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{FAF8A29B-0CCC-4B27-A320-BAD05EE7D4FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FAF8A29B-0CCC-4B27-A320-BAD05EE7D4FC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FAF8A29B-0CCC-4B27-A320-BAD05EE7D4FC}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{FAF8A29B-0CCC-4B27-A320-BAD05EE7D4FC}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{FAF8A29B-0CCC-4B27-A320-BAD05EE7D4FC}.Release|Win32.ActiveCfg = Release|Any CPU
+		{FAF8A29B-0CCC-4B27-A320-BAD05EE7D4FC}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

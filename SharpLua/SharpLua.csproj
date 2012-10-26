@@ -145,7 +145,9 @@
     <Compile Include="NewParser\Compiler\Compiler.cs" />
     <Compile Include="NewParser\Compiler\K2Reg.cs" />
     <Compile Include="NewParser\Compiler\Var2Reg.cs" />
-    <Compile Include="NewParser\ExtractDocumentationComments.cs" />
+    <Compile Include="NewParser\XmlDocumentation\DocumentationComment.cs" />
+    <Compile Include="NewParser\XmlDocumentation\Documentation.cs" />
+    <Compile Include="NewParser\XmlDocumentation\ExtractDocumentationComments.cs" />
     <Compile Include="NewParser\Lexer.cs" />
     <Compile Include="NewParser\Location.cs" />
     <Compile Include="NewParser\LuaSourceException.cs" />
@@ -170,6 +172,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="NewParser\Todo.txt" />
+    <Content Include="NewParser\XmlDocumentation\Format.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

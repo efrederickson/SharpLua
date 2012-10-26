@@ -1,0 +1,423 @@
+﻿-- A file of empty table and function declarations, 
+-- used to generate documentation for #lua
+empty = nil
+
+--- <summary>
+--- string manipulation library
+--- </summary>
+string = { }
+
+--- <summary>
+--- splits the string into a table based upon the separator
+--- </summary>
+--- <param name="string">The string to split</param>
+--- <param name="pattern">The pattern to split the string on</param>
+--- <returns>The table of split characters</returns>
+function string.split(string, pattern) end
+
+--- <summary>
+--- Matches the string based upon a given pattern and returns the captures
+--- </summary>
+--- <param name="string">The string to match</param>
+--- <param name="pattern">The pattern to match in the string</param>
+--- <param name="start">Optional start index to begin matching, can be negative</param>
+function string.match(string, pattern, start) end
+
+--- <summary>
+--- Returns an iterator function that, each time it is called, returns the next captures from pattern over string s. If pattern specifies no captures, then the whole match is produced in each call. 
+--- </summary>
+--- <param name="s">The target string</param>
+--- <param name="pattern">The pattern to match</param>
+function string.gmatch(s, pattern) end
+
+--- <summary>
+--- Turns the entire string into uppercase
+--- </summary>
+--- <param name="s">The target string</param>
+function string.upper(s) end
+
+--- <summary>
+--- Returns a copy of s in which all (or the first n, if given) occurrences of the pattern have been replaced by a replacement string specified by repl, which can be a string, a table, or a function. gsub also returns, as its second value, the total number of matches that occurred. 
+--- </summary>
+--- <param name="s">The target string</param>
+--- <param name="pattern">the pattern to replace</param>
+--- <param name="repl">The replacement</param>
+--- <param name="n">Optional number of replacements to make</param>
+function string.gsub(s, pattern, repl, n) end
+
+--- <summary>
+--- Returns a formatted version of its variable number of arguments following the description given in its first argument (which must be a string).
+--- </summary>
+--- <param name"formatstring">The string to format</param>
+--- <param name="...">The format args</param>
+function string.format(formatstring, ...) end
+
+--- <summary>
+--- Turns the entire string into lowercase
+--- </summary>
+--- <param name="s">The target string</param>
+function string.lower(s) end
+
+--- <summary>
+--- Returns the substring of s that starts at i and continues until j; i and j can be negative
+--- </summary>
+--- <param name="s">the string to get the substring of
+--- <param name="i">The start index</param>
+--- <param name="j">The end index</param>
+function string.sub(s, i, j) end
+
+--- <summary>
+--- Returns an iterator function that, each time it is called, returns the next captures from pattern over string s. If pattern specifies no captures, then the whole match is produced in each call. 
+--- </summary>
+--- <param name="s">The target string</param>
+--- <param name="pattern">The pattern to match</param>
+function string.gfind(s, pattern) end
+
+--- <summary>
+--- Looks for the first match of pattern in the string s. If it finds a match, then find returns the indices of s where this occurrence starts and ends; otherwise, it returns nil.
+--- </summary>
+--- <param name="s">The target string</param>
+--- <param name="pattern">The pattern to find</param>
+--- <param name="init">the starting index</param>
+--- <param name="plain">Whether to match "pattern" as a pattern or a plain string</param>
+function string.find(s, pattern, init, plain) end
+
+--- <summary>
+--- Receives zero or more integers. Returns a string with length equal to the number of arguments, in which each character has the internal numerical code equal to its corresponding argument. 
+--- </summary>
+--- <param name="...">The numbers to convert to chars</param>
+function string.char(...) end
+
+--- <summary>
+--- Compiles func into bytecode
+--- </summary>
+--- <param name="func">A function to compile</param>
+--- <returns>The compiled function</returns>
+function string.dump(func) end
+
+--- <summary>
+--- Makes a compiled string back into a function
+--- </summary>
+--- <param name="str">The compiled string</param>
+--- <returns>A function</returns>
+function string.undump(str) end
+
+--- <summary>
+--- Returns a string that is the string 's' reversed
+--- </summary>
+--- <param name="s">The target string</param>
+function string.reverse(s) end
+
+--- <summary>
+--- Returns the internal numerical codes of the characters s[i], s[i+1], ..., s[j]. The default value for i is 1; the default value for j is i. 
+--- </summary>
+--- <param name="s">The string/char to convert to integers</param>
+--- <param name="i">The start index</param>
+--- <param name="j">The end index</param>
+function string.byte(s, i, j) end
+
+--- <summary>
+--- Matches the string based upon a given pattern and returns the captures
+--- </summary>
+--- <param name="string">The string to match</param>
+--- <param name="pattern">The pattern to match in the string</param>
+--- <param name="start">Optional start index to begin matching, can be negative</param>
+function string.strmatch(string, pattern, start) end
+
+--- <summary>
+--- Returns the length of the string
+--- </summary>
+--- <param name="s">The string to get the length of</param>
+function string.len(s) end
+
+--- <summary>
+--- Returns a string that is the concatenation of n copies of the string s
+--- </summary>
+--- <param name="s">The string to concatentate</param>
+--- <param name="n">The number of times to concatenate s</param>
+function string.rep(s, n) end
+
+--- <summary>
+--- This function is similar to pcall, except that you can set a new error handler
+--- </summary>
+--- <param name="f">The function to run in protected mode</param>
+--- <param name="err">The error function</param>
+function xpcall(f, err) end
+
+--- <summary>
+--- The package table
+--- </summary>
+package = { }
+
+--- <summary>
+--- A table to store loaders for specific modules (see require). 
+--- </summary>
+package.preload = { }
+
+--- <summary>
+--- Dynamically links the host program with the C library libname. Inside this library, looks for a function funcname and returns this function as a C function. <br />
+--- It does not load C Libraries in #Lua
+--- </summary>
+--- <param name="libname">The library to load</param>
+--- <param name="funcname"></param>
+function package.loadlib(libname, funcname) end
+
+--- <summary>
+--- A table used by require to control which modules are already loaded. When you require a module modname and package.loaded[modname] is not false, require simply returns the value stored there. 
+--- </summary>
+package.loaded = { }
+
+--- <summary>
+--- A table used by require to control how to load modules. 
+--- </summary>
+package.loaders = { }
+
+--- <summary>
+--- The path used by require to search for a C loader
+--- </summary>
+package.cpath = { }
+
+--- <summary>
+--- The path used by require to search for a Lua loader. 
+--- </summary>
+package.path = ""
+
+--- <summary>
+--- Sets a metatable for module with its __index field referring to the global environment, so that this module inherits values from the global environment. To be used as an option to function module. 
+--- </summary>
+--- <param name="module">The module</param>
+function package.seeall(module) end
+
+--- <summary>
+--- Receives an argument of any type and converts it to a string in a reasonable format.
+--- </summary>
+--- <param name="e">The object to convert into a string</param>
+function tostring(e) end
+
+--- <summary>
+--- Receives any number of arguments, and prints their values to stdout, using the tostring function to convert them to strings.
+--- </summary>
+--- <param name="...">The arguments to print</param>
+function print(...) end
+
+--- <summary>
+--- Provides operating system facilities
+--- </summary>
+os = { }
+
+--- <summary>
+--- Exits the program with the specified code or 0
+--- </summary>
+--- <param name="code">Optional, defaults to 0</param>
+function os.exit(code) end
+
+--- <summary>
+--- Sets the current locale of the program.
+--- </summary>
+--- <param name="locale"></param>
+--- <param name="category"></param>
+function os.setlocale(locale, category) end
+
+--- <summary>
+--- Returns a string or a table containing date and time, formatted according to the given string format. 
+--- </summary>
+--- <param name="format">Optional</param>
+--- <param name="time">Optional</param>
+function os.date(format, time) end
+
+--- <summary>
+--- Returns the value of the process environment variable varname, or nil if the variable is not defined. 
+--- </summary>
+--- <param name="varname">The variable to get</param>
+function os.getenv(varname) end
+
+--- <summary>
+--- Returns the number of seconds from time t1 to time t2. In POSIX, Windows, and some other systems, this value is exactly t2-t1. 
+--- </summary>
+--- <param name="t2"></param>
+--- <param name="t1"></param>
+function os.difftime(t2, t1) end
+
+--- <summary>
+--- Deletes the file or directory with the given name. Directories must be empty to be removed. If this function fails, it returns nil, plus a string describing the error. 
+--- </summary>
+--- <param name="fileOrDir">The file/dir to remove</param>
+function os.remove(fileOrDir) end
+
+--[[
+new CompletionItem("time"), 
+new CompletionItem("clock"), 
+new CompletionItem("tmpname"), 
+new CompletionItem("rename"), 
+new CompletionItem("execute"), 
+
+new CompletionItem("unpack"), 
+
+new CompletionItem("set_global_mt"), 
+new CompletionItem("require"), 
+new CompletionItem("getfenv"), 
+new CompletionItem("setmetatable"), 
+new CompletionItem("next"), 
+new CompletionItem("luanet"), 
+new CompletionItem("assert"), 
+
+new CompletionItem("clr"), 
+new CompletionItem("call"), 
+new CompletionItem("create"), 
+new CompletionItem("ns"), 
+new CompletionItem("usingns"), 
+new CompletionItem("getns"), 
+new CompletionItem("load"), 
+new CompletionItem("import"), 
+
+new CompletionItem("tonumber"), 
+new CompletionItem("newproxy"), 
+new CompletionItem("io"), 
+new CompletionItem("lines"), 
+new CompletionItem("write"), 
+new CompletionItem("close"), 
+new CompletionItem("flush"), 
+new CompletionItem("open"), 
+new CompletionItem("output"), 
+new CompletionItem("type"), 
+new CompletionItem("read"), 
+new CompletionItem("stderr"), 
+new CompletionItem("stdin"), 
+new CompletionItem("input"), 
+new CompletionItem("stdout"), 
+new CompletionItem("popen"), 
+new CompletionItem("tmpfile"), 
+
+new CompletionItem("rawequal"), 
+new CompletionItem("Lua"), 
+new CompletionItem("CLR"), 
+new CompletionItem("Clr"), 
+new CompletionItem("Parser"), 
+
+new CompletionItem("collectgarbage"), 
+new CompletionItem("getmetatable"), 
+new CompletionItem("set"), 
+new CompletionItem("sleep"), 
+new CompletionItem("rawtype"), 
+new CompletionItem("System"), 
+
+new CompletionItem("_WORKDIR"), 
+new CompletionItem("rawset"), 
+new CompletionItem("bit32"), 
+new CompletionItem("band"), 
+new CompletionItem("extract"), 
+new CompletionItem("bor"), 
+new CompletionItem("bnot"), 
+new CompletionItem("arshift"), 
+new CompletionItem("rshift"), 
+new CompletionItem("rrotate"), 
+new CompletionItem("replace"), 
+new CompletionItem("lshift"), 
+new CompletionItem("lrotate"), 
+new CompletionItem("btest"), 
+new CompletionItem("bxor"), 
+
+new CompletionItem("bit"), 
+
+new CompletionItem("debug"), 
+new CompletionItem("getupvalue"), 
+new CompletionItem("sethook"), 
+new CompletionItem("gethook"), 
+new CompletionItem("setlocal"), 
+new CompletionItem("traceback"), 
+new CompletionItem("setfenv"), 
+new CompletionItem("getinfo"), 
+new CompletionItem("setupvalue"), 
+new CompletionItem("getlocal"), 
+new CompletionItem("getregistry"), 
+
+new CompletionItem("module"), 
+new CompletionItem("table"), 
+new CompletionItem("getn"), 
+new CompletionItem("cat"), 
+new CompletionItem("icat"), 
+new CompletionItem("isub"), 
+new CompletionItem("transpose"), 
+new CompletionItem("iall"), 
+new CompletionItem("izip"), 
+new CompletionItem("maxn"), 
+new CompletionItem("concat"), 
+new CompletionItem("irev"), 
+new CompletionItem("shallow_copy"), 
+new CompletionItem("iforeach"), 
+new CompletionItem("tolookup"), 
+new CompletionItem("foreachi"), 
+new CompletionItem("foreach"), 
+new CompletionItem("sort"), 
+new CompletionItem("ifold"), 
+new CompletionItem("invert"), 
+new CompletionItem("ifilter"), 
+new CompletionItem("iany"), 
+new CompletionItem("pack"), 
+new CompletionItem("imap"), 
+new CompletionItem("deep_copy"), 
+new CompletionItem("range"), 
+new CompletionItem("override"), 
+new CompletionItem("setn"), 
+new CompletionItem("removeitem"), 
+new CompletionItem("insert"), 
+new CompletionItem("iflatten"), 
+
+new CompletionItem("math"), 
+new CompletionItem("sinh"), 
+new CompletionItem("log"), 
+new CompletionItem("max"), 
+new CompletionItem("acos"), 
+new CompletionItem("huge"), 
+new CompletionItem("ldexp"), 
+new CompletionItem("pi"), 
+new CompletionItem("cos"), 
+new CompletionItem("tanh"), 
+new CompletionItem("pow"), 
+new CompletionItem("deg"), 
+new CompletionItem("tan"), 
+new CompletionItem("cosh"), 
+new CompletionItem("round"), 
+new CompletionItem("random"), 
+new CompletionItem("randomseed"), 
+new CompletionItem("frexp"), 
+new CompletionItem("ceil"), 
+new CompletionItem("floor"), 
+new CompletionItem("rad"), 
+new CompletionItem("abs"), 
+new CompletionItem("sqrt"), 
+new CompletionItem("modf"), 
+new CompletionItem("asin"), 
+new CompletionItem("min"), 
+new CompletionItem("mod"), 
+new CompletionItem("fmod"), 
+new CompletionItem("log10"), 
+new CompletionItem("atan2"), 
+new CompletionItem("exp"), 
+new CompletionItem("sin"), 
+new CompletionItem("atan"), 
+
+new CompletionItem("coroutine"), 
+new CompletionItem("resume"), 
+new CompletionItem("yield"), 
+new CompletionItem("status"), 
+new CompletionItem("wrap"), 
+new CompletionItem("running"), 
+
+new CompletionItem("pcall"), 
+new CompletionItem("SharpLua"), 
+
+new CompletionItem("pairs"), 
+new CompletionItem("ipairs"), 
+new CompletionItem("_G"), 
+new CompletionItem("select"), 
+new CompletionItem("gcinfo"), 
+new CompletionItem("rawget"), 
+new CompletionItem("loadstring"), 
+new CompletionItem("_VERSION"), 
+new CompletionItem("wait"), 
+new CompletionItem("dofile"), 
+new CompletionItem("error"), 
+new CompletionItem("loadfile"), 
+
+]]

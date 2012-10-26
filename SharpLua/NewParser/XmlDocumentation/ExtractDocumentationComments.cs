@@ -6,36 +6,8 @@ using SharpLua.Ast;
 using SharpLua.Ast.Statement;
 using SharpLua.Ast.Expression;
 
-namespace SharpLua
+namespace SharpLua.XmlDocumentation
 {
-    // TODO:
-    // Getting function names might need to be better
-
-    public class DocumentationComment
-    {
-        public List<string> Lines = new List<string>();
-        public Token Ident = null;
-        public string EOL = "\r\n";
-
-        public string Text
-        {
-            get
-            {
-                StringBuilder sb = new StringBuilder();
-                foreach (string l in Lines)
-                {
-                    string line = l.TrimStart();
-                    if (line.Substring(0, 3) == "---")
-                        line = line.Substring(3);
-                    sb.Append(line);
-                    sb.Append(EOL);
-                }
-                return sb.ToString();
-            }
-        }
-
-    }
-
     public class ExtractDocumentationComments
     {
         public static List<DocumentationComment> Extract(Chunk c)
@@ -76,10 +48,19 @@ namespace SharpLua
                                         (c.ScannedTokens[p + i2].Type == TokenType.Symbol && c.ScannedTokens[p + i2].Data == ".")
                                         || (c.ScannedTokens[p + i2].Type == TokenType.Ident))
                                         i2++;
-                                    cmt.Ident = c.ScannedTokens[p + i2 - 1];
+                                    cmt.Ident = c.ScannedTokens[p + i2 - 1].Data;
+                                    p += i2;
                                 }
                                 else
-                                    cmt.Ident = c.ScannedTokens[p + 1];
+                                {
+                                    int i2 = 2;
+                                    while (
+                                        (c.ScannedTokens[p + i2].Type == TokenType.Symbol && c.ScannedTokens[p + i2].Data == ".")
+                                        || (c.ScannedTokens[p + i2].Type == TokenType.Ident))
+                                        i2++;
+                                    cmt.Ident = c.ScannedTokens[p + i2 - 1].Data;
+                                    p += i2;
+                                }
                             else if (t.Type == TokenType.Keyword && t.Data == "function")
                             {
                                 int i2 = 1;
@@ -87,14 +68,42 @@ namespace SharpLua
                                     (c.ScannedTokens[p + i2].Type == TokenType.Symbol && c.ScannedTokens[p + i2].Data == ".")
                                     || (c.ScannedTokens[p + i2].Type == TokenType.Ident))
                                     i2++;
-                                cmt.Ident = c.ScannedTokens[p + i2 - 1];
+                                cmt.Ident = c.ScannedTokens[p + i2 - 1].Data;
+                                p += i2;
                             }
                             else if (t.Type == TokenType.Ident)
-                                cmt.Ident = t;
+                            {
+                                int i2 = 1;
+                                while (
+                                    (c.ScannedTokens[p + i2].Type == TokenType.Symbol && c.ScannedTokens[p + i2].Data == ".")
+                                    || (c.ScannedTokens[p + i2].Type == TokenType.Ident))
+                                    i2++;
+                                cmt.Ident = c.ScannedTokens[p + i2 - 1].Data;
+                                p += i2;
+                            }
 
                         }
-
-                        cmnts.Add(cmt);
+                        if (cmt.Ident != null
+                            && string.IsNullOrEmpty(cmt.Ident) == false
+                            && cmt.Lines.Count > 0)
+                        {
+                            //Console.WriteLine("YEP: " + cmt.Ident);
+                            cmnts.Add(cmt);
+                        }
+                        else
+                        {
+                            /*
+                            Console.Write("NOPE: (" + (cmt.Ident == null ? "" : cmt.Ident) + ")");
+                            Console.WriteLine(
+                                cmt.Ident == null ? "Ident is null"
+                                : (string.IsNullOrEmpty(cmt.Ident)
+                                  ? "Ident is empty"
+                                  : (cmt.Lines.Count == 0
+                                    ? "No doc lines"
+                                    : "wut?"))
+                                );
+                            */
+                        }
                     }
                 }
                 return cmnts;

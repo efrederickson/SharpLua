@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-16"?>
+<Documentation>
+    <string> &lt;summary&gt;
+ string manipulation library
+ &lt;/summary&gt;
+</string>
+    <split> &lt;summary&gt;
+ splits the string into a table based upon the separator
+ &lt;/summary&gt;
+ &lt;param name="string"&gt;The string to split&lt;/param&gt;
+ &lt;param name="pattern"&gt;The pattern to split the string on&lt;/param&gt;
+ &lt;returns&gt;The table of split characters&lt;/returns&gt;
+</split>
+    <match> &lt;summary&gt;
+ Matches the string based upon a given pattern and returns the captures
+ &lt;/summary&gt;
+ &lt;param name="string"&gt;The string to match&lt;/param&gt;
+ &lt;param name="pattern"&gt;The pattern to match in the string&lt;/param&gt;
+ &lt;param name="start"&gt;Optional start index to begin matching, can be negative&lt;/param&gt;
+</match>
+    <gmatch> &lt;summary&gt;
+ Returns an iterator function that, each time it is called, returns the next captures from pattern over string s. If pattern specifies no captures, then the whole match is produced in each call. 
+ &lt;/summary&gt;
+ &lt;param name="s"&gt;The target string&lt;/param&gt;
+ &lt;param name="pattern"&gt;The pattern to match&lt;/param&gt;
+</gmatch>
+    <upper> &lt;summary&gt;
+ Turns the entire string into uppercase
+ &lt;/summary&gt;
+ &lt;param name="s"&gt;The target string&lt;/param&gt;
+</upper>
+    <gsub> &lt;summary&gt;
+ Returns a copy of s in which all (or the first n, if given) occurrences of the pattern have been replaced by a replacement string specified by repl, which can be a string, a table, or a function. gsub also returns, as its second value, the total number of matches that occurred. 
+ &lt;/summary&gt;
+ &lt;param name="s"&gt;The target string&lt;/param&gt;
+ &lt;param name="pattern"&gt;the pattern to replace&lt;/param&gt;
+ &lt;param name="repl"&gt;The replacement&lt;/param&gt;
+ &lt;param name="n"&gt;Optional number of replacements to make&lt;/param&gt;
+</gsub>
+    <format> &lt;summary&gt;
+ Returns a formatted version of its variable number of arguments following the description given in its first argument (which must be a string).
+ &lt;/summary&gt;
+ &lt;param name"formatstring"&gt;The string to format&lt;/param&gt;
+ &lt;param name="..."&gt;The format args&lt;/param&gt;
+</format>
+    <lower> &lt;summary&gt;
+ Turns the entire string into lowercase
+ &lt;/summary&gt;
+ &lt;param name="s"&gt;The target string&lt;/param&gt;
+</lower>
+    <sub> &lt;summary&gt;
+ Returns the substring of s that starts at i and continues until j; i and j can be negative
+ &lt;/summary&gt;
+ &lt;param name="s"&gt;the string to get the substring of
+ &lt;param name="i"&gt;The start index&lt;/param&gt;
+ &lt;param name="j"&gt;The end index&lt;/param&gt;
+</sub>
+    <gfind> &lt;summary&gt;
+ Returns an iterator function that, each time it is called, returns the next captures from pattern over string s. If pattern specifies no captures, then the whole match is produced in each call. 
+ &lt;/summary&gt;
+ &lt;param name="s"&gt;The target string&lt;/param&gt;
+ &lt;param name="pattern"&gt;The pattern to match&lt;/param&gt;
+</gfind>
+    <find> &lt;summary&gt;
+ Looks for the first match of pattern in the string s. If it finds a match, then find returns the indices of s where this occurrence starts and ends; otherwise, it returns nil.
+ &lt;/summary&gt;
+ &lt;param name="s"&gt;The target string&lt;/param&gt;
+ &lt;param name="pattern"&gt;The pattern to find&lt;/param&gt;
+ &lt;param name="init"&gt;the starting index&lt;/param&gt;
+ &lt;param name="plain"&gt;Whether to match "pattern" as a pattern or a plain string&lt;/param&gt;
+</find>
+    <char> &lt;summary&gt;
+ Receives zero or more integers. Returns a string with length equal to the number of arguments, in which each character has the internal numerical code equal to its corresponding argument. 
+ &lt;/summary&gt;
+ &lt;param name="..."&gt;The numbers to convert to chars&lt;/param&gt;
+</char>
+    <dump> &lt;summary&gt;
+ Compiles func into bytecode
+ &lt;/summary&gt;
+ &lt;param name="func"&gt;A function to compile&lt;/param&gt;
+ &lt;returns&gt;The compiled function&lt;/returns&gt;
+</dump>
+    <undump> &lt;summary&gt;
+ Makes a compiled string back into a function
+ &lt;/summary&gt;
+ &lt;param name="str"&gt;The compiled string&lt;/param&gt;
+ &lt;returns&gt;A function&lt;/returns&gt;
+</undump>
+    <reverse> &lt;summary&gt;
+ Returns a string that is the string 's' reversed
+ &lt;/summary&gt;
+ &lt;param name="s"&gt;The target string&lt;/param&gt;
+</reverse>
+    <byte> &lt;summary&gt;
+ Returns the internal numerical codes of the characters s[i], s[i+1], ..., s[j]. The default value for i is 1; the default value for j is i. 
+ &lt;/summary&gt;
+ &lt;param name="s"&gt;The string/char to convert to integers&lt;/param&gt;
+ &lt;param name="i"&gt;The start index&lt;/param&gt;
+ &lt;param name="j"&gt;The end index&lt;/param&gt;
+</byte>
+    <strmatch> &lt;summary&gt;
+ Matches the string based upon a given pattern and returns the captures
+ &lt;/summary&gt;
+ &lt;param name="string"&gt;The string to match&lt;/param&gt;
+ &lt;param name="pattern"&gt;The pattern to match in the string&lt;/param&gt;
+ &lt;param name="start"&gt;Optional start index to begin matching, can be negative&lt;/param&gt;
+</strmatch>
+    <len> &lt;summary&gt;
+ Returns the length of the string
+ &lt;/summary&gt;
+ &lt;param name="s"&gt;The string to get the length of&lt;/param&gt;
+</len>
+    <rep> &lt;summary&gt;
+ Returns a string that is the concatenation of n copies of the string s
+ &lt;/summary&gt;
+ &lt;param name="s"&gt;The string to concatentate&lt;/param&gt;
+ &lt;param name="n"&gt;The number of times to concatenate s&lt;/param&gt;
+</rep>
+    <xpcall> &lt;summary&gt;
+ This function is similar to pcall, except that you can set a new error handler
+ &lt;/summary&gt;
+ &lt;param name="f"&gt;The function to run in protected mode&lt;/param&gt;
+ &lt;param name="err"&gt;The error function&lt;/param&gt;
+</xpcall>
+    <package> &lt;summary&gt;
+ The package table
+ &lt;/summary&gt;
+</package>
+    <preload> &lt;summary&gt;
+ A table to store loaders for specific modules (see require). 
+ &lt;/summary&gt;
+</preload>
+    <loadlib> &lt;summary&gt;
+ Dynamically links the host program with the C library libname. Inside this library, looks for a function funcname and returns this function as a C function. &lt;br /&gt;
+ It does not load C Libraries in #Lua
+ &lt;/summary&gt;
+ &lt;param name="libname"&gt;The library to load&lt;/param&gt;
+ &lt;param name="funcname"&gt;&lt;/param&gt;
+</loadlib>
+    <loaded> &lt;summary&gt;
+ A table used by require to control which modules are already loaded. When you require a module modname and package.loaded[modname] is not false, require simply returns the value stored there. 
+ &lt;/summary&gt;
+</loaded>
+    <loaders> &lt;summary&gt;
+ A table used by require to control how to load modules. 
+ &lt;/summary&gt;
+</loaders>
+    <cpath> &lt;summary&gt;
+ The path used by require to search for a C loader
+ &lt;/summary&gt;
+</cpath>
+    <path> &lt;summary&gt;
+ The path used by require to search for a Lua loader. 
+ &lt;/summary&gt;
+</path>
+    <seeall> &lt;summary&gt;
+ Sets a metatable for module with its __index field referring to the global environment, so that this module inherits values from the global environment. To be used as an option to function module. 
+ &lt;/summary&gt;
+ &lt;param name="module"&gt;The module&lt;/param&gt;
+</seeall>
+    <tostring> &lt;summary&gt;
+ Receives an argument of any type and converts it to a string in a reasonable format.
+ &lt;/summary&gt;
+ &lt;param name="e"&gt;The object to convert into a string&lt;/param&gt;
+</tostring>
+    <print> &lt;summary&gt;
+ Receives any number of arguments, and prints their values to stdout, using the tostring function to convert them to strings.
+ &lt;/summary&gt;
+ &lt;param name="..."&gt;The arguments to print&lt;/param&gt;
+</print>
+    <os> &lt;summary&gt;
+ Provides operating system facilities
+ &lt;/summary&gt;
+</os>
+    <exit> &lt;summary&gt;
+ Exits the program with the specified code or 0
+ &lt;/summary&gt;
+ &lt;param name="code"&gt;Optional, defaults to 0&lt;/param&gt;
+</exit>
+    <setlocale> &lt;summary&gt;
+ Sets the current locale of the program.
+ &lt;/summary&gt;
+ &lt;param name="locale"&gt;&lt;/param&gt;
+ &lt;param name="category"&gt;&lt;/param&gt;
+</setlocale>
+    <date> &lt;summary&gt;
+ Returns a string or a table containing date and time, formatted according to the given string format. 
+ &lt;/summary&gt;
+ &lt;param name="format"&gt;Optional&lt;/param&gt;
+ &lt;param name="time"&gt;Optional&lt;/param&gt;
+</date>
+    <getenv> &lt;summary&gt;
+ Returns the value of the process environment variable varname, or nil if the variable is not defined. 
+ &lt;/summary&gt;
+ &lt;param name="varname"&gt;The variable to get&lt;/param&gt;
+</getenv>
+    <difftime> &lt;summary&gt;
+ Returns the number of seconds from time t1 to time t2. In POSIX, Windows, and some other systems, this value is exactly t2-t1. 
+ &lt;/summary&gt;
+ &lt;param name="t2"&gt;&lt;/param&gt;
+ &lt;param name="t1"&gt;&lt;/param&gt;
+</difftime>
+    <remove> &lt;summary&gt;
+ Deletes the file or directory with the given name. Directories must be empty to be removed. If this function fails, it returns nil, plus a string describing the error. 
+ &lt;/summary&gt;
+ &lt;param name="fileOrDir"&gt;The file/dir to remove&lt;/param&gt;
+</remove>
+</Documentation>

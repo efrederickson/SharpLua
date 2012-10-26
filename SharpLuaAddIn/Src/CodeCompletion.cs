@@ -362,7 +362,10 @@ new CompletionItem("loadfile"),
                 ch != ' ' &&
                 ch != ')' &&
                 ch != ']' &&
-                ch != '}'
+                ch != '}' &&
+                ch != '"' && // TODO: better string/comment handling
+                ch != '\'' &&
+                editor.Document.GetLineForOffset(editor.Caret.Offset).Text.Trim().StartsWith("--") == false
                 )
             {
                 if (l.items.Count > 0)

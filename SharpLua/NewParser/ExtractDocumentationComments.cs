@@ -70,11 +70,25 @@ namespace SharpLua
                             t = c.ScannedTokens[p];
                             if (t.Type == TokenType.Keyword && t.Data == "local")
                                 if (c.ScannedTokens[p + 1].Type == TokenType.Keyword && c.ScannedTokens[p + 1].Data == "function")
-                                    cmt.Ident = c.ScannedTokens[p + 2];
+                                {
+                                    int i2 = 2;
+                                    while (
+                                        (c.ScannedTokens[p + i2].Type == TokenType.Symbol && c.ScannedTokens[p + i2].Data == ".")
+                                        || (c.ScannedTokens[p + i2].Type == TokenType.Ident))
+                                        i2++;
+                                    cmt.Ident = c.ScannedTokens[p + i2 - 1];
+                                }
                                 else
                                     cmt.Ident = c.ScannedTokens[p + 1];
                             else if (t.Type == TokenType.Keyword && t.Data == "function")
-                                cmt.Ident = c.ScannedTokens[p + 1];
+                            {
+                                int i2 = 1;
+                                while (
+                                    (c.ScannedTokens[p + i2].Type == TokenType.Symbol && c.ScannedTokens[p + i2].Data == ".")
+                                    || (c.ScannedTokens[p + i2].Type == TokenType.Ident))
+                                    i2++;
+                                cmt.Ident = c.ScannedTokens[p + i2 - 1];
+                            }
                             else if (t.Type == TokenType.Ident)
                                 cmt.Ident = t;
 

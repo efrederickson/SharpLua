@@ -12,7 +12,7 @@ namespace SharpLuaAddIn
     {
         private AstExtractor() { }
 
-        public static List<CompletionItem> Disect(Chunk c)
+        public static List<CompletionItem> ExtractSymbols(Chunk c)
         {
             return DoChunk(c.Body);
         }

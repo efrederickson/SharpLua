@@ -22,6 +22,8 @@ namespace SharpLua.Interactive
         /// <param name="args">Application startup args</param>
         public static void Main(string[] args)
         {
+            // TODO: Better arg parsing/checking, make it more like the C lua
+
             bool GoInteractive = true;
 
             // Create global variables
@@ -58,7 +60,7 @@ namespace SharpLua.Interactive
                         LuaRuntime.SetVariable("_WORKDIR", Path.GetDirectoryName(file));
                         LuaRuntime.RunFile(file);
                         // it loaded successfully
-                        if (args.Length > 1) // possibly interactive mode after
+                        if (args.Length > 1 && args[1].ToUpper() != "-NOI") // possibly interactive mode after
                             Console.WriteLine("Loaded file '" + Path.GetFileName(file) + "'");
                     }
                     catch (Exception error)
@@ -79,6 +81,8 @@ namespace SharpLua.Interactive
             foreach (string arg in args)
                 if (arg.ToUpper() == "-I")
                     GoInteractive = true;
+                else if (arg.ToUpper() == "-NOI")
+                    GoInteractive = false;
 
             if (args.Length == 0)
                 GoInteractive = true;
@@ -136,7 +140,7 @@ namespace SharpLua.Interactive
                             // doesnt work :(
                             //LuaRuntime.Run("pcall(function() print(debug.traceback()) end)");
                             //Console.WriteLine();
-                            
+
                             //Lua.LuaState l = LuaRuntime.GetLua().LuaState;
                             //LuaRuntime.GetLua().traceback(l);
                             //Lua.lua_getglobal(l, "print");

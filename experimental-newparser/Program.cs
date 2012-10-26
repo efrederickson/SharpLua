@@ -97,8 +97,7 @@ namespace SharpLua
 
         private static void TestExtractDocComments()
         {
-            Lexer l = new Lexer();
-            Parser p = new Parser(l.Lex(@"
+            string str = /*@"
 ---<summary>
 --- somefin
 ---</summary>
@@ -106,13 +105,23 @@ namespace SharpLua
 function a()
 
 end
+*/@"
+---<summary>
+--- ugh.
+---</summary>
+function tbl.dosomething()
 
+end
+";/*
 ---<summary>
 --- a var
 ---</summary>
 ---<returns>wut?</returns>
 x = 1
-"));
+";*/
+
+            Lexer l = new Lexer();
+            Parser p = new Parser(l.Lex(str));
             Chunk c = p.Parse();
             List<DocumentationComment> docs = ExtractDocumentationComments.Extract(c);
             foreach (DocumentationComment d in docs)

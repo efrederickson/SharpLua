@@ -22,12 +22,25 @@
              class    = "SharpLuaAddIn.TestPad"/>
     </Path>
     
+    <Path name="/AddIns/FileTypeRegisterer/FileTypes">
+        <FiletypeAssociation
+			        id = "slua"
+			        autoRegister = "True"
+			        icon = "${AddInPath:SharpLua.SharpDevelop.AddIn}/slua.ico"
+			        text = "SharpLua script"/>
+         <FiletypeAssociation
+			        id = "lua"
+			        autoRegister = "True"
+			        icon = "${AddInPath:SharpLua.SharpDevelop.AddIn}/slua.ico"
+			        text = "Lua script"/>
+    </Path>
+        
     <Path name="/SharpDevelop/Workbench/LanguageBindings">
-		<LanguageBinding
-			id="SharpLua"
-		    class="SharpLuaAddIn.SharpLuaLanguageBinding"
-		    extensions=".slua;.lua" />
-	</Path>
+		    <LanguageBinding
+			      id="SharpLua"
+		        class="SharpLuaAddIn.SharpLuaLanguageBinding"
+		        extensions=".slua;.lua" />
+	  </Path>
     
     <Path name = "/SharpDevelop/BackendBindings/Templates">
         <Directory id = "Lua" path = "./Templates" />
@@ -50,8 +63,9 @@
     <Path name = "/Workspace/Icons">
         <Icon id         = "LuaFile"
               extensions = ".slua;.lua"
-              resource   = "C++.FileIcon"/>
+              resource   = "C++.FileIcon" />
     </Path>
+    <!-- resource = "${AddInPath:SharpLua.SharpDevelop.AddIn}/slua.ico"/> -->
     
     <Path name = "/AddIns/DefaultTextEditor/CodeCompletion">
         <CodeCompletionBinding id = "SharpLua" extensions = ".lua;.slua" class = "SharpLuaAddIn.CodeCompletion"/>

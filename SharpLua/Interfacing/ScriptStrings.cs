@@ -326,6 +326,14 @@ function math.round(x)
     return math.floor(x + 0.5)
 end
 
+function table.find(table, obj)
+    for k, v in pairs(table) do
+        if v == obj then
+            return k
+        end
+    end
+end
+
 -- Courtesy of lua-users.org and metalua
 
 function string.split(str, pat)

@@ -47,6 +47,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpLua.LASMTests", "Sharp
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{BAB533D5-5E42-4D68-8EB5-30F937D6008C}"
 	ProjectSection(SolutionItems) = preProject
+		Scripts\generateIntellisense.slua = Scripts\generateIntellisense.slua
 		Scripts\XFuscator.lua = Scripts\XFuscator.lua
 	EndProjectSection
 EndProject

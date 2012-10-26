@@ -3,7 +3,7 @@ SharpLua TODO
 - Documentation
 - Simple library extension
 - compression library (separate project), using IExtendFramework
-- set "..." to command line args in _G
+X set "..." to command line args in _G
 - Lists
 - new icon
 X set              - set (table, key, value)
@@ -80,7 +80,7 @@ Supported Compilers/Debuggers
      - ExpLua
      - SharpLua comment (XML/.net style)
  - Indentation/formatting
-     - minfied
+     - minified
      - beautified
      - tabs to spaces
  - Convert
@@ -118,7 +118,7 @@ Supported Compilers/Debuggers
      - edit/remove other debugging info
  - view/edit LASM of running Lua project
  - Rip Scripts/LocalScripts from rbxm/rbxl files
- - XFUSCATOR
+ X XFUSCATOR
  - Zip/Rar/7z/Tar.Gz project
  - compare files
      - exclude white space (for reconstruction/beautifying debugging purposes)

@@ -1,0 +1,32 @@
+scanned = { 
+-- Put things that shouldn't be in intellisense here.
+    packageName = true,
+    decompile = true,
+    arg = true,
+    [-1] = true, 
+    [0] = true,
+    n = true,
+    [3] = true,
+    ["..."] = true,
+    TestModule = true,
+    PrintHi = true,
+    TestModule2 = true,
+    test = true,
+}
+
+for k, v in pairs(_G) do
+    if not scanned[k] then
+        scanned[k] = true
+        print("new CompletionItem(\"" .. k .. "\"), ")
+        if type(v) == "table" then
+            for k2, v2 in pairs(v) do
+                if not scanned[k2] then
+                    print("new CompletionItem(\"" .. k2 .. "\"), ")
+                    scanned[k2] = true
+                end
+            end
+            print""
+        end
+    end
+end
+        

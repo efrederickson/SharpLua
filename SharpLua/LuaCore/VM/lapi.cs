@@ -405,11 +405,19 @@ namespace SharpLua
             {
                 case LUA_TSTRING: return tsvalue(o).len;
                 case LUA_TUSERDATA: return uvalue(o).len;
-                case LUA_TTABLE: return (uint)luaH_getn(hvalue(o));
+                case LUA_TTABLE:
+                    // Table now respects __len metamethod
+                    Table h = hvalue(o);
+                    TValue tm = fasttm(L, h.metatable, TMS.TM_LEN);
+                    if (tm != null)
+                        //return call_binTM(L, o, luaO_nilobject, ra, TMS.TM_LEN);
+                        throw new NotImplementedException();
+                    else
+                        return (uint)luaH_getn(hvalue(o));
                 case LUA_TNUMBER:
                     {
                         uint l;
-                        lua_lock(L);  /* `luaV_tostring' may create a new string */
+                        lua_lock(L);  /* 'luaV_tostring' may create a new string */
                         l = (luaV_tostring(L, o) != 0 ? tsvalue(o).len : 0);
                         lua_unlock(L);
                         return l;
@@ -968,6 +976,7 @@ namespace SharpLua
             if (chunkname == null) chunkname = "?";
 
 #if OVERRIDE_LOAD || true
+            //#if false
             if (data is LoadS)
             {
                 LoadS d = data as LoadS;

@@ -44,6 +44,9 @@ namespace SharpLua
             TM_USEDINDEX,
             TM_GETINDEX,
             TM_ITER,
+            TM_TABLESCOPE,
+            TM_BITNEGATE,
+            TM_BITXOR,
             TM_N		/* number of elements in the enum */
         };
 
@@ -68,7 +71,7 @@ namespace SharpLua
 			"__add", "__sub", "__mul", "__div", "__mod",
 			"__pow", "__unm", "__len", "__lt", "__le",
 			"__concat", "__call", "__rshift", "__lshift", "__bitand", "__bitor",
-			"__usedindex", "__getindex", "__iter"
+			"__usedindex", "__getindex", "__iter", "__scope", "__bitnegate", "__bitxor",
 		  };
 
         public static void luaT_init(LuaState L)

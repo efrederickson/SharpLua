@@ -227,6 +227,7 @@ namespace SharpLua
             return lua_gc(L, LUA_GCCOUNT, 0);
         }
 
+        /*
         public static lua_Unsigned luaL_checkunsigned(LuaState L, int narg)
         {
             bool isnum = false;
@@ -266,7 +267,7 @@ namespace SharpLua
             api_incr_top(L);
             lua_unlock(L);
         }
-
+        */
 
 
 

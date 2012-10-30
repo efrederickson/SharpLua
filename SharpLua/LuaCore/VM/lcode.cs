@@ -89,10 +89,6 @@ namespace SharpLua
             OPR_LT, OPR_LE, OPR_GT, OPR_GE,
             OPR_AND, OPR_OR,
             OPR_NOBINOPR,
-            OPR_RSHIFT,
-            OPR_LSHIFT,
-            OPR_BITAND,
-            OPR_BITOR,
         };
 
 
@@ -837,18 +833,6 @@ namespace SharpLua
                 case OpCode.OP_ADD: r = luai_numadd(v1, v2); break;
                 case OpCode.OP_SUB: r = luai_numsub(v1, v2); break;
                 case OpCode.OP_MUL: r = luai_nummul(v1, v2); break;
-                case OpCode.OP_RSHIFT:
-                    r = luai_numrshift(v1, v2);
-                    break;
-                case OpCode.OP_LSHIFT:
-                    r = luai_numlshift(v1, v2);
-                    break;
-                case OpCode.OP_BITAND:
-                    r = luai_numbitand(v1, v2);
-                    break;
-                case OpCode.OP_BITOR:
-                    r = luai_numbitor(v1, v2);
-                    break;
                 case OpCode.OP_DIV:
                     if (v2 == 0) return 0;  /* do not attempt to divide by 0 */
                     r = luai_numdiv(v1, v2); break;
@@ -964,10 +948,6 @@ namespace SharpLua
                 case BinOpr.OPR_DIV:
                 case BinOpr.OPR_MOD:
                 case BinOpr.OPR_POW:
-                case BinOpr.OPR_RSHIFT:
-                case BinOpr.OPR_LSHIFT:
-                case BinOpr.OPR_BITAND:
-                case BinOpr.OPR_BITOR:
                     if ((isnumeral(v) == 0))
                         luaK_exp2RK(fs, v);
                     break;
@@ -1027,10 +1007,6 @@ namespace SharpLua
                 case BinOpr.OPR_LE: codecomp(fs, OpCode.OP_LE, 1, e1, e2); break;
                 case BinOpr.OPR_GT: codecomp(fs, OpCode.OP_LT, 0, e1, e2); break;
                 case BinOpr.OPR_GE: codecomp(fs, OpCode.OP_LE, 0, e1, e2); break;
-                case BinOpr.OPR_RSHIFT: codearith(fs, OpCode.OP_RSHIFT, e1, e2); break;
-                case BinOpr.OPR_LSHIFT: codearith(fs, OpCode.OP_LSHIFT, e1, e2); break;
-                case BinOpr.OPR_BITAND: codearith(fs, OpCode.OP_BITAND, e1, e2); break;
-                case BinOpr.OPR_BITOR: codearith(fs, OpCode.OP_BITOR, e1, e2); break;
                 default: lua_assert(0); break;
             }
         }

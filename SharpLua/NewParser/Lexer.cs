@@ -417,7 +417,10 @@ namespace SharpLua
                         t.Data = "~=";
                     }
                     else
-                        error("Unexpected symbol '~'");
+                    {
+                        t.Type = TokenType.Symbol;
+                        t.Data = "~";
+                    }
 
                 }
                 else if (c == '.')
@@ -460,6 +463,29 @@ namespace SharpLua
                     read(); // read the '>'
                     t.Data = "->";
                     t.Type = TokenType.Symbol;
+                }
+                else if (c == '^')
+                {
+                    t.Type = TokenType.Symbol;
+                    
+                    if (peek() == '^')
+                    {
+                        read();
+                        if (peek() == '=')
+                        {
+                            read();
+                            t.Data = "^^=";
+                        }
+                        else
+                            t.Data = "^^";
+                    }
+                    else if (peek() == '=')
+                    {
+                        read();
+                        t.Data = "^=";
+                    }
+                    else
+                        t.Data = "^";
                 }
                 else if (IsSymbol(c))
                 {

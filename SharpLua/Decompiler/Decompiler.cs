@@ -420,38 +420,6 @@ namespace SharpLua.Decompiler
                         }
                         emit(" = ...");
                         break;
-                    case Lua.OpCode.OP_RSHIFT:
-                        // A B C, R(A) := RK(B) >> RK(C)
-                        emitName(a);
-                        emit(" = ");
-                        emitRegOrConst(b);
-                        emit(" >> ");
-                        emitRegOrConst(c);
-                        break;
-                    case Lua.OpCode.OP_LSHIFT:
-                        // A B C, R(A) := RK(B) << RK(C)
-                        emitName(a);
-                        emit(" = ");
-                        emitRegOrConst(b);
-                        emit(" << ");
-                        emitRegOrConst(c);
-                        break;
-                    case Lua.OpCode.OP_BITAND:
-                        // A B C, R(A) := RK(B) & RK(C)
-                        emitName(a);
-                        emit(" = ");
-                        emitRegOrConst(b);
-                        emit(" & ");
-                        emitRegOrConst(c);
-                        break;
-                    case Lua.OpCode.OP_BITOR:
-                        // A B C, R(A) := RK(B) | RK(C)
-                        emitName(a);
-                        emit(" = ");
-                        emitRegOrConst(b);
-                        emit(" ^| ");
-                        emitRegOrConst(c);
-                        break;
                     default:
                         break;
                 }

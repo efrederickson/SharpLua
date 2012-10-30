@@ -9,6 +9,7 @@ using SharpLua;
 
 namespace SharpLua.Compiler
 {
+    /*
     public class Compiler
     {
         Var2Reg v2r = new Var2Reg();
@@ -17,7 +18,6 @@ namespace SharpLua.Compiler
 
         public Compiler() { current = main; }
 
-        /*
         void DoExpr(Expression e)
         {
             if (e is AnonymousFunctionExpr) // function() ... end
@@ -131,6 +131,7 @@ namespace SharpLua.Compiler
             Lua.SET_OPCODE(ref r, Lua.OpCode.OP_LOADK);
             return r;
         }
-        */
+        
     }
+    */
 }

@@ -37,7 +37,7 @@ namespace SharpLua
             TK_RETURN, TK_THEN, TK_TRUE, TK_UNTIL, TK_WHILE,
             /* other terminal symbols */
             TK_CONCAT, TK_DOTS, TK_EQ, TK_GE, TK_LE, TK_NE, TK_NUMBER,
-            TK_NAME, TK_STRING, TK_EOS, TK_RSHIFT, TK_LSHIFT, TK_BITAND, TK_BITOR
+            TK_NAME, TK_STRING, TK_EOS,
         };
 
         /* number of reserved words */
@@ -98,7 +98,6 @@ namespace SharpLua
             "return", "then", "true", "until", "while",
             "..", "...", "==", ">=", "<=", "~=", 
             "<number>", "<name>", "<string>", "<eof>",
-            ">>", "<<", "&", "|",
         };
 
 
@@ -492,11 +491,6 @@ namespace SharpLua
                                 next(ls);
                                 return (int)RESERVED.TK_LE;
                             }
-                            else if (ls.current == '<')
-                            {
-                                next(ls);
-                                return (int)RESERVED.TK_LSHIFT;
-                            }
                             else
                             {
                                 return '<';
@@ -512,11 +506,6 @@ namespace SharpLua
                             {
                                 next(ls);
                                 return (int)RESERVED.TK_GE;
-                            }
-                            else if (ls.current == '>')
-                            {
-                                next(ls);
-                                return (int)RESERVED.TK_RSHIFT;
                             }
                             else
                                 return '>';
@@ -553,19 +542,6 @@ namespace SharpLua
                         {
                             return (int)RESERVED.TK_EOS;
                         }
-                    case '!':
-                        next(ls);
-                        return (int)RESERVED.TK_NOT;
-                    case '&':
-                        next(ls);
-                        return (int)RESERVED.TK_BITAND;
-                    case '|':
-                        next(ls);
-                        if (char.IsLetter((char)ls.current) || ls.current == '_')
-                        {
-                            //expr(ls)
-                        }
-                        return (int)RESERVED.TK_BITOR;
                     default:
                         {
                             if (isspace(ls.current))
@@ -590,7 +566,9 @@ namespace SharpLua
                                 ts = luaX_newstring(ls, luaZ_buffer(ls.buff),
                                                     luaZ_bufflen(ls.buff));
                                 if (ts.tsv.reserved > 0)  /* reserved word? */
+                                {
                                     return ts.tsv.reserved - 1 + FIRST_RESERVED;
+                                }
                                 else
                                 {
                                     seminfo.ts = ts;

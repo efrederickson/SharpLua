@@ -145,6 +145,7 @@
     <Compile Include="NewParser\Ast\Statement\WhileStatement.cs" />
     <Compile Include="NewParser\Ast\Variable.cs" />
     <Compile Include="NewParser\Compiler\Compiler.cs" />
+    <Compile Include="NewParser\Compiler\Compiler2.cs" />
     <Compile Include="NewParser\Compiler\K2Reg.cs" />
     <Compile Include="NewParser\Compiler\Var2Reg.cs" />
     <Compile Include="NewParser\XmlDocumentation\DocumentationComment.cs" />

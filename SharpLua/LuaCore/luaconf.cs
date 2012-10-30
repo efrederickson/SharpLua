@@ -596,10 +596,6 @@ namespace SharpLua
         public static lua_Number luai_numdiv(lua_Number a, lua_Number b) { return ((a) / (b)); }
         public static lua_Number luai_nummod(lua_Number a, lua_Number b) { return ((a) - Math.Floor((a) / (b)) * (b)); }
         public static lua_Number luai_numpow(lua_Number a, lua_Number b) { return (Math.Pow(a, b)); }
-        public static lua_Number luai_numrshift(lua_Number a, lua_Number b) { return (int)Math.Round(a) >> (int)Math.Round(b); }
-        public static lua_Number luai_numlshift(lua_Number a, lua_Number b) { return (int)Math.Round(a) << (int)Math.Round(b); }
-        public static lua_Number luai_numbitand(lua_Number a, lua_Number b) { return (int)Math.Round(a) & (int)Math.Round(b); }
-        public static lua_Number luai_numbitor(lua_Number a, lua_Number b) { return (int)Math.Round(a) | (int)Math.Round(b); }
         public static lua_Number luai_numunm(lua_Number a) { return (-(a)); }
         public static bool luai_numeq(lua_Number a, lua_Number b) { return ((a) == (b)); }
         public static bool luai_numlt(lua_Number a, lua_Number b) { return ((a) < (b)); }

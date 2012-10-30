@@ -367,6 +367,18 @@ namespace SharpLua
 
                         }
                     }
+                    else if (reader.ConsumeKeyword("function"))
+                    {
+                        if (reader.Peek().Type != TokenType.Ident)
+                            error("function name expected");
+                        string name = reader.Get().Data;
+                        AnonymousFunctionExpr f = ParseExprFunctionArgsAndBody(scope);
+                        v.EntryList.Add(new TableConstructorStringKeyExpr
+                        {
+                            Key = name,
+                            Value = f
+                        });
+                    }
                     else if (reader.ConsumeSymbol('}'))
                         break;
                     else
@@ -464,7 +476,7 @@ namespace SharpLua
 
         bool isUnOp(string o)
         {
-            foreach (string s in new string[] { "-", "not", "#", "!" })
+            foreach (string s in new string[] { "-", "not", "#", "!", "~" })
                 if (s == o)
                     return true;
             return false;
@@ -506,6 +518,7 @@ namespace SharpLua
         new priority_("<<", 7, 7),
         new priority_("&", 7, 7),
         new priority_("|", 7, 7),
+        new priority_("^^", 7, 7), // Xor
  	};
 
         priority_ getpriority(string d)
@@ -991,6 +1004,7 @@ namespace SharpLua
                 case "|=":
                 case "^=":
                 case "%=":
+                case "^^=":
                     return true;
 
                 default:

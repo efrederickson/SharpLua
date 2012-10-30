@@ -1,181 +1,73 @@
-/*
- ** $Id: lparser.c,v 2.42.1.3 2007/12/28 15:32:23 roberto Exp $
- ** Lua Parser
- ** See Copyright Notice in lua.h
- */
-
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Text;
-using System.Runtime.InteropServices;
-
-namespace SharpLua
+﻿namespace SharpLua.NewParser.Compiler
 {
+    using BinOpr = Lua.BinOpr;
+    using BlockCnt = Lua.BlockCnt;
+    using CharPtr = Lua.CharPtr;
+    using expdesc = Lua.expdesc;
+    using expkind = Lua.expkind;
+    using FuncState = Lua.FuncState;
+    using LexState = Lua.LexState;
+    using LocVar = Lua.LocVar;
     using lu_byte = System.Byte;
-    using lua_Number = System.Double;
+    using LuaState = Lua.LuaState;
+    using Mbuffer = Lua.Mbuffer;
+    using OpCode = Lua.OpCode;
+    using Proto = Lua.Proto;
+    using RESERVED = Lua.RESERVED;
+    using TString = Lua.TString;
+    using UnOpr = Lua.UnOpr;
     using ZIO = Lua.Zio;
 
-    public partial class Lua
+    internal class Compiler2
     {
-        /*
-         ** Expression descriptor
-         */
-
-        public enum expkind
+        public static int hasmultret(expkind k)
         {
-            VVOID,	/* no value */
-            VNIL,
-            VTRUE,
-            VFALSE,
-            VK,		/* info = index of constant in `k' */
-            VKNUM,	/* nval = numerical value */
-            VLOCAL,	/* info = local register */
-            VUPVAL,       /* info = index of upvalue in `upvalues' */
-            VGLOBAL,	/* info = index of table; aux = index of global name in `k' */
-            VINDEXED,	/* info = table register; aux = index register (or `k') */
-            VJMP,		/* info = instruction pc */
-            VRELOCABLE,	/* info = instruction pc */
-            VNONRELOC,	/* info = result register */
-            VCALL,	/* info = instruction pc */
-            VVARARG	/* info = instruction pc */
-        };
+            return ((k) == expkind.VCALL || (k) == expkind.VVARARG) ? 1 : 0;
+        }
 
-
-
-        public class expdesc
+        public static LocVar getlocvar(FuncState fs, int i)
         {
+            return fs.f.locvars[fs.actvar[i]];
+        }
 
-            public void Copy(expdesc e)
-            {
-                this.k = e.k;
-                this.u.Copy(e.u);
-                this.t = e.t;
-                this.f = e.f;
-            }
-
-            public expkind k;
-            public class _u
-            {
-                public void Copy(_u u)
-                {
-                    this.s.Copy(u.s);
-                    this.nval = u.nval;
-                }
-
-                public class _s
-                {
-                    public void Copy(_s s)
-                    {
-                        this.info = s.info;
-                        this.aux = s.aux;
-                    }
-                    public int info, aux;
-                };
-                public _s s = new _s();
-                public lua_Number nval;
-            };
-            public _u u = new _u();
-
-            public int t;  /* patch list of `exit when true' */
-            public int f;  /* patch list of `exit when false' */
-        };
-
-
-        public class upvaldesc
+        public static void luaY_checklimit(FuncState fs, int v, int l, CharPtr m)
         {
-            public lu_byte k;
-            public lu_byte info;
-        };
-
-
-        /* state needed to generate code for a given function */
-        public class FuncState
-        {
-            public FuncState()
-            {
-                for (int i = 0; i < this.upvalues.Length; i++)
-                    this.upvalues[i] = new upvaldesc();
-            }
-
-            public Proto f;  /* current function header */
-            public Table h;  /* table to find (and reuse) elements in 'k' */
-            public FuncState prev;  /* enclosing function */
-            public LexState ls;  /* lexical state */
-            public LuaState L;  /* copy of the Lua state */
-            public BlockCnt bl;  /* chain of current blocks */
-            public int pc;  /* next position to code (equivalent to `ncode') */
-            public int lasttarget;   /* `pc' of last `jump target' */
-            public int jpc;  /* list of pending jumps to `pc' */
-            public int freereg;  /* first free register */
-            public int nk;  /* number of elements in `k' */
-            public int np;  /* number of elements in `p' */
-            public short nlocvars;  /* number of elements in `locvars' */
-            public lu_byte nactvar;  /* number of active local variables */
-            public upvaldesc[] upvalues = new upvaldesc[LUAI_MAXUPVALUES];  /* upvalues */
-            public ushort[] actvar = new ushort[LUAI_MAXVARS];  /* declared-variable stack */
-        };
-
-
-        public static int hasmultret(expkind k) { return ((k) == expkind.VCALL || (k) == expkind.VVARARG) ? 1 : 0; }
-
-        public static LocVar getlocvar(FuncState fs, int i) { return fs.f.locvars[fs.actvar[i]]; }
-
-        public static void luaY_checklimit(FuncState fs, int v, int l, CharPtr m) { if ((v) > (l)) errorlimit(fs, l, m); }
-
-
-        /*
-         ** nodes for block list (list of active blocks)
-         */
-        public class BlockCnt
-        {
-            public BlockCnt previous;  /* chain */
-            public int breaklist;  /* list of jumps out of this loop */
-            public int continuelist;/* list of jumps to the loop's test */
-            public lu_byte nactvar;  /* # active locals outside the breakable structure */
-            public lu_byte upval;  /* true if some variable in the block is an upvalue */
-            public lu_byte isbreakable;  /* true if `block' is a loop */
-        };
-
-
+            if ((v) > (l)) errorlimit(fs, l, m);
+        }
 
         private static void anchor_token(LexState ls)
         {
             if (ls.t.token == (int)RESERVED.TK_NAME || ls.t.token == (int)RESERVED.TK_STRING)
             {
                 TString ts = ls.t.seminfo.ts;
-                luaX_newstring(ls, getstr(ts), ts.tsv.len);
+                Lua.luaX_newstring(ls, Lua.getstr(ts), ts.tsv.len);
             }
         }
 
-
         private static void error_expected(LexState ls, int token)
         {
-            luaX_syntaxerror(ls,
-                             luaO_pushfstring(ls.L, LUA_QS + " expected", luaX_token2str(ls, token)));
+            Lua.luaX_syntaxerror(ls,
+                             Lua.luaO_pushfstring(ls.L, Lua.LUA_QS + " expected", Lua.luaX_token2str(ls, token)));
         }
-
 
         private static void errorlimit(FuncState fs, int limit, CharPtr what)
         {
             CharPtr msg = (fs.f.linedefined == 0) ?
-                luaO_pushfstring(fs.L, "main function has more than %d %s", limit, what) :
-                luaO_pushfstring(fs.L, "function at line %d has more than %d %s",
+                Lua.luaO_pushfstring(fs.L, "main function has more than %d %s", limit, what) :
+                Lua.luaO_pushfstring(fs.L, "function at line %d has more than %d %s",
                                  fs.f.linedefined, limit, what);
-            luaX_lexerror(fs.ls, msg, 0);
+            Lua.luaX_lexerror(fs.ls, msg, 0);
         }
-
 
         private static int testnext(LexState ls, int c)
         {
             if (ls.t.token == c)
             {
-                luaX_next(ls);
+                Lua.luaX_next(ls);
                 return 1;
             }
             else return 0;
         }
-
 
         private static void check(LexState ls, int c)
         {
@@ -186,13 +78,13 @@ namespace SharpLua
         private static void checknext(LexState ls, int c)
         {
             check(ls, c);
-            luaX_next(ls);
+            Lua.luaX_next(ls);
         }
-
 
         public static void check_condition(LexState ls, bool c, CharPtr msg)
         {
-            if (!(c)) luaX_syntaxerror(ls, msg);
+            if (!(c))
+                Lua.luaX_syntaxerror(ls, msg);
         }
 
         private static void check_match(LexState ls, int what, int who, int where)
@@ -203,9 +95,9 @@ namespace SharpLua
                     error_expected(ls, what);
                 else
                 {
-                    luaX_syntaxerror(ls, luaO_pushfstring(ls.L,
-                                                          LUA_QS + " expected (to close " + LUA_QS + " at line %d)",
-                                                          luaX_token2str(ls, what), luaX_token2str(ls, who), where));
+                    Lua.luaX_syntaxerror(ls, Lua.luaO_pushfstring(ls.L,
+                                                          Lua.LUA_QS + " expected (to close " + Lua.LUA_QS + " at line %d)",
+                                                          Lua.luaX_token2str(ls, what), Lua.luaX_token2str(ls, who), where));
                 }
             }
         }
@@ -215,69 +107,61 @@ namespace SharpLua
             TString ts;
             check(ls, (int)RESERVED.TK_NAME);
             ts = ls.t.seminfo.ts;
-            luaX_next(ls);
+            Lua.luaX_next(ls);
             return ts;
         }
 
-
         private static void init_exp(expdesc e, expkind k, int i)
         {
-            e.f = e.t = NO_JUMP;
+            e.f = e.t = Lua.NO_JUMP;
             e.k = k;
             e.u.s.info = i;
         }
 
-
         private static void codestring(LexState ls, expdesc e, TString s)
         {
-            init_exp(e, expkind.VK, luaK_stringK(ls.fs, s));
+            init_exp(e, expkind.VK, Lua.luaK_stringK(ls.fs, s));
         }
-
 
         private static void checkname(LexState ls, expdesc e)
         {
             codestring(ls, e, str_checkname(ls));
         }
 
-
         private static int registerlocalvar(LexState ls, TString varname)
         {
             FuncState fs = ls.fs;
             Proto f = fs.f;
             int oldsize = f.sizelocvars;
-            luaM_growvector(ls.L, ref f.locvars, fs.nlocvars, ref f.sizelocvars,
-                            (int)SHRT_MAX, "too many local variables");
+            Lua.luaM_growvector(ls.L, ref f.locvars, fs.nlocvars, ref f.sizelocvars,
+                            (int)Lua.SHRT_MAX, "too many local variables");
             while (oldsize < f.sizelocvars) f.locvars[oldsize++].varname = null;
             f.locvars[fs.nlocvars].varname = varname;
-            luaC_objbarrier(ls.L, f, varname);
+            Lua.luaC_objbarrier(ls.L, f, varname);
             return fs.nlocvars++;
         }
 
-
         public static void new_localvarliteral(LexState ls, CharPtr v, int n)
         {
-            new_localvar(ls, luaX_newstring(ls, "" + v, (uint)(v.chars.Length - 1)), n);
+            new_localvar(ls, Lua.luaX_newstring(ls, "" + v, (uint)(v.chars.Length - 1)), n);
         }
-
 
         private static void new_localvar(LexState ls, TString name, int n)
         {
             FuncState fs = ls.fs;
-            luaY_checklimit(fs, fs.nactvar + n + 1, LUAI_MAXVARS, "local variables");
+            luaY_checklimit(fs, fs.nactvar + n + 1, Lua.LUAI_MAXVARS, "local variables");
             fs.actvar[fs.nactvar + n] = (ushort)registerlocalvar(ls, name);
         }
-
 
         private static void adjustlocalvars(LexState ls, int nvars)
         {
             FuncState fs = ls.fs;
-            fs.nactvar = cast_byte(fs.nactvar + nvars);
+            fs.nactvar = Lua.cast_byte(fs.nactvar + nvars);
             for (; nvars != 0; nvars--)
             {
                 getlocvar(fs, fs.nactvar - nvars).startpc = fs.pc;
             }
         }
-
 
         private static void removevars(LexState ls, int tolevel)
         {
@@ -285,7 +169,6 @@ namespace SharpLua
             while (fs.nactvar > tolevel)
                 getlocvar(fs, --fs.nactvar).endpc = fs.pc;
         }
-
 
         private static int indexupvalue(FuncState fs, TString name, expdesc v)
         {
@@ -296,22 +179,21 @@ namespace SharpLua
             {
                 if ((int)fs.upvalues[i].k == (int)v.k && fs.upvalues[i].info == v.u.s.info)
                 {
-                    lua_assert(f.upvalues[i] == name);
+                    Lua.lua_assert(f.upvalues[i] == name);
                     return i;
                 }
             }
             /* new one */
-            luaY_checklimit(fs, f.nups + 1, LUAI_MAXUPVALUES, "upvalues");
-            luaM_growvector(fs.L, ref f.upvalues, f.nups, ref f.sizeupvalues, MAX_INT, "");
+            luaY_checklimit(fs, f.nups + 1, Lua.LUAI_MAXUPVALUES, "upvalues");
+            Lua.luaM_growvector(fs.L, ref f.upvalues, f.nups, ref f.sizeupvalues, Lua.MAX_INT, "");
             while (oldsize < f.sizeupvalues) f.upvalues[oldsize++] = null;
             f.upvalues[f.nups] = name;
-            luaC_objbarrier(fs.L, f, name);
-            lua_assert(v.k == expkind.VLOCAL || v.k == expkind.VUPVAL);
-            fs.upvalues[f.nups].k = cast_byte(v.k);
-            fs.upvalues[f.nups].info = cast_byte(v.u.s.info);
+            Lua.luaC_objbarrier(fs.L, f, name);
+            Lua.lua_assert(v.k == expkind.VLOCAL || v.k == expkind.VUPVAL);
+            fs.upvalues[f.nups].k = Lua.cast_byte(v.k);
+            fs.upvalues[f.nups].info = Lua.cast_byte(v.u.s.info);
             return f.nups++;
         }
-
 
         private static int searchvar(FuncState fs, TString n)
         {
@@ -324,7 +206,6 @@ namespace SharpLua
             return -1;  /* not found */
         }
 
-
         private static void markupval(FuncState fs, int level)
         {
             BlockCnt bl = fs.bl;
@@ -332,12 +213,11 @@ namespace SharpLua
             if (bl != null) bl.upval = 1;
         }
 
-
         private static expkind singlevaraux(FuncState fs, TString n, expdesc var, int base_)
         {
             if (fs == null)
             {  /* no more levels? */
-                init_exp(var, expkind.VGLOBAL, NO_REG);  /* default is global variable */
+                init_exp(var, expkind.VGLOBAL, Lua.NO_REG);  /* default is global variable */
                 return expkind.VGLOBAL;
             }
             else
@@ -361,15 +241,13 @@ namespace SharpLua
             }
         }
 
-
         private static void singlevar(LexState ls, expdesc var)
         {
             TString varname = str_checkname(ls);
             FuncState fs = ls.fs;
             if (singlevaraux(fs, varname, var, 1) == expkind.VGLOBAL)
-                var.u.s.info = luaK_stringK(fs, varname);  /* info points to global name */
+                var.u.s.info = Lua.luaK_stringK(fs, varname);  /* info points to global name */
         }
-
 
         private static void adjust_assign(LexState ls, int nvars, int nexps, expdesc e)
         {
@@ -379,44 +257,43 @@ namespace SharpLua
             {
                 extra++;  /* includes call itself */
                 if (extra < 0) extra = 0;
-                luaK_setreturns(fs, e, extra);  /* last exp. provides the difference */
-                if (extra > 1) luaK_reserveregs(fs, extra - 1);
+                Lua.luaK_setreturns(fs, e, extra);  /* last exp. provides the difference */
+                if (extra > 1) Lua.luaK_reserveregs(fs, extra - 1);
             }
             else
             {
-                if (e.k != expkind.VVOID) luaK_exp2nextreg(fs, e);  /* close last expression */
+                if (e.k != expkind.VVOID) Lua.luaK_exp2nextreg(fs, e);  /* close last expression */
                 if (extra > 0)
                 {
                     int reg = fs.freereg;
-                    luaK_reserveregs(fs, extra);
-                    luaK_nil(fs, reg, extra);
+                    Lua.luaK_reserveregs(fs, extra);
+                    Lua.luaK_nil(fs, reg, extra);
                 }
             }
         }
 
-
         private static void enterlevel(LexState ls)
         {
-            if (++ls.L.nCcalls > LUAI_MAXCCALLS)
-                luaX_lexerror(ls, "chunk has too many syntax levels", 0);
+            if (++ls.L.nCcalls > Lua.LUAI_MAXCCALLS)
+                Lua.luaX_lexerror(ls, "chunk has too many syntax levels", 0);
         }
 
-
-        private static void leavelevel(LexState ls) { ls.L.nCcalls--; }
-
+        private static void leavelevel(LexState ls)
+        {
+            ls.L.nCcalls--;
+        }
 
         private static void enterblock(FuncState fs, BlockCnt bl, lu_byte isbreakable)
         {
-            bl.breaklist = NO_JUMP;
-            bl.continuelist = NO_JUMP;
+            bl.breaklist = Lua.NO_JUMP;
+            bl.continuelist = Lua.NO_JUMP;
             bl.isbreakable = isbreakable;
             bl.nactvar = fs.nactvar;
             bl.upval = 0;
             bl.previous = fs.bl;
             fs.bl = bl;
-            lua_assert(fs.freereg == fs.nactvar);
+            Lua.lua_assert(fs.freereg == fs.nactvar);
         }
-
 
         private static void leaveblock(FuncState fs)
         {
@@ -424,14 +301,13 @@ namespace SharpLua
             fs.bl = bl.previous;
             removevars(fs.ls, bl.nactvar);
             if (bl.upval != 0)
-                luaK_codeABC(fs, OpCode.OP_CLOSE, bl.nactvar, 0, 0);
+                Lua.luaK_codeABC(fs, OpCode.OP_CLOSE, bl.nactvar, 0, 0);
             /* a block either controls scope or breaks (never both) */
-            lua_assert((bl.isbreakable == 0) || (bl.upval == 0));
-            lua_assert(bl.nactvar == fs.nactvar);
+            Lua.lua_assert((bl.isbreakable == 0) || (bl.upval == 0));
+            Lua.lua_assert(bl.nactvar == fs.nactvar);
             fs.freereg = fs.nactvar;  /* free registers */
-            luaK_patchtohere(fs, bl.breaklist);
+            Lua.luaK_patchtohere(fs, bl.breaklist);
         }
-
 
         private static void pushclosure(LexState ls, FuncState func, expdesc v)
         {
@@ -439,24 +315,23 @@ namespace SharpLua
             Proto f = fs.f;
             int oldsize = f.sizep;
             int i;
-            luaM_growvector(ls.L, ref f.p, fs.np, ref f.sizep,
-                            MAXARG_Bx, "constant table overflow");
+            Lua.luaM_growvector(ls.L, ref f.p, fs.np, ref f.sizep,
+                            Lua.MAXARG_Bx, "constant table overflow");
             while (oldsize < f.sizep) f.p[oldsize++] = null;
             f.p[fs.np++] = func.f;
-            luaC_objbarrier(ls.L, f, func.f);
-            init_exp(v, expkind.VRELOCABLE, luaK_codeABx(fs, OpCode.OP_CLOSURE, 0, fs.np - 1));
+            Lua.luaC_objbarrier(ls.L, f, func.f);
+            init_exp(v, expkind.VRELOCABLE, Lua.luaK_codeABx(fs, OpCode.OP_CLOSURE, 0, fs.np - 1));
             for (i = 0; i < func.f.nups; i++)
             {
                 OpCode o = ((int)func.upvalues[i].k == (int)expkind.VLOCAL) ? OpCode.OP_MOVE : OpCode.OP_GETUPVAL;
-                luaK_codeABC(fs, o, 0, func.upvalues[i].info, 0);
+                Lua.luaK_codeABC(fs, o, 0, func.upvalues[i].info, 0);
             }
         }
-
 
         private static void open_func(LexState ls, FuncState fs)
         {
             LuaState L = ls.L;
-            Proto f = luaF_newproto(L);
+            Proto f = Lua.luaF_newproto(L);
             fs.f = f;
             fs.prev = ls.fs;  /* linked list of funcstates */
             fs.ls = ls;
@@ -464,7 +339,7 @@ namespace SharpLua
             ls.fs = fs;
             fs.pc = 0;
             fs.lasttarget = -1;
-            fs.jpc = NO_JUMP;
+            fs.jpc = Lua.NO_JUMP;
             fs.freereg = 0;
             fs.nk = 0;
             fs.np = 0;
@@ -473,12 +348,12 @@ namespace SharpLua
             fs.bl = null;
             f.source = ls.source;
             f.maxstacksize = 2;  /* registers 0/1 are always valid */
-            fs.h = luaH_new(L, 0, 0);
+            fs.h = Lua.luaH_new(L, 0, 0);
             /* anchor table of constants and prototype (to avoid being collected) */
-            sethvalue2s(L, L._top, fs.h);
-            incr_top(L);
-            setptvalue2s(L, L._top, f);
-            incr_top(L);
+            Lua.sethvalue2s(L, L._top, fs.h);
+            Lua.incr_top(L);
+            Lua.setptvalue2s(L, L._top, f);
+            Lua.incr_top(L);
         }
 
         private static void close_func(LexState ls)
@@ -487,99 +362,92 @@ namespace SharpLua
             FuncState fs = ls.fs;
             Proto f = fs.f;
             removevars(ls, 0);
-            luaK_ret(fs, 0, 0);  /* final return */
-            luaM_reallocvector(L, ref f.code, f.sizecode, fs.pc/*, typeof(Instruction)*/);
+            Lua.luaK_ret(fs, 0, 0);  /* final return */
+            Lua.luaM_reallocvector(L, ref f.code, f.sizecode, fs.pc/*, typeof(Instruction)*/);
             f.sizecode = fs.pc;
-            luaM_reallocvector(L, ref f.lineinfo, f.sizelineinfo, fs.pc/*, typeof(int)*/);
+            Lua.luaM_reallocvector(L, ref f.lineinfo, f.sizelineinfo, fs.pc/*, typeof(int)*/);
             f.sizelineinfo = fs.pc;
-            luaM_reallocvector(L, ref f.k, f.sizek, fs.nk/*, TValue*/);
+            Lua.luaM_reallocvector(L, ref f.k, f.sizek, fs.nk/*, TValue*/);
             f.sizek = fs.nk;
-            luaM_reallocvector(L, ref f.p, f.sizep, fs.np/*, Proto*/);
+            Lua.luaM_reallocvector(L, ref f.p, f.sizep, fs.np/*, Proto*/);
             f.sizep = fs.np;
             for (int i = 0; i < f.p.Length; i++)
             {
                 f.p[i].protos = f.p;
                 f.p[i].index = i;
             }
-            luaM_reallocvector(L, ref f.locvars, f.sizelocvars, fs.nlocvars/*, LocVar*/);
+            Lua.luaM_reallocvector(L, ref f.locvars, f.sizelocvars, fs.nlocvars/*, LocVar*/);
             f.sizelocvars = fs.nlocvars;
-            luaM_reallocvector(L, ref f.upvalues, f.sizeupvalues, f.nups/*, TString*/);
+            Lua.luaM_reallocvector(L, ref f.upvalues, f.sizeupvalues, f.nups/*, TString*/);
             f.sizeupvalues = f.nups;
-            lua_assert(luaG_checkcode(f));
-            lua_assert(fs.bl == null);
+            Lua.lua_assert(Lua.luaG_checkcode(f));
+            Lua.lua_assert(fs.bl == null);
             ls.fs = fs.prev;
             /* last token read was anchored in defunct function; must reanchor it */
             if (fs != null) anchor_token(ls);
             L._top -= 2;  /* remove table and prototype from the stack */
         }
 
-
         public static Proto luaY_parser(LuaState L, ZIO z, Mbuffer buff, CharPtr name)
         {
             LexState lexstate = new LexState();
             FuncState funcstate = new FuncState();
             lexstate.buff = buff;
-            luaX_setinput(L, lexstate, z, luaS_new(L, name));
+            Lua.luaX_setinput(L, lexstate, z, Lua.luaS_new(L, name));
             open_func(lexstate, funcstate);
-            funcstate.f.is_vararg = VARARG_ISVARARG;  /* main func. is always vararg */
-            luaX_next(lexstate);  /* read first token */
+            funcstate.f.is_vararg = Lua.VARARG_ISVARARG;  /* main func. is always vararg */
+            Lua.luaX_next(lexstate);  /* read first token */
             System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
             chunk(lexstate);
             check(lexstate, (int)RESERVED.TK_EOS);
             close_func(lexstate);
-            lua_assert(funcstate.prev == null);
-            lua_assert(funcstate.f.nups == 0);
-            lua_assert(lexstate.fs == null);
+            Lua.lua_assert(funcstate.prev == null);
+            Lua.lua_assert(funcstate.f.nups == 0);
+            Lua.lua_assert(lexstate.fs == null);
             return funcstate.f;
         }
-
-
 
         /*============================================================*/
         /* GRAMMAR RULES */
         /*============================================================*/
-
 
         private static void field(LexState ls, expdesc v)
         {
             /* field . ['.' | ':'] NAME */
             FuncState fs = ls.fs;
             expdesc key = new expdesc();
-            luaK_exp2anyreg(fs, v);
-            luaX_next(ls);  /* skip the dot or colon */
+            Lua.luaK_exp2anyreg(fs, v);
+            Lua.luaX_next(ls);  /* skip the dot or colon */
             checkname(ls, key);
-            luaK_indexed(fs, v, key);
+            Lua.luaK_indexed(fs, v, key);
         }
-
 
         private static void yindex(LexState ls, expdesc v)
         {
             /* index . '[' expr ']' */
+
             //luaX_next(ls);  /* skip the '[' */
             //expr(ls, v);
             //luaK_exp2val(ls.fs, v);
             //checknext(ls, ']');
 
-            luaX_next(ls); /* skip the '[' */
+            Lua.luaX_next(ls); /* skip the '[' */
             do
             {
                 expr(ls, v);
-                luaK_exp2val(ls.fs, v);
+                Lua.luaK_exp2val(ls.fs, v);
 
                 //yindex(ls, key);
                 //luaK_indexed(ls.fs, v, key);
             } while (testnext(ls, ',') == 1);
             checknext(ls, ']');
-
         }
-
 
         /*
          ** {======================================================================
          ** Rules for Constructors
          ** =======================================================================
          */
-
 
         public class ConsControl
         {
@@ -589,7 +457,6 @@ namespace SharpLua
             public int na;  /* total number of array elements */
             public int tostore;  /* number of array elements pending to be stored */
         };
-
 
         private static void recfield(LexState ls, ConsControl cc)
         {
@@ -601,27 +468,27 @@ namespace SharpLua
             int rkkey;
             if (ls.t.token == (int)RESERVED.TK_NAME)
             {
-                luaY_checklimit(fs, cc.nh, MAX_INT, "items in a constructor");
+                luaY_checklimit(fs, cc.nh, Lua.MAX_INT, "items in a constructor");
                 checkname(ls, key);
             }
             else  /* ls.t.token == '[' */
                 yindex(ls, key);
             cc.nh++;
             checknext(ls, '=');
-            rkkey = luaK_exp2RK(fs, key);
+            rkkey = Lua.luaK_exp2RK(fs, key);
             expr(ls, val);
-            luaK_codeABC(fs, OpCode.OP_SETTABLE, cc.t.u.s.info, rkkey, luaK_exp2RK(fs, val));
+            Lua.luaK_codeABC(fs, OpCode.OP_SETTABLE, cc.t.u.s.info, rkkey, Lua.luaK_exp2RK(fs, val));
             fs.freereg = reg;  /* free registers */
         }
 
         private static void closelistfield(FuncState fs, ConsControl cc)
         {
             if (cc.v.k == expkind.VVOID) return;  /* there is no list item */
-            luaK_exp2nextreg(fs, cc.v);
+            Lua.luaK_exp2nextreg(fs, cc.v);
             cc.v.k = expkind.VVOID;
-            if (cc.tostore == LFIELDS_PER_FLUSH)
+            if (cc.tostore == Lua.LFIELDS_PER_FLUSH)
             {
-                luaK_setlist(fs, cc.t.u.s.info, cc.na, cc.tostore);  /* flush */
+                Lua.luaK_setlist(fs, cc.t.u.s.info, cc.na, cc.tostore);  /* flush */
                 cc.tostore = 0;  /* no more items pending */
             }
         }
@@ -631,51 +498,49 @@ namespace SharpLua
             if (cc.tostore == 0) return;
             if (hasmultret(cc.v.k) != 0)
             {
-                luaK_setmultret(fs, cc.v);
-                luaK_setlist(fs, cc.t.u.s.info, cc.na, LUA_MULTRET);
+                Lua.luaK_setmultret(fs, cc.v);
+                Lua.luaK_setlist(fs, cc.t.u.s.info, cc.na, Lua.LUA_MULTRET);
                 cc.na--;  /* do not count last expression (unknown number of elements) */
             }
             else
             {
                 if (cc.v.k != expkind.VVOID)
-                    luaK_exp2nextreg(fs, cc.v);
-                luaK_setlist(fs, cc.t.u.s.info, cc.na, cc.tostore);
+                    Lua.luaK_exp2nextreg(fs, cc.v);
+                Lua.luaK_setlist(fs, cc.t.u.s.info, cc.na, cc.tostore);
             }
         }
-
 
         private static void listfield(LexState ls, ConsControl cc)
         {
             expr(ls, cc.v);
-            luaY_checklimit(ls.fs, cc.na, MAX_INT, "items in a constructor");
+            luaY_checklimit(ls.fs, cc.na, Lua.MAX_INT, "items in a constructor");
             cc.na++;
             cc.tostore++;
         }
-
 
         private static void constructor(LexState ls, expdesc t)
         {
             /* constructor . ?? */
             FuncState fs = ls.fs;
             int line = ls.linenumber;
-            int pc = luaK_codeABC(fs, OpCode.OP_NEWTABLE, 0, 0, 0);
+            int pc = Lua.luaK_codeABC(fs, OpCode.OP_NEWTABLE, 0, 0, 0);
             ConsControl cc = new ConsControl();
             cc.na = cc.nh = cc.tostore = 0;
             cc.t = t;
             init_exp(t, expkind.VRELOCABLE, pc);
             init_exp(cc.v, expkind.VVOID, 0);  /* no value (yet) */
-            luaK_exp2nextreg(ls.fs, t);  /* fix it at stack top (for gc) */
+            Lua.luaK_exp2nextreg(ls.fs, t);  /* fix it at stack top (for gc) */
             checknext(ls, '{');
             do
             {
-                lua_assert(cc.v.k == expkind.VVOID || cc.tostore > 0);
+                Lua.lua_assert(cc.v.k == expkind.VVOID || cc.tostore > 0);
                 if (ls.t.token == '}') break;
                 closelistfield(fs, cc);
                 switch (ls.t.token)
                 {
                     case (int)RESERVED.TK_NAME:
                         {  /* may be listfields or recfields */
-                            luaX_lookahead(ls);
+                            Lua.luaX_lookahead(ls);
                             if (ls.lookahead.token != '=')  /* expression? */
                                 listfield(ls, cc);
                             else
@@ -696,13 +561,11 @@ namespace SharpLua
             } while ((testnext(ls, ',') != 0) || (testnext(ls, ';') != 0));
             check_match(ls, '}', '{', line);
             lastlistfield(fs, cc);
-            SETARG_B(new InstructionPtr(fs.f.code, pc), luaO_int2fb((uint)cc.na)); /* set initial array size */
-            SETARG_C(new InstructionPtr(fs.f.code, pc), luaO_int2fb((uint)cc.nh));  /* set initial table size */
+            Lua.SETARG_B(new InstructionPtr(fs.f.code, pc), Lua.luaO_int2fb((uint)cc.na)); /* set initial array size */
+            Lua.SETARG_C(new InstructionPtr(fs.f.code, pc), Lua.luaO_int2fb((uint)cc.nh));  /* set initial table size */
         }
 
         /* }====================================================================== */
-
-
 
         private static void parlist(LexState ls)
         {
@@ -730,39 +593,37 @@ namespace SharpLua
 #if IMPLICIT_VARARG
                                 wasvararg = true;
 #endif
-                                luaX_next(ls);
+                                Lua.luaX_next(ls);
 #if LUA_COMPAT_VARARG
                                 /* use `arg' as default name */
                                 new_localvarliteral(ls, "arg", nparams++);
-                                f.is_vararg = VARARG_HASARG | VARARG_NEEDSARG;
+                                f.is_vararg = Lua.VARARG_HASARG | Lua.VARARG_NEEDSARG;
 #endif
-                                f.is_vararg |= VARARG_ISVARARG;
+                                f.is_vararg |= Lua.VARARG_ISVARARG;
                                 break;
                             }
-                        default: luaX_syntaxerror(ls, "<name> or " + LUA_QL("...") + " expected"); break;
+                        default: Lua.luaX_syntaxerror(ls, "<name> or " + Lua.LUA_QL("...") + " expected"); break;
                     }
                 } while ((f.is_vararg == 0) && (testnext(ls, ',') != 0));
             }
 #if IMPLICIT_VARARG
             if (wasvararg == false)
             {
-
 #if LUA_COMPAT_VARARG
                 /* use `arg' as default name */
                 new_localvarliteral(ls, "arg", nparams++);
-                f.is_vararg = VARARG_HASARG | VARARG_NEEDSARG;
+                f.is_vararg = Lua.VARARG_HASARG | Lua.VARARG_NEEDSARG;
 #else
                 f.is_vararg = 0;
 #endif
 
-                f.is_vararg |= VARARG_ISVARARG;
+                f.is_vararg |= Lua.VARARG_ISVARARG;
             }
 #endif
             adjustlocalvars(ls, nparams);
-            f.numparams = cast_byte(fs.nactvar - (f.is_vararg & VARARG_HASARG));
-            luaK_reserveregs(fs, fs.nactvar);  /* reserve register for parameters */
+            f.numparams = Lua.cast_byte(fs.nactvar - (f.is_vararg & Lua.VARARG_HASARG));
+            Lua.luaK_reserveregs(fs, fs.nactvar);  /* reserve register for parameters */
         }
-
 
         private static void body(LexState ls, expdesc e, int needself, int line)
         {
@@ -792,7 +653,7 @@ namespace SharpLua
             expr(ls, v);
             while (testnext(ls, ',') != 0)
             {
-                luaK_exp2nextreg(ls.fs, v);
+                Lua.luaK_exp2nextreg(ls.fs, v);
                 expr(ls, v);
                 n++;
             }
@@ -810,14 +671,14 @@ namespace SharpLua
                 case '(':
                     {  /* funcargs . `(' [ explist1 ] `)' */
                         if (line != ls.lastline)
-                            luaX_syntaxerror(ls, "ambiguous syntax (function call x new statement)");
-                        luaX_next(ls);
+                            Lua.luaX_syntaxerror(ls, "ambiguous syntax (function call x new statement)");
+                        Lua.luaX_next(ls);
                         if (ls.t.token == ')')  /* arg list is empty? */
                             args.k = expkind.VVOID;
                         else
                         {
                             explist1(ls, args);
-                            luaK_setmultret(fs, args);
+                            Lua.luaK_setmultret(fs, args);
                         }
                         check_match(ls, ')', '(', line);
                         break;
@@ -830,27 +691,27 @@ namespace SharpLua
                 case (int)RESERVED.TK_STRING:
                     {  /* funcargs . STRING */
                         codestring(ls, args, ls.t.seminfo.ts);
-                        luaX_next(ls);  /* must use `seminfo' before `next' */
+                        Lua.luaX_next(ls);  /* must use `seminfo' before `next' */
                         break;
                     }
                 default:
                     {
-                        luaX_syntaxerror(ls, "function arguments expected");
+                        Lua.luaX_syntaxerror(ls, "function arguments expected");
                         return;
                     }
             }
-            lua_assert(f.k == expkind.VNONRELOC);
+            Lua.lua_assert(f.k == expkind.VNONRELOC);
             base_ = f.u.s.info;  /* base_ register for call */
             if (hasmultret(args.k) != 0)
-                nparams = LUA_MULTRET;  /* open call */
+                nparams = Lua.LUA_MULTRET;  /* open call */
             else
             {
                 if (args.k != expkind.VVOID)
-                    luaK_exp2nextreg(fs, args);  /* close last argument */
+                    Lua.luaK_exp2nextreg(fs, args);  /* close last argument */
                 nparams = fs.freereg - (base_ + 1);
             }
-            init_exp(f, expkind.VCALL, luaK_codeABC(fs, OpCode.OP_CALL, base_, nparams + 1, 2));
-            luaK_fixline(fs, line);
+            init_exp(f, expkind.VCALL, Lua.luaK_codeABC(fs, OpCode.OP_CALL, base_, nparams + 1, 2));
+            Lua.luaK_fixline(fs, line);
             fs.freereg = base_ + 1;  /* call remove function and arguments and leaves
 									(unless changed) one result */
         }
@@ -869,10 +730,10 @@ namespace SharpLua
                 case '(':
                     {
                         int line = ls.linenumber;
-                        luaX_next(ls);
+                        Lua.luaX_next(ls);
                         expr(ls, v);
                         check_match(ls, ')', '(', line);
-                        luaK_dischargevars(ls.fs, v);
+                        Lua.luaK_dischargevars(ls.fs, v);
                         return;
                     }
                 case (int)RESERVED.TK_NAME:
@@ -882,7 +743,7 @@ namespace SharpLua
                     }
                 default:
                     {
-                        luaX_syntaxerror(ls, "unexpected symbol");
+                        Lua.luaX_syntaxerror(ls, "unexpected symbol");
                         return;
                     }
             }
@@ -891,7 +752,7 @@ namespace SharpLua
         private static void primaryexp(LexState ls, expdesc v)
         {
             /* primaryexp .
-				prefixexp { `.' NAME | `[' exp `]' | `:' NAME funcargs | funcargs } */
+                prefixexp { `.' NAME | `[' exp `]' | `:' NAME funcargs | funcargs } */
             FuncState fs = ls.fs;
             prefixexp(ls, v);
             for (; ; )
@@ -906,17 +767,17 @@ namespace SharpLua
                     case '[':
                         {  /* `[' exp1 `]' */
                             expdesc key = new expdesc();
-                            luaK_exp2anyreg(fs, v);
+                            Lua.luaK_exp2anyreg(fs, v);
                             yindex(ls, key);
-                            luaK_indexed(fs, v, key);
+                            Lua.luaK_indexed(fs, v, key);
                             break;
                         }
                     case ':':
                         {  /* `:' NAME funcargs */
                             expdesc key = new expdesc();
-                            luaX_next(ls);
+                            Lua.luaX_next(ls);
                             checkname(ls, key);
-                            luaK_self(fs, v, key);
+                            Lua.luaK_self(fs, v, key);
                             funcargs(ls, v);
                             break;
                         }
@@ -924,7 +785,7 @@ namespace SharpLua
                     case (int)RESERVED.TK_STRING:
                     case '{':
                         {  /* funcargs */
-                            luaK_exp2nextreg(fs, v);
+                            Lua.luaK_exp2nextreg(fs, v);
                             funcargs(ls, v);
                             break;
                         }
@@ -936,7 +797,7 @@ namespace SharpLua
         private static void simpleexp(LexState ls, expdesc v)
         {
             /* simpleexp . NUMBER | STRING | NIL | true | false | ... |
-						  constructor | FUNCTION body | primaryexp */
+                          constructor | FUNCTION body | primaryexp */
             switch (ls.t.token)
             {
                 case (int)RESERVED.TK_NUMBER:
@@ -969,9 +830,9 @@ namespace SharpLua
                     {  /* vararg */
                         FuncState fs = ls.fs;
                         check_condition(ls, fs.f.is_vararg != 0,
-                                        "cannot use " + LUA_QL("...") + " outside a vararg function");
-                        fs.f.is_vararg &= unchecked((lu_byte)(~VARARG_NEEDSARG));  /* don't need 'arg' */
-                        init_exp(v, expkind.VVARARG, luaK_codeABC(fs, OpCode.OP_VARARG, 0, 1, 0));
+                                        "cannot use " + Lua.LUA_QL("...") + " outside a vararg function");
+                        fs.f.is_vararg &= unchecked((lu_byte)(~Lua.VARARG_NEEDSARG));  /* don't need 'arg' */
+                        init_exp(v, expkind.VVARARG, Lua.luaK_codeABC(fs, OpCode.OP_VARARG, 0, 1, 0));
                         break;
                     }
                 case '{':
@@ -981,7 +842,7 @@ namespace SharpLua
                     }
                 case (int)RESERVED.TK_FUNCTION:
                     {
-                        luaX_next(ls);
+                        Lua.luaX_next(ls);
                         body(ls, v, 0, ls.linenumber);
                         return;
                     }
@@ -991,7 +852,7 @@ namespace SharpLua
                         return;
                     }
             }
-            luaX_next(ls);
+            Lua.luaX_next(ls);
         }
 
         private static UnOpr getunopr(int op)
@@ -1066,7 +927,7 @@ namespace SharpLua
             new priority_(7, 7),               // << (left shift)
             new priority_(7, 7),               // &  (bitwise and)
             new priority_(7, 7),               // |  (bitwise or)
-            new priority_(7, 7),               // XOR  (bitwise xor)
+            new priority_(7, 7),               // ^^  (bitwise xor)
         };
 
         public const int UNARY_PRIORITY = 8;  /* priority for unary operators */
@@ -1075,6 +936,7 @@ namespace SharpLua
          ** subexpr . (simpleexp | unop subexpr) { binop subexpr }
          ** where `binop' is any binary operator with a priority higher than `limit'
          */
+
         private static BinOpr subexpr(LexState ls, expdesc v, uint limit)
         {
             BinOpr op = new BinOpr();
@@ -1083,9 +945,9 @@ namespace SharpLua
             uop = getunopr(ls.t.token);
             if (uop != UnOpr.OPR_NOUNOPR)
             {
-                luaX_next(ls);
+                Lua.luaX_next(ls);
                 subexpr(ls, v, UNARY_PRIORITY);
-                luaK_prefix(ls.fs, uop, v);
+                Lua.luaK_prefix(ls.fs, uop, v);
             }
             else simpleexp(ls, v);
             /* expand while operators have priorities higher than `limit' */
@@ -1094,11 +956,11 @@ namespace SharpLua
             {
                 expdesc v2 = new expdesc();
                 BinOpr nextop;
-                luaX_next(ls);
-                luaK_infix(ls.fs, op, v);
+                Lua.luaX_next(ls);
+                Lua.luaK_infix(ls.fs, op, v);
                 /* read sub-expression with higher priority */
                 nextop = subexpr(ls, v2, priority[(int)op].right);
-                luaK_posfix(ls.fs, op, v, v2);
+                Lua.luaK_posfix(ls.fs, op, v, v2);
                 op = nextop;
             }
             leavelevel(ls);
@@ -1132,7 +994,6 @@ namespace SharpLua
             }
         }
 
-
         private static void block(LexState ls)
         {
             /* block . chunk */
@@ -1140,21 +1001,20 @@ namespace SharpLua
             BlockCnt bl = new BlockCnt();
             enterblock(fs, bl, 0);
             chunk(ls);
-            lua_assert(bl.breaklist == NO_JUMP);
+            Lua.lua_assert(bl.breaklist == Lua.NO_JUMP);
             leaveblock(fs);
         }
-
 
         /*
          ** structure to chain all variables in the left-hand side of an
          ** assignment
          */
+
         public class LHS_assign
         {
             public LHS_assign prev;
             public expdesc v = new expdesc();  /* variable (global, local, upvalue, or indexed) */
         };
-
 
         /*
          ** check whether, in an assignment to a local variable, the local variable
@@ -1162,6 +1022,7 @@ namespace SharpLua
          ** local value in a safe place and use this safe copy in the previous
          ** assignment.
          */
+
         private static void check_conflict(LexState ls, LHS_assign lh, expdesc v)
         {
             FuncState fs = ls.fs;
@@ -1185,11 +1046,10 @@ namespace SharpLua
             }
             if (conflict != 0)
             {
-                luaK_codeABC(fs, OpCode.OP_MOVE, fs.freereg, v.u.s.info, 0);  /* make copy */
-                luaK_reserveregs(fs, 1);
+                Lua.luaK_codeABC(fs, OpCode.OP_MOVE, fs.freereg, v.u.s.info, 0);  /* make copy */
+                Lua.luaK_reserveregs(fs, 1);
             }
         }
-
 
         private static void assignment(LexState ls, LHS_assign lh, int nvars)
         {
@@ -1203,7 +1063,7 @@ namespace SharpLua
                 primaryexp(ls, nv.v);
                 if (nv.v.k == expkind.VLOCAL)
                     check_conflict(ls, lh, nv.v);
-                luaY_checklimit(ls.fs, nvars, LUAI_MAXCCALLS - ls.L.nCcalls,
+                luaY_checklimit(ls.fs, nvars, Lua.LUAI_MAXCCALLS - ls.L.nCcalls,
                                 "variables in assignment");
                 assignment(ls, nv, nvars + 1);
             }
@@ -1220,15 +1080,14 @@ namespace SharpLua
                 }
                 else
                 {
-                    luaK_setoneret(ls.fs, e);  /* close last expression */
-                    luaK_storevar(ls.fs, lh.v, e);
+                    Lua.luaK_setoneret(ls.fs, e);  /* close last expression */
+                    Lua.luaK_storevar(ls.fs, lh.v, e);
                     return;  /* avoid default */
                 }
             }
             init_exp(e, expkind.VNONRELOC, ls.fs.freereg - 1);  /* default assignment */
-            luaK_storevar(ls.fs, lh.v, e);
+            Lua.luaK_storevar(ls.fs, lh.v, e);
         }
-
 
         private static int cond(LexState ls)
         {
@@ -1236,10 +1095,9 @@ namespace SharpLua
             expdesc v = new expdesc();
             expr(ls, v);  /* read condition */
             if (v.k == expkind.VNIL) v.k = expkind.VFALSE;  /* `falses' are all equal here */
-            luaK_goiftrue(ls.fs, v);
+            Lua.luaK_goiftrue(ls.fs, v);
             return v.f;
         }
-
 
         private static void breakstat(LexState ls)
         {
@@ -1252,13 +1110,13 @@ namespace SharpLua
                 bl = bl.previous;
             }
             if (bl == null)
-                luaX_syntaxerror(ls, "no loop to break");
+                Lua.luaX_syntaxerror(ls, "no loop to break");
             if (upval != 0)
-                luaK_codeABC(fs, OpCode.OP_CLOSE, bl.nactvar, 0, 0);
-            luaK_concat(fs, ref bl.breaklist, luaK_jump(fs));
+                Lua.luaK_codeABC(fs, OpCode.OP_CLOSE, bl.nactvar, 0, 0);
+            Lua.luaK_concat(fs, ref bl.breaklist, Lua.luaK_jump(fs));
         }
 
-        static void continuestat(LexState ls)
+        private static void continuestat(LexState ls)
         {
             FuncState fs = ls.fs;
             BlockCnt bl = fs.bl;
@@ -1269,13 +1127,11 @@ namespace SharpLua
                 bl = bl.previous;
             }
             if (bl == null)
-                luaX_syntaxerror(ls, "no loop to continue");
+                Lua.luaX_syntaxerror(ls, "no loop to continue");
             if (upval != 0)
-                luaK_codeABC(fs, OpCode.OP_CLOSE, bl.nactvar, 0, 0);
-            luaK_concat(fs, ref bl.continuelist, luaK_jump(fs));
+                Lua.luaK_codeABC(fs, OpCode.OP_CLOSE, bl.nactvar, 0, 0);
+            Lua.luaK_concat(fs, ref bl.continuelist, Lua.luaK_jump(fs));
         }
-
-
 
         private static void whilestat(LexState ls, int line)
         {
@@ -1284,49 +1140,47 @@ namespace SharpLua
             int whileinit;
             int condexit;
             BlockCnt bl = new BlockCnt();
-            luaX_next(ls);  /* skip WHILE */
-            whileinit = luaK_getlabel(fs);
+            Lua.luaX_next(ls);  /* skip WHILE */
+            whileinit = Lua.luaK_getlabel(fs);
             condexit = cond(ls);
             enterblock(fs, bl, 1);
             checknext(ls, (int)RESERVED.TK_DO);
             block(ls);
-            luaK_patchlist(fs, luaK_jump(fs), whileinit);
-            luaK_patchlist(fs, bl.continuelist, whileinit);  /* continue goes to start, too */
+            Lua.luaK_patchlist(fs, Lua.luaK_jump(fs), whileinit);
+            Lua.luaK_patchlist(fs, bl.continuelist, whileinit);  /* continue goes to start, too */
             check_match(ls, (int)RESERVED.TK_END, (int)RESERVED.TK_WHILE, line);
             leaveblock(fs);
-            luaK_patchtohere(fs, condexit);  /* false conditions finish the loop */
+            Lua.luaK_patchtohere(fs, condexit);  /* false conditions finish the loop */
         }
-
 
         private static void repeatstat(LexState ls, int line)
         {
             /* repeatstat . REPEAT block UNTIL cond */
             int condexit;
             FuncState fs = ls.fs;
-            int repeat_init = luaK_getlabel(fs);
+            int repeat_init = Lua.luaK_getlabel(fs);
             BlockCnt bl1 = new BlockCnt(), bl2 = new BlockCnt();
             enterblock(fs, bl1, 1);  /* loop block */
             enterblock(fs, bl2, 0);  /* scope block */
-            luaX_next(ls);  /* skip REPEAT */
+            Lua.luaX_next(ls);  /* skip REPEAT */
             chunk(ls);
-            luaK_patchtohere(fs, bl1.continuelist);
+            Lua.luaK_patchtohere(fs, bl1.continuelist);
             check_match(ls, (int)RESERVED.TK_UNTIL, (int)RESERVED.TK_REPEAT, line);
             condexit = cond(ls);  /* read condition (inside scope block) */
             if (bl2.upval == 0)
             {  /* no upvalues? */
                 leaveblock(fs);  /* finish scope */
-                luaK_patchlist(ls.fs, condexit, repeat_init);  /* close the loop */
+                Lua.luaK_patchlist(ls.fs, condexit, repeat_init);  /* close the loop */
             }
             else
             {  /* complete semantics when there are upvalues */
                 breakstat(ls);  /* if condition then break */
-                luaK_patchtohere(ls.fs, condexit);  /* else... */
+                Lua.luaK_patchtohere(ls.fs, condexit);  /* else... */
                 leaveblock(fs);  /* finish scope... */
-                luaK_patchlist(ls.fs, luaK_jump(fs), repeat_init);  /* and repeat */
+                Lua.luaK_patchlist(ls.fs, Lua.luaK_jump(fs), repeat_init);  /* and repeat */
             }
             leaveblock(fs);  /* finish loop */
         }
-
 
         private static int exp1(LexState ls)
         {
@@ -1334,10 +1188,9 @@ namespace SharpLua
             int k;
             expr(ls, e);
             k = (int)e.k;
-            luaK_exp2nextreg(ls.fs, e);
+            Lua.luaK_exp2nextreg(ls.fs, e);
             return k;
         }
-
 
         private static void forbody(LexState ls, int base_, int line, int nvars, int isnum)
         {
@@ -1347,20 +1200,19 @@ namespace SharpLua
             int prep, endfor;
             adjustlocalvars(ls, 3);  /* control variables */
             checknext(ls, (int)RESERVED.TK_DO);
-            prep = (isnum != 0) ? luaK_codeAsBx(fs, OpCode.OP_FORPREP, base_, NO_JUMP) : luaK_jump(fs);
+            prep = (isnum != 0) ? Lua.luaK_codeAsBx(fs, OpCode.OP_FORPREP, base_, Lua.NO_JUMP) : Lua.luaK_jump(fs);
             enterblock(fs, bl, 0);  /* scope for declared variables */
             adjustlocalvars(ls, nvars);
-            luaK_reserveregs(fs, nvars);
+            Lua.luaK_reserveregs(fs, nvars);
             block(ls);
             leaveblock(fs);  /* end of scope for declared variables */
-            luaK_patchtohere(fs, prep);
-            luaK_patchtohere(fs, bl.previous.continuelist);	/* continue, if any, jumps to here */
-            endfor = (isnum != 0) ? luaK_codeAsBx(fs, OpCode.OP_FORLOOP, base_, NO_JUMP) :
-                luaK_codeABC(fs, OpCode.OP_TFORLOOP, base_, 0, nvars);
-            luaK_fixline(fs, line);  /* pretend that `OP_FOR' starts the loop */
-            luaK_patchlist(fs, ((isnum != 0) ? endfor : luaK_jump(fs)), prep + 1);
+            Lua.luaK_patchtohere(fs, prep);
+            Lua.luaK_patchtohere(fs, bl.previous.continuelist);	/* continue, if any, jumps to here */
+            endfor = (isnum != 0) ? Lua.luaK_codeAsBx(fs, OpCode.OP_FORLOOP, base_, Lua.NO_JUMP) :
+                Lua.luaK_codeABC(fs, OpCode.OP_TFORLOOP, base_, 0, nvars);
+            Lua.luaK_fixline(fs, line);  /* pretend that `OP_FOR' starts the loop */
+            Lua.luaK_patchlist(fs, ((isnum != 0) ? endfor : Lua.luaK_jump(fs)), prep + 1);
         }
-
 
         private static void fornum(LexState ls, TString varname, int line)
         {
@@ -1379,12 +1231,11 @@ namespace SharpLua
                 exp1(ls);  /* optional step */
             else
             {  /* default step = 1 */
-                luaK_codeABx(fs, OpCode.OP_LOADK, fs.freereg, luaK_numberK(fs, 1));
-                luaK_reserveregs(fs, 1);
+                Lua.luaK_codeABx(fs, OpCode.OP_LOADK, fs.freereg, Lua.luaK_numberK(fs, 1));
+                Lua.luaK_reserveregs(fs, 1);
             }
             forbody(ls, base_, line, 1, 1);
         }
-
 
         private static void forlist(LexState ls, TString indexname)
         {
@@ -1405,10 +1256,9 @@ namespace SharpLua
             checknext(ls, (int)RESERVED.TK_IN);
             line = ls.linenumber;
             adjust_assign(ls, 3, explist1(ls, e), e);
-            luaK_checkstack(fs, 3);  /* extra space to call generator */
+            Lua.luaK_checkstack(fs, 3);  /* extra space to call generator */
             forbody(ls, base_, line, nvars - 3, 0);
         }
-
 
         private static void forstat(LexState ls, int line)
         {
@@ -1417,7 +1267,7 @@ namespace SharpLua
             TString varname;
             BlockCnt bl = new BlockCnt();
             enterblock(fs, bl, 1);  /* scope for loop and control variables */
-            luaX_next(ls);  /* skip `for' */
+            Lua.luaX_next(ls);  /* skip `for' */
             varname = str_checkname(ls);  /* first variable name */
             switch (ls.t.token)
             {
@@ -1426,51 +1276,49 @@ namespace SharpLua
                 case (int)RESERVED.TK_IN:
                     forlist(ls, varname);
                     break;
-                default: luaX_syntaxerror(ls, LUA_QL("=") + " or " + LUA_QL("in") + " expected"); break;
+
+                default: Lua.luaX_syntaxerror(ls, Lua.LUA_QL("=") + " or " + Lua.LUA_QL("in") + " expected"); break;
             }
             check_match(ls, (int)RESERVED.TK_END, (int)RESERVED.TK_FOR, line);
             leaveblock(fs);  /* loop scope (`break' jumps to this point) */
         }
 
-
         private static int test_then_block(LexState ls)
         {
             /* test_then_block . [IF | ELSEIF] cond THEN block */
             int condexit;
-            luaX_next(ls);  /* skip IF or ELSEIF */
+            Lua.luaX_next(ls);  /* skip IF or ELSEIF */
             condexit = cond(ls);
             checknext(ls, (int)RESERVED.TK_THEN);
             block(ls);  /* `then' part */
             return condexit;
         }
 
-
         private static void ifstat(LexState ls, int line)
         {
             /* ifstat . IF cond THEN block {ELSEIF cond THEN block} [ELSE block] END */
             FuncState fs = ls.fs;
             int flist;
-            int escapelist = NO_JUMP;
+            int escapelist = Lua.NO_JUMP;
             flist = test_then_block(ls);  /* IF cond THEN block */
             while (ls.t.token == (int)RESERVED.TK_ELSEIF)
             {
-                luaK_concat(fs, ref escapelist, luaK_jump(fs));
-                luaK_patchtohere(fs, flist);
+                Lua.luaK_concat(fs, ref escapelist, Lua.luaK_jump(fs));
+                Lua.luaK_patchtohere(fs, flist);
                 flist = test_then_block(ls);  /* ELSEIF cond THEN block */
             }
             if (ls.t.token == (int)RESERVED.TK_ELSE)
             {
-                luaK_concat(fs, ref escapelist, luaK_jump(fs));
-                luaK_patchtohere(fs, flist);
-                luaX_next(ls);  /* skip ELSE (after patch, for correct line info) */
+                Lua.luaK_concat(fs, ref escapelist, Lua.luaK_jump(fs));
+                Lua.luaK_patchtohere(fs, flist);
+                Lua.luaX_next(ls);  /* skip ELSE (after patch, for correct line info) */
                 block(ls);  /* `else' part */
             }
             else
-                luaK_concat(fs, ref escapelist, flist);
-            luaK_patchtohere(fs, escapelist);
+                Lua.luaK_concat(fs, ref escapelist, flist);
+            Lua.luaK_patchtohere(fs, escapelist);
             check_match(ls, (int)RESERVED.TK_END, (int)RESERVED.TK_IF, line);
         }
-
 
         private static void localfunc(LexState ls)
         {
@@ -1478,14 +1326,13 @@ namespace SharpLua
             FuncState fs = ls.fs;
             new_localvar(ls, str_checkname(ls), 0);
             init_exp(v, expkind.VLOCAL, fs.freereg);
-            luaK_reserveregs(fs, 1);
+            Lua.luaK_reserveregs(fs, 1);
             adjustlocalvars(ls, 1);
             body(ls, b, 0, ls.linenumber);
-            luaK_storevar(fs, v, b);
+            Lua.luaK_storevar(fs, v, b);
             /* debug information will only see the variable after this point! */
             getlocvar(fs, fs.nactvar - 1).startpc = fs.pc;
         }
-
 
         private static void localstat(LexState ls)
         {
@@ -1508,7 +1355,6 @@ namespace SharpLua
             adjustlocalvars(ls, nvars);
         }
 
-
         private static int funcname(LexState ls, expdesc v)
         {
             /* funcname . NAME {field} [`:' NAME] */
@@ -1524,19 +1370,17 @@ namespace SharpLua
             return needself;
         }
 
-
         private static void funcstat(LexState ls, int line)
         {
             /* funcstat . FUNCTION funcname body */
             int needself;
             expdesc v = new expdesc(), b = new expdesc();
-            luaX_next(ls);  /* skip FUNCTION */
+            Lua.luaX_next(ls);  /* skip FUNCTION */
             needself = funcname(ls, v);
             body(ls, b, needself, line);
-            luaK_storevar(ls.fs, v, b);
-            luaK_fixline(ls.fs, line);  /* definition `happens' in the first line */
+            Lua.luaK_storevar(ls.fs, v, b);
+            Lua.luaK_fixline(ls.fs, line);  /* definition `happens' in the first line */
         }
-
 
         private static void exprstat(LexState ls)
         {
@@ -1545,7 +1389,7 @@ namespace SharpLua
             LHS_assign v = new LHS_assign();
             primaryexp(ls, v.v);
             if (v.v.k == expkind.VCALL)  /* stat . func */
-                SETARG_C(getcode(fs, v.v), 1);  /* call statement uses no results */
+                Lua.SETARG_C(Lua.getcode(fs, v.v), 1);  /* call statement uses no results */
             else
             {  /* stat . assignment */
                 v.prev = null;
@@ -1553,14 +1397,13 @@ namespace SharpLua
             }
         }
 
-
         private static void retstat(LexState ls)
         {
             /* stat . RETURN explist */
             FuncState fs = ls.fs;
             expdesc e = new expdesc();
             int first, nret;  /* registers with returned values */
-            luaX_next(ls);  /* skip RETURN */
+            Lua.luaX_next(ls);  /* skip RETURN */
             if ((block_follow(ls.t.token) != 0) || ls.t.token == ';')
                 first = nret = 0;  /* return no values */
             else
@@ -1568,30 +1411,29 @@ namespace SharpLua
                 nret = explist1(ls, e);  /* optional return values */
                 if (hasmultret(e.k) != 0)
                 {
-                    luaK_setmultret(fs, e);
+                    Lua.luaK_setmultret(fs, e);
                     if (e.k == expkind.VCALL && nret == 1)
                     {  /* tail call? */
-                        SET_OPCODE(getcode(fs, e), OpCode.OP_TAILCALL);
-                        lua_assert(GETARG_A(getcode(fs, e)) == fs.nactvar);
+                        Lua.SET_OPCODE(Lua.getcode(fs, e), OpCode.OP_TAILCALL);
+                        Lua.lua_assert(Lua.GETARG_A(Lua.getcode(fs, e)) == fs.nactvar);
                     }
                     first = fs.nactvar;
-                    nret = LUA_MULTRET;  /* return all values */
+                    nret = Lua.LUA_MULTRET;  /* return all values */
                 }
                 else
                 {
                     if (nret == 1)  /* only one single value? */
-                        first = luaK_exp2anyreg(fs, e);
+                        first = Lua.luaK_exp2anyreg(fs, e);
                     else
                     {
-                        luaK_exp2nextreg(fs, e);  /* values must go to the `stack' */
+                        Lua.luaK_exp2nextreg(fs, e);  /* values must go to the `stack' */
                         first = fs.nactvar;  /* return all `active' values */
-                        lua_assert(nret == fs.freereg - first);
+                        Lua.lua_assert(nret == fs.freereg - first);
                     }
                 }
             }
-            luaK_ret(fs, first, nret);
+            Lua.luaK_ret(fs, first, nret);
         }
-
 
         private static int statement(LexState ls)
         {
@@ -1610,7 +1452,7 @@ namespace SharpLua
                     }
                 case (int)RESERVED.TK_DO:
                     {  /* stat . DO block END */
-                        luaX_next(ls);  /* skip DO */
+                        Lua.luaX_next(ls);  /* skip DO */
                         block(ls);
                         check_match(ls, (int)RESERVED.TK_END, (int)RESERVED.TK_DO, line);
                         return 0;
@@ -1632,7 +1474,7 @@ namespace SharpLua
                     }
                 case (int)RESERVED.TK_LOCAL:
                     {  /* stat . localstat */
-                        luaX_next(ls);  /* skip LOCAL */
+                        Lua.luaX_next(ls);  /* skip LOCAL */
                         if (testnext(ls, (int)RESERVED.TK_FUNCTION) != 0)  /* local function? */
                             localfunc(ls);
                         else
@@ -1646,13 +1488,13 @@ namespace SharpLua
                     }
                 case (int)RESERVED.TK_BREAK:
                     {  /* stat . breakstat */
-                        luaX_next(ls);  /* skip BREAK */
+                        Lua.luaX_next(ls);  /* skip BREAK */
                         breakstat(ls);
                         return 1;  /* must be last statement */
                     }
                 case (int)RESERVED.TK_CONTINUE:
                     {  /* stat -> continuestat */
-                        luaX_next(ls);  /* skip CONTINUE */
+                        Lua.luaX_next(ls);  /* skip CONTINUE */
                         continuestat(ls);
                         return 1;	  /* must be last statement */
                     }
@@ -1664,7 +1506,6 @@ namespace SharpLua
             }
         }
 
-
         private static void chunk(LexState ls)
         {
             /* chunk . { stat [`;'] } */
@@ -1674,14 +1515,11 @@ namespace SharpLua
             {
                 islast = statement(ls);
                 testnext(ls, ';');
-                lua_assert(ls.fs.f.maxstacksize >= ls.fs.freereg &&
+                Lua.lua_assert(ls.fs.f.maxstacksize >= ls.fs.freereg &&
                            ls.fs.freereg >= ls.fs.nactvar);
                 ls.fs.freereg = ls.fs.nactvar;  /* free registers */
             }
             leavelevel(ls);
         }
-
-        /* }====================================================================== */
-
     }
 }

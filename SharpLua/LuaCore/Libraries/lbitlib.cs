@@ -43,7 +43,7 @@ namespace SharpLua
             int i, n = lua_gettop(L);
             b_uint r = ~(b_uint)0;
             for (i = 1; i <= n; i++)
-                r &= luaL_checkunsigned(L, i);
+                r &= luaL_checkinteger(L, i);
             return trim(r);
         }
 
@@ -51,7 +51,7 @@ namespace SharpLua
         static int b_and(LuaState L)
         {
             b_uint r = andaux(L);
-            lua_pushunsigned(L, r);
+            lua_pushnumber(L, r);
             return 1;
         }
 
@@ -69,8 +69,8 @@ namespace SharpLua
             int i, n = lua_gettop(L);
             b_uint r = 0;
             for (i = 1; i <= n; i++)
-                r |= luaL_checkunsigned(L, i);
-            lua_pushunsigned(L, trim(r));
+                r |= luaL_checkinteger(L, i);
+            lua_pushnumber(L, trim(r));
             return 1;
         }
 
@@ -80,16 +80,16 @@ namespace SharpLua
             int i, n = lua_gettop(L);
             b_uint r = 0;
             for (i = 1; i <= n; i++)
-                r ^= luaL_checkunsigned(L, i);
-            lua_pushunsigned(L, trim(r));
+                r ^= luaL_checkinteger(L, i);
+            lua_pushnumber(L, trim(r));
             return 1;
         }
 
 
         static int b_not(LuaState L)
         {
-            b_uint r = ~luaL_checkunsigned(L, 1);
-            lua_pushunsigned(L, trim(r));
+            b_uint r = ~luaL_checkinteger(L, 1);
+            lua_pushnumber(L, trim(r));
             return 1;
         }
 
@@ -109,26 +109,26 @@ namespace SharpLua
                 else r <<= i;
                 r = trim(r);
             }
-            lua_pushunsigned(L, r);
+            lua_pushnumber(L, r);
             return 1;
         }
 
 
         static int b_lshift(LuaState L)
         {
-            return b_shift(L, luaL_checkunsigned(L, 1), luaL_checkint(L, 2));
+            return b_shift(L, luaL_checkinteger(L, 1), luaL_checkint(L, 2));
         }
 
 
         static int b_rshift(LuaState L)
         {
-            return b_shift(L, luaL_checkunsigned(L, 1), -luaL_checkint(L, 2));
+            return b_shift(L, luaL_checkinteger(L, 1), -luaL_checkint(L, 2));
         }
 
 
         static int b_arshift(LuaState L)
         {
-            b_uint r = luaL_checkunsigned(L, 1);
+            b_uint r = luaL_checkinteger(L, 1);
             int i = luaL_checkint(L, 2);
             if (i < 0 || (r & ((b_uint)1 << (LUA_NBITS - 1))) == 0)
                 return b_shift(L, r, -i);
@@ -137,7 +137,7 @@ namespace SharpLua
                 if (i >= LUA_NBITS) r = ALLONES;
                 else
                     r = trim((r >> i) | ~(~(b_uint)0 >> i));  /* add signal bit */
-                lua_pushunsigned(L, r);
+                lua_pushnumber(L, r);
                 return 1;
             }
         }
@@ -145,11 +145,11 @@ namespace SharpLua
 
         static int b_rot(LuaState L, int i)
         {
-            b_uint r = luaL_checkunsigned(L, 1);
+            b_uint r = luaL_checkinteger(L, 1);
             i &= (LUA_NBITS - 1);  /* i = i % NBITS */
             r = trim(r);
             r = (r << i) | (r >> (LUA_NBITS - i));
-            lua_pushunsigned(L, trim(r));
+            lua_pushnumber(L, trim(r));
             return 1;
         }
 
@@ -186,10 +186,10 @@ namespace SharpLua
         static int b_extract(LuaState L)
         {
             int w = 0;
-            b_uint r = luaL_checkunsigned(L, 1);
+            b_uint r = luaL_checkinteger(L, 1);
             int f = fieldargs(L, 2, ref w);
             r = (r >> f) & mask(w);
-            lua_pushunsigned(L, r);
+            lua_pushnumber(L, r);
             return 1;
         }
 
@@ -197,13 +197,13 @@ namespace SharpLua
         static int b_replace(LuaState L)
         {
             int w = 0;
-            b_uint r = luaL_checkunsigned(L, 1);
-            b_uint v = luaL_checkunsigned(L, 2);
+            b_uint r = luaL_checkinteger(L, 1);
+            b_uint v = luaL_checkinteger(L, 2);
             int f = fieldargs(L, 3, ref w);
             lua_Unsigned m = mask(w);
             v &= m;  /* erase bits outside given width */
             r = (r & ~(m << f)) | (v << f);
-            lua_pushunsigned(L, r);
+            lua_pushnumber(L, r);
             return 1;
         }
 
@@ -223,15 +223,11 @@ namespace SharpLua
   new luaL_Reg(null, null)
 };
 
-
-
         public static int luaopen_bit32(LuaState L)
         {
             luaL_register(L, LUA_BITLIBNAME, bitlib);
             luaL_register(L, LUA_BITLIB32NAME, bitlib);
             return 1;
         }
-
-
     }
 }

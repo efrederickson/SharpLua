@@ -409,7 +409,6 @@ namespace SharpLua
             } while (total > 1);  /* repeat until only 1 result left */
         }
 
-
         public static void Arith(LuaState L, StkId ra, TValue rb,
                                  TValue rc, TMS op)
         {
@@ -428,10 +427,6 @@ namespace SharpLua
                     case TMS.TM_MOD: setnvalue(ra, luai_nummod(nb, nc)); break;
                     case TMS.TM_POW: setnvalue(ra, luai_numpow(nb, nc)); break;
                     case TMS.TM_UNM: setnvalue(ra, luai_numunm(nb)); break;
-                    case TMS.TM_RSHIFT: setnvalue(ra, luai_numrshift(nb, nc)); break;
-                    case TMS.TM_LSHIFT: setnvalue(ra, luai_numlshift(nb, nc)); break;
-                    case TMS.TM_BITAND: setnvalue(ra, luai_numbitand(nb, nc)); break;
-                    case TMS.TM_BITOR: setnvalue(ra, luai_numbitor(nb, nc)); break;
                     default: lua_assert(false); break;
                 }
             }
@@ -1119,18 +1114,8 @@ namespace SharpLua
                             }
                             continue;
                         }
-                    case OpCode.OP_RSHIFT:
-                        arith_op(L, luai_numrshift, TMS.TM_RSHIFT, base_, i, k, ra, pc);
-                        continue;
-                    case OpCode.OP_LSHIFT:
-                        arith_op(L, luai_numlshift, TMS.TM_LSHIFT, base_, i, k, ra, pc);
-                        continue;
-                    case OpCode.OP_BITAND:
-                        arith_op(L, luai_numbitand, TMS.TM_BITAND, base_, i, k, ra, pc);
-                        continue;
-                    case OpCode.OP_BITOR:
-                        arith_op(L, luai_numbitor, TMS.TM_BITOR, base_, i, k, ra, pc);
-                        continue;
+                    default:
+                        throw new InvalidProgramException(GET_OPCODE(i).ToString() + " is not supported");
                 }
             }
         }

@@ -13,6 +13,8 @@ namespace SharpLua.Visitors
     // - inline functions             -> Anonymous functions
     // - using                        -> do/end
     // - '!' unary operator           -> "not"
+    // - '~ ' unary operator          -> bit.bnot(<expr>)
+    // - <bit operators>              -> bit functions
 
     /// <summary>
     /// Needs to be updated...
@@ -102,7 +104,28 @@ namespace SharpLua.Visitors
                 string left = DoExpr(b.Lhs);
                 string op = b.Op;
                 string right = DoExpr(b.Rhs);
-                ret = string.Format("{0} {1} {2}", left, op, right);
+                if (op == ">>")
+                {
+                    ret = string.Format("bit.rshift({0}, {1})", left, right);
+                }
+                else if (op == "<<")
+                {
+                    ret = string.Format("bit.lshift({0}, {1})", left, right);
+                }
+                else if (op == "&")
+                {
+                    ret = string.Format("bit.band({0}, {1})", left, right);
+                }
+                else if (op == "|")
+                {
+                    ret = string.Format("bit.bor({0}, {1})", left, right);
+                }
+                else if (op == "^^")
+                {
+                    ret = string.Format("bit.bxor({0}, {1})", left, right);
+                }
+                else
+                    ret = string.Format("{0} {1} {2}", left, op, right);
             }
             else if (e is BoolExpr)
             {
@@ -212,9 +235,16 @@ namespace SharpLua.Visitors
                 if (op == "!")
                     op = "not";
                 string s = op;
-                if (s.Length != 1)
-                    s += " ";
-                ret = s + DoExpr((e as UnOpExpr).Rhs);
+                if (s != "~")
+                {
+                    if (s.Length != 1)
+                        s += " ";
+                    ret = s + DoExpr((e as UnOpExpr).Rhs);
+                }
+                else
+                {
+                    ret = "bit.bnot(" + DoExpr((e as UnOpExpr).Rhs) + ")";
+                }
             }
             else if (e is TableConstructorValueExpr)
                 ret = DoExpr((e as TableConstructorValueExpr).Value);
@@ -263,14 +293,17 @@ namespace SharpLua.Visitors
                     sb.Append("local ");
                 sb.Append(DoExpr(a.Lhs[0]));
                 sb.Append(" = ");
-                sb.Append(DoExpr(a.Lhs[0]));
-                sb.Append(" " + ((BinOpExpr)a.Rhs[0]).Op + " ");
-                Expression assignment = ((BinOpExpr)a.Rhs[0]).Rhs;
+                //sb.Append(DoExpr(a.Lhs[0]));
+                ((BinOpExpr)a.Rhs[0]).Rhs.ParenCount++;
+                sb.Append(DoExpr(a.Rhs[0]));
+                ((BinOpExpr)a.Rhs[0]).Rhs.ParenCount--;
+                //sb.Append(" " + ((BinOpExpr)a.Rhs[0]).Op + " ");
+                //Expression assignment = ((BinOpExpr)a.Rhs[0]).Rhs;
                 //sb.Append(DoExpr((((BinOpExpr)a.Rhs[0]).Lhs)));
                 //sb.Append(((BinOpExpr)a.Rhs[0]).Op);
                 // it might mess up Order of Operations, so we need parens.
-                // x *= 6 + 2 != x = x * 6 + 2
-                sb.Append("(" + DoExpr(assignment) + ")");
+                // x *= 6 + 2    !=    x = x * 6 + 2
+                //sb.Append("(" + DoExpr(assignment) + ")");
                 return sb.ToString();
             }
             else if (s is BreakStatement)

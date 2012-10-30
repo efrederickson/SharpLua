@@ -263,15 +263,10 @@ namespace SharpLua
             OP_CLOSURE,/*	A Bx	R(A) := closure(KPROTO[Bx], R(A), ... ,R(A+n))	*/
 
             OP_VARARG/*	A B	R(A), R(A+1), ..., R(A+B-1) = vararg		*/
-                ,
-            OP_RSHIFT, /* A B C R(A) := R(B) >> R(C) */
-            OP_LSHIFT,/* A B C R(A) := R(B) << R(C) */
-            OP_BITAND,/* A B C R(A) := R(B) & R(C) */
-            OP_BITOR,/* A B C R(A) := R(B) | R(C) */
         };
 
 
-        public const int NUM_OPCODES = (int)OpCode.OP_BITOR;
+        public const int NUM_OPCODES = (int)OpCode.OP_VARARG;
 
 
 
@@ -366,10 +361,6 @@ namespace SharpLua
             "CLOSE",
             "CLOSURE",
             "VARARG",
-            "RSHIFT",
-            "LSHIFT",
-            "BITAND",
-            "BITOR",
         };
 
 
@@ -418,10 +409,6 @@ namespace SharpLua
                 ,opmode(0, 0, OpArgMask.OpArgN, OpArgMask.OpArgN, OpMode.iABC)		/* OP_CLOSE */
                 ,opmode(0, 1, OpArgMask.OpArgU, OpArgMask.OpArgN, OpMode.iABx)		/* OP_CLOSURE */
                 ,opmode(0, 1, OpArgMask.OpArgU, OpArgMask.OpArgN, OpMode.iABC)		/* OP_VARARG */
-                ,opmode(0, 1, OpArgMask.OpArgK, OpArgMask.OpArgK, OpMode.iABC) // OP_RSHIFT
-                ,opmode(0, 1, OpArgMask.OpArgK, OpArgMask.OpArgK, OpMode.iABC) // OP_LSHIFT
-                ,opmode(0, 1, OpArgMask.OpArgK, OpArgMask.OpArgK, OpMode.iABC) // OP_BITAND
-                ,opmode(0, 1, OpArgMask.OpArgK, OpArgMask.OpArgK, OpMode.iABC) // OP_BITOR
         };
 
     }

@@ -127,7 +127,7 @@ namespace SharpLuaAddIn
         public CompletionItem(string text)
         {
             Text = text;
-            Description = DocumentationManager.GetDocumentation(text);
+            //Description = DocumentationManager.GetDocumentation(text);
             Image = null;
         }
 
@@ -160,8 +160,10 @@ namespace SharpLuaAddIn
 
         public string Description
         {
-            get;
-            set;
+            get
+            {
+                return DocumentationManager.GetDocumentation(Text);
+            }
         }
 
         public ICSharpCode.SharpDevelop.IImage Image

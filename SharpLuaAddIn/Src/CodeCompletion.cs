@@ -292,14 +292,15 @@ new CompletionItem("loadfile"),
 
         public override CodeCompletionKeyPressResult HandleKeyPress(ITextEditor editor, char ch)
         {
-            if (reset) // don't call the function unless necessary. It keeps the if check also though.
+            if (reset) // don't call the function unless necessary. AddDefaultIntellisense has a reset check also, though.
                 AddDefaultIntellisense();
             updateDocument(editor.Document.Text);
 
             bool isOk = string.IsNullOrWhiteSpace(textFrom(editor, 1, 1));
             if (isOk || (textFrom(editor, 1, 1).Length > 0 && char.IsLetter(textFrom(editor, 1, 1)[0]) == false && char.IsNumber(textFrom(editor, 1, 1)[0]) == false))
             {
-                // syntax based upon key pressed. It will build up though...
+                // syntax based upon key pressed. It will build up though.
+                // Luckily we have a duplicate remover to help with this
 
                 switch (ch)
                 {
@@ -360,11 +361,15 @@ new CompletionItem("loadfile"),
             if (ch != '\r' &&
                 ch != '\n' &&
                 ch != ' ' &&
+                ch != '(' &&
                 ch != ')' &&
-                ch != ']' &&
+                ch != '{' &&
                 ch != '}' &&
+                !char.IsSymbol(ch) &&
                 ch != '"' && // TODO: better string/comment handling
                 ch != '\'' &&
+                (ch != '-' && textFrom(editor, editor.Caret.Offset - 1, 1) == "-") &&
+                !char.IsNumber(ch) &&
                 editor.Document.GetLineForOffset(editor.Caret.Offset).Text.Trim().StartsWith("--") == false
                 )
             {
@@ -408,6 +413,10 @@ new CompletionItem("loadfile"),
                 p.ThrowParsingErrors = false;
                 SharpLua.Ast.Chunk c = p.Parse();
                 this.l.items.AddRange(AstExtractor.ExtractSymbols(c));
+                var cmts = SharpLua.XmlDocumentation.ExtractDocumentationComments.Extract(c);
+                if (false)
+                    LoggingService.Info(cmts.Count);
+                DocumentationManager.Add(cmts);
             }
             catch (System.Exception ex)
             {
@@ -427,31 +436,34 @@ new CompletionItem("loadfile"),
 
         public override bool HandleKeyword(ITextEditor editor, string word)
         {
-            if (word == "require")
+            if (IsInsideStringOrComment(editor, editor.Document.GetLineForOffset(editor.Caret.Offset), editor.Caret.Offset) == false)
             {
-                reset = true;
-                l.items.Clear();
-                foreach (string s in Common.ListModules())
-                    l.Items.Add(new LuaModuleCompletionData(s));
-                showCompletionWindow(editor);
-                return true;
-            }
-            else if (word == "load")
-            {
-                reset = true;
-                l.items.Clear();
-                string begin = "";
-                if (editor.Document.TextLength >= 8)
-                    begin = editor.Document.Text.Substring(editor.Caret.Offset - 8, 4);
-                if (begin == "clr.")
+                if (word == "require")
                 {
-                    // .NET Assemblies
-                    foreach (string s in Common.ListCLRAssemblies())
-                        l.Items.Add(new ClrAssemblyCompletionData(s));
+                    reset = true;
+                    l.items.Clear();
+                    foreach (string s in Common.ListModules())
+                        l.Items.Add(new LuaModuleCompletionData(s));
                     showCompletionWindow(editor);
                     return true;
                 }
-                return false;
+                else if (word == "load")
+                {
+                    reset = true;
+                    l.items.Clear();
+                    string begin = "";
+                    if (editor.Document.TextLength >= 8)
+                        begin = editor.Document.Text.Substring(editor.Caret.Offset - 8, 4);
+                    if (begin == "clr.")
+                    {
+                        // .NET Assemblies
+                        foreach (string s in Common.ListCLRAssemblies())
+                            l.Items.Add(new ClrAssemblyCompletionData(s));
+                        showCompletionWindow(editor);
+                        return true;
+                    }
+                    return false;
+                }
             }
             return base.HandleKeyword(editor, word);
         }
@@ -462,5 +474,50 @@ new CompletionItem("loadfile"),
             editor.ShowCompletionWindow(l);
         }
 
+        bool IsInsideStringOrComment(ITextEditor textArea, IDocumentLine curLine, int cursorOffset)
+        {
+            // scan cur line if it is inside a string or single line comment (--)
+            bool insideString = false;
+            char stringstart = ' ';
+            //bool verbatim = false; // true if the current string is verbatim (@-string)
+            char c = ' ';
+            char lastchar;
+
+            for (int i = curLine.Offset; i < cursorOffset; ++i)
+            {
+                lastchar = c;
+                c = textArea.Document.GetCharAt(i);
+                if (insideString)
+                {
+                    if (c == stringstart)
+                    {
+                        //if (verbatim && i + 1 < cursorOffset && textArea.Document.GetCharAt(i + 1) == '"')
+                        //{
+                        //    ++i; // skip escaped character
+                        //}
+                        //else
+                        //{
+                        insideString = false;
+                        //}
+                    }
+                    //else if (c == '\\' && !verbatim)
+                    //{
+                    //    ++i; // skip escaped character
+                    //}
+                }
+                else if (c == '/' && i + 1 < cursorOffset && textArea.Document.GetCharAt(i + 1) == '/')
+                {
+                    return true;
+                }
+                else if (c == '"' || c == '\'')
+                {
+                    stringstart = c;
+                    insideString = true;
+                    //verbatim = (c == '"') && (lastchar == '@');
+                }
+            }
+
+            return insideString;
+        }
     }
 }

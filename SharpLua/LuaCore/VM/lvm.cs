@@ -92,7 +92,7 @@ namespace SharpLua
 
 
         private static void callTMres(LuaState L, StkId res, TValue f,
-                                       TValue p1, TValue p2)
+                                      TValue p1, TValue p2)
         {
             ptrdiff_t result = savestack(L, res);
             setobj2s(L, L._top, f);  /* push function */
@@ -109,7 +109,7 @@ namespace SharpLua
 
 
         private static void callTM(LuaState L, TValue f, TValue p1,
-                                    TValue p2, TValue p3)
+                                   TValue p2, TValue p3)
         {
             setobj2s(L, L._top, f);  /* push function */
             setobj2s(L, L._top + 1, p1);  /* 1st argument */
@@ -120,27 +120,49 @@ namespace SharpLua
             luaD_call(L, L._top - 4, 0);
         }
 
-
         public static void luaV_gettable(LuaState L, TValue t, TValue key, StkId val)
         {
             int loop;
             for (loop = 0; loop < MAXTAGLOOP; loop++)
             {
-                TValue tm;
+                TValue tm = null;
                 if (ttistable(t))
                 {  /* `t' is a table? */
                     Table h = hvalue(t);
+
+                    if ((tm = fasttm(L, h.metatable, TMS.TM_GETINDEX)) == null)
+                    {
+                        // No __getindex metatable function
+                    }
+                    else // __GETINDEX meta function
+                    {
+                        goto callfunc;
+                    }
+
                     TValue res = luaH_get(h, key); /* do a primitive get */
-                    if (!ttisnil(res) ||  /* result is no nil? */
+
+                    if (!ttisnil(res) ||  // result is not nil?
                         (tm = fasttm(L, h.metatable, TMS.TM_INDEX)) == null)
-                    { /* or no TM? */
+                    { // or no TM?
                         setobj2s(L, val, res);
                         return;
                     }
+
+                    /*
+                    if (!ttisnil(res) ||  // result is not nil?
+                        (tm = fasttm(L, h.metatable, TMS.TM_INDEX)) == null)
+                    { // or no TM?
+                        setobj2s(L, val, res);
+                        return;
+                    }
+                    */
                     /* else will try the tag method */
                 }
                 else if (ttisnil(tm = luaT_gettmbyobj(L, t, TMS.TM_INDEX)))
                     luaG_typeerror(L, t, "index");
+
+            callfunc:
+
                 if (ttisfunction(tm))
                 {
                     callTMres(L, val, tm, t, key);
@@ -162,13 +184,38 @@ namespace SharpLua
                 {  /* `t' is a table? */
                     Table h = hvalue(t);
                     TValue oldval = luaH_set(L, h, key); /* do a primitive set */
-                    if (!ttisnil(oldval) ||  /* result is no nil? */
-                        (tm = fasttm(L, h.metatable, TMS.TM_NEWINDEX)) == null)
-                    { /* or no TM? */
-                        setobj2t(L, oldval, val);
-                        h.flags = 0;
-                        luaC_barriert(L, h, val);
-                        return;
+                    if (!ttisnil(oldval)) /* old is not nil? */
+                    {
+                        if ((tm = fasttm(L, h.metatable, TMS.TM_USEDINDEX)) == null) /* and no TM? */
+                        {
+                            setobj2t(L, oldval, val); /* write barrier */
+                            h.flags = 0;
+                            luaC_barriert(L, h, val);
+                            return;
+                        }
+                        else
+                        {
+                            /* else will try the tag method */
+                        }
+                    }
+                    else /* old is nil? */
+                    {
+                        if ((tm = fasttm(L, h.metatable, TMS.TM_NEWINDEX)) == null)
+                        {
+                            /* and no TM? */
+                            setobj2t(L, oldval, val);
+                            h.flags = 0;
+                            luaC_barriert(L, h, val);
+                            /* write barrier */
+                            return;
+                        }
+                        else
+                        {
+                            /* else will try the tag method */
+                        }
+                        //h.flags = 0;
+                        //luaC_barriert(L, h, val);
+                        //return;
                     }
                     /* else will try the tag method */
                 }
@@ -191,7 +238,7 @@ namespace SharpLua
 
 
         private static int call_binTM(LuaState L, TValue p1, TValue p2,
-                                       StkId res, TMS event_)
+                                      StkId res, TMS event_)
         {
             TValue tm = luaT_gettmbyobj(L, p1, event_);  /* try first operand */
             if (ttisnil(tm))
@@ -203,7 +250,7 @@ namespace SharpLua
 
 
         private static TValue get_compTM(LuaState L, Table mt1, Table mt2,
-                                          TMS event_)
+                                         TMS event_)
         {
             TValue tm1 = fasttm(L, mt1, event_);
             TValue tm2;
@@ -218,7 +265,7 @@ namespace SharpLua
 
 
         private static int call_orderTM(LuaState L, TValue p1, TValue p2,
-                                         TMS event_)
+                                        TMS event_)
         {
             TValue tm1 = luaT_gettmbyobj(L, p1, event_);
             TValue tm2;
@@ -255,7 +302,6 @@ namespace SharpLua
                 }
             }
         }
-
 
         public static int luaV_lessthan(LuaState L, TValue l, TValue r)
         {
@@ -320,7 +366,6 @@ namespace SharpLua
             return l_isfalse(L._top) == 0 ? 1 : 0;
         }
 
-
         public static void luaV_concat(LuaState L, int total, int last)
         {
             do
@@ -366,7 +411,7 @@ namespace SharpLua
 
 
         public static void Arith(LuaState L, StkId ra, TValue rb,
-                                  TValue rc, TMS op)
+                                 TValue rc, TMS op)
         {
             TValue tempb = new TValue(), tempc = new TValue();
             TValue b, c;
@@ -415,6 +460,7 @@ namespace SharpLua
         // todo: implement proper checks, as above
         internal static TValue RA(LuaState L, StkId base_, Instruction i) { return base_ + GETARG_A(i); }
         internal static TValue RB(LuaState L, StkId base_, Instruction i) { return base_ + GETARG_B(i); }
+        internal static object RB(Instruction i, StkId base_) { return check_exp(getBMode(GET_OPCODE(i)) == OpArgMask.OpArgR, base_ + GETARG_B(i)); }
         internal static TValue RC(LuaState L, StkId base_, Instruction i) { return base_ + GETARG_C(i); }
         internal static TValue RKB(LuaState L, StkId base_, Instruction i, TValue[] k) { return ISK(GETARG_B(i)) != 0 ? k[INDEXK(GETARG_B(i))] : base_ + GETARG_B(i); }
         internal static TValue RKC(LuaState L, StkId base_, Instruction i, TValue[] k) { return ISK(GETARG_C(i)) != 0 ? k[INDEXK(GETARG_C(i))] : base_ + GETARG_C(i); }
@@ -596,6 +642,7 @@ namespace SharpLua
                             TValue rb = KBx(L, i, k);
                             sethvalue(L, g, cl.env);
                             lua_assert(ttisstring(rb));
+
                             //Protect(
                             L.savedpc = InstructionPtr.Assign(pc);
                             luaV_gettable(L, g, rb, ra);
@@ -726,12 +773,21 @@ namespace SharpLua
                         }
                     case OpCode.OP_LEN:
                         {
+                            //luaV_objlen(L, ra, (lua_TValue)RB(i, L.base_));
+                            //base_ = L.ci.u.l.base_;
+
                             TValue rb = RB(L, base_, i);
                             switch (ttype(rb))
                             {
                                 case LUA_TTABLE:
                                     {
-                                        setnvalue(ra, (lua_Number)luaH_getn(hvalue(rb)));
+                                        // Table now respects __len metamethod
+                                        Table h = hvalue(rb);
+                                        TValue tm = fasttm(L, h.metatable, TMS.TM_LEN);
+                                        if (tm != null)
+                                            call_binTM(L, rb, luaO_nilobject, ra, TMS.TM_LEN);
+                                        else
+                                            setnvalue(ra, (lua_Number)luaH_getn(hvalue(rb)));
                                         break;
                                     }
                                 case LUA_TSTRING:
@@ -935,6 +991,24 @@ namespace SharpLua
                     case OpCode.OP_TFORLOOP:
                         {
                             StkId cb = ra + 3;  /* call base */
+
+                            if (!ttisfunction(ra))
+                            {
+                                TValue tm = luaT_gettmbyobj(L, ra, TMS.TM_ITER);
+                                if (!ttisfunction(tm)) luaG_typeerror(L, ra, "iterate");
+                                setobjs2s(L, cb + 1, ra);		//
+                                setobjs2s(L, cb, tm);		//
+                                L.top = cb + 2;			// tag func + the object parameter.
+                                luaD_call(L, cb, 3);
+                                L.top = L.ci.top;
+                                ra = RA(L, base_, i);					//
+                                cb = ra + 3;				// previous call may change the stack
+                                setobj2s(L, ra + 2, cb + 2);	//
+                                setobj2s(L, ra + 1, cb + 1);	//
+                                setobj2s(L, ra, cb);		// replace parameters with return from tag method
+                                L.top = ra + 3;
+                            }
+
                             setobjs2s(L, cb + 2, ra + 2);
                             setobjs2s(L, cb + 1, ra + 1);
                             setobjs2s(L, cb, ra);

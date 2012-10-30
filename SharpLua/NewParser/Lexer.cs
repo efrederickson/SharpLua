@@ -92,7 +92,9 @@ namespace SharpLua
                 word == "until" ||
                 word == "while"
                 ||
-                word == "using";
+                word == "using"
+                ||
+                word == "continue";
             // ||
             //word == "class" ||
             //word == "static";
@@ -310,12 +312,23 @@ namespace SharpLua
                     (c == '.' && char.IsDigit(peek())))
                 { // negative numbers are handled in unary minus collection
                     string num = "";
-                    if (c == '0' && peek() == 'x')
+                    if (c == '0' && matchpeek("xX"))
                     {
-                        read();
-                        //read();
-                        num = "0x";
+                        //read(); -> already done
+                        num = "0" + read(); // 'xX'
                         while (IsHexDigit(peek()))
+                            num += read();
+                    }
+                    else if (c == '0' && matchpeek("bB"))
+                    {
+                        num = "0" + read(); // read 'bB'
+                        while (char.IsDigit(peek()) || peek() == '_')
+                            num += read();
+                    }
+                    else if (c == '0' && matchpeek("oO"))
+                    {
+                        num = "0" + read(); // read 'oO'
+                        while (char.IsDigit(peek()))// || peek() == '_')
                             num += read();
                     }
                     else

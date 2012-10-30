@@ -118,7 +118,11 @@ namespace SharpLua
             // string -> char support
             {
                 if (LuaDLL.lua_isstring(luaState, stackPos))
-                    return extractValues[runtimeHandleValue];
+                {
+                    string str = LuaDLL.lua_tostring(luaState, stackPos);
+                    if (str.Length == 1) // must be char length (Length == 1)
+                        return extractValues[runtimeHandleValue];
+                }
                 else if (luatype == LuaTypes.LUA_TNIL)
                     return extractNetObject;
             }

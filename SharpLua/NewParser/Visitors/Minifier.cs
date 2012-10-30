@@ -221,6 +221,8 @@ namespace SharpLua.Visitors
                 // HAHAHA this is incredibly simple...
                 return "break";
             }
+            else if (s is ContinueStatement)
+                return "continue";
             else if (s is CallStatement)
             {
                 // Also incredibly simple...

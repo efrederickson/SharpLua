@@ -292,6 +292,10 @@ namespace SharpLua.Visitors
                     // HAHAHA this is incredibly simple...
                     return fromTokens(s.ScannedTokens, s.Scope);
                 }
+                else if (s is ContinueStatement)
+                {
+                    return fromTokens(s.ScannedTokens, s.Scope);
+                }
                 else if (s is CallStatement)
                 {
                     // Also incredibly simple...

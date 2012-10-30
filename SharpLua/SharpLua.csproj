@@ -17,7 +17,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;LUA_CORE;_WIN32;LUA_COMPAT_VARARG;LUA_COMPAT_MOD;LUA_COMPAT_GFIND;CATCH_EXCEPTIONS</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;IMPLICIT_VARARG;OVERRIDE_LOAD;LUA_CORE;_WIN32;LUA_COMPAT_VARARG;LUA_COMPAT_MOD;LUA_COMPAT_GFIND;CATCH_EXCEPTIONS</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Decompiler\Decompiler.cs" />
+    <Content Include="Defines.txt" />
     <Compile Include="Interfacing\CheckType.cs" />
     <Compile Include="Interfacing\GenerateEventAssembly.cs" />
     <Compile Include="Interfacing\Lua.cs" />
@@ -130,6 +131,7 @@
     <Compile Include="NewParser\Ast\Statement\AugmentedAssignmentStatement.cs" />
     <Compile Include="NewParser\Ast\Statement\BreakStatement.cs" />
     <Compile Include="NewParser\Ast\Statement\CallStatement.cs" />
+    <Compile Include="NewParser\Ast\Statement\ContinueStatement.cs" />
     <Compile Include="NewParser\Ast\Statement\DoStatement.cs" />
     <Compile Include="NewParser\Ast\Statement\ForStatement.cs" />
     <Compile Include="NewParser\Ast\Statement\FunctionStatement.cs" />

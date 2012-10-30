@@ -13,6 +13,7 @@ scanned = {
     TestModule2 = true,
     test = true,
     DEBUG = true,
+    set_global_mt = true,
     scanned = true,
 }
 

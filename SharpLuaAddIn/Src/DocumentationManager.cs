@@ -65,7 +65,7 @@ namespace SharpLuaAddIn
                     sb.AppendLine();
                     sb.AppendLine();
                 }
-                sb.AppendLine(d.SelectSingleNode("/doc/summary").InnerText.Trim().Replace("<br />", "\r\n"));
+                sb.AppendLine(d.SelectSingleNode("/doc/summary").InnerText.Trim().Replace("<br />", "\r\n").Replace("<br>", "\r\n").Replace("<br/>", "\r\n"));
                 foreach (XmlNode n in d.SelectNodes("/doc/param"))
                 {
                     sb.Append(n.Attributes["name"].InnerText.Trim());
@@ -76,7 +76,8 @@ namespace SharpLuaAddIn
                 {
                     sb.AppendLine("Returns: " + n.InnerText.Trim());
                 }
-                sb.Remove(sb.Length - 1, 1); // remove last \n
+                if (sb.Length >= 2)
+                    sb.Remove(sb.Length - 2, 2); // remove last \n
                 return sb.ToString();
             }
             catch (Exception ex)
@@ -85,6 +86,17 @@ namespace SharpLuaAddIn
                 LoggingService.Error(dc.Text, ex);
             }
             return dc.Text;
+        }
+
+        internal static void Add(List<DocumentationComment> list)
+        {
+            foreach (DocumentationComment dc in list)
+            {
+                if (documentation.ContainsKey(dc.Ident))
+                    documentation[dc.Ident] = dc;
+                else
+                    documentation.Add(dc.Ident, dc);
+            }
         }
     }
 }

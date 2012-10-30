@@ -220,6 +220,10 @@ System = luanet.namespace(""System"")
         #region ExtLib
         public const string InitExtLib = @" -- Ext lib - a bunch of extension functions
 
+function tobool(x)
+    return x == true
+end
+
 -- _G.arg -> _G['...']
 arg = { 'a', 'b', 'aFILEname' }
 if arg then

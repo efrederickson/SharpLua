@@ -1,5 +1,7 @@
 SharpLua TODO
 
+http://lua-users.org/wiki/LuaFiveTwo
+
 - Documentation
 - Simple library extension
 - compression library (separate project), using IExtendFramework
@@ -13,6 +15,8 @@ Parser/Lexer
      X option to continue parsing after a parse error (add to error list)
      - allow embedded LASM (?)
      - Link tokens together? (Next/Previous)
+
+Modify Parser to handle [,] differently, so it can be ExactReconstructed
 
 X Modify exact reconstructor to check Expressions before reconstructing
      ! then work exact reconstructor comment/ws logic into the other reconstructors

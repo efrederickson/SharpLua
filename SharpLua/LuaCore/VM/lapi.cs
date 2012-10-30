@@ -967,6 +967,7 @@ namespace SharpLua
             lua_lock(L);
             if (chunkname == null) chunkname = "?";
 
+#if OVERRIDE_LOAD || true
             if (data is LoadS)
             {
                 LoadS d = data as LoadS;
@@ -1029,7 +1030,7 @@ namespace SharpLua
                     }
                 }
             }
-
+#endif
             luaZ_init(L, z, reader, data);
             status = luaD_protectedparser(L, z, chunkname);
             lua_unlock(L);

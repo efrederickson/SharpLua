@@ -40,7 +40,7 @@
     <format> &lt;summary&gt;
  Returns a formatted version of its variable number of arguments following the description given in its first argument (which must be a string).
  &lt;/summary&gt;
- &lt;param name"formatstring"&gt;The string to format&lt;/param&gt;
+ &lt;param name="formatstring"&gt;The string to format&lt;/param&gt;
  &lt;param name="..."&gt;The format args&lt;/param&gt;
 </format>
     <lower> &lt;summary&gt;
@@ -51,7 +51,7 @@
     <sub> &lt;summary&gt;
  Returns the substring of s that starts at i and continues until j; i and j can be negative
  &lt;/summary&gt;
- &lt;param name="s"&gt;the string to get the substring of
+ &lt;param name="s"&gt;the string to get the substring of&lt;/param&gt;
  &lt;param name="i"&gt;The start index&lt;/param&gt;
  &lt;param name="j"&gt;The end index&lt;/param&gt;
 </sub>
@@ -134,7 +134,7 @@
  Dynamically links the host program with the C library libname. Inside this library, looks for a function funcname and returns this function as a C function. &lt;br /&gt;
  It does not load C Libraries in #Lua
  &lt;/summary&gt;
- &lt;param name="libname"&gt;The library to load&lt;/param&gt;
+ &lt;param name="libname="&gt;The library to load&lt;/param&gt;
  &lt;param name="funcname"&gt;&lt;/param&gt;
 </loadlib>
     <loaded> &lt;summary&gt;
@@ -159,7 +159,7 @@
  &lt;param name="module"&gt;The module&lt;/param&gt;
 </seeall>
     <tostring> &lt;summary&gt;
- Receives an argument of any type and converts it to a string in a reasonable format.
+ Receives an argument of any type and converts it to a string.
  &lt;/summary&gt;
  &lt;param name="e"&gt;The object to convert into a string&lt;/param&gt;
 </tostring>
@@ -205,4 +205,94 @@
  &lt;/summary&gt;
  &lt;param name="fileOrDir"&gt;The file/dir to remove&lt;/param&gt;
 </remove>
+    <time> &lt;summary&gt;
+ Returns the current time when called without arguments, or a time representing the date and time specified by the given table.
+ &lt;/summary&gt;
+ &lt;param name="table"&gt;The format table&lt;/param&gt;
+</time>
+    <clock> &lt;summary&gt;
+ Returns an approximation of the amount in seconds of CPU time used by the program. 
+ &lt;/summary&gt;
+</clock>
+    <tmpname> &lt;summary&gt;
+ Returns a string with a file name that can be used for a temporary file. The file must be explicitly opened before its use and explicitly removed when no longer needed. &lt;br /&gt;
+ It is recommended to use io.tmpfile(), as that removes the file when the application ends.
+ &lt;/summary&gt;
+</tmpname>
+    <rename> &lt;summary&gt;
+ Renames file or directory named oldname to newname. If this function fails, it returns nil, plus a string describing the error. 
+ &lt;/summary&gt;
+ &lt;param name="oldname"&gt;The old filename&lt;/param&gt;
+ &lt;param name="newname"&gt;The new filename&lt;/param&gt;
+</rename>
+    <execute> &lt;summary&gt;
+ This function is equivalent to the C function system. &lt;br /&gt;
+ It passes 'command' to be executed by an operating system shell. &lt;br /&gt;
+ It returns a status code, which is system-dependent. If command is absent, then it returns nonzero if a shell is available and zero otherwise.
+ &lt;/summary&gt;
+ &lt;param name="command"&gt;The shell program to run&lt;/param&gt;
+</execute>
+    <unpack> &lt;summary&gt;
+ Returns the elements from the given table. This function is equivalent to: &lt;br /&gt;
+ return list[i], list[i+1], ..., list[j]
+ &lt;/summary&gt;
+ &lt;param name="list"&gt;The list to unpack&lt;/param&gt;
+ &lt;param name="i"&gt;The start index&lt;/param&gt;
+ &lt;param name="j"&gt;The end index&lt;/param&gt;
+</unpack>
+    <require> &lt;summary&gt;
+ Loads the given module, whether Lua or C, by looking on package.path and package.cpath
+ &lt;/summary&gt;
+&lt;param name="modulename"&gt;The module to load&lt;/param&gt;
+</require>
+    <getfenv> &lt;summary&gt;
+ Returns the current environment in use by the function. &lt;br /&gt;
+ 'f' can be a Lua function or a number that specifies the function at that stack level: Level 1 is the function calling getfenv. &lt;br /&gt;
+ If the given function is not a Lua function, or if 'f' is 0, getfenv returns the global environment. The default for 'f' is 1. 
+ &lt;/summary&gt;
+ &lt;param name="f"&gt;The function to get the environment of&lt;/param&gt;
+</getfenv>
+    <setmetatable> &lt;summary&gt;
+ Sets the metatable for the given table. &lt;br /&gt;
+ You cannot change the metatable of other types from Lua, only from C. &lt;br /&gt;
+ If metatable is nil, removes the metatable of the given table. If the original metatable has a "__metatable" field, it raises an error. 
+ &lt;/summary&gt;
+</setmetatable>
+    <next> &lt;summary&gt;
+ Allows a program to traverse all fields of a table. Its first argument is a table and its second argument is an index in this table
+ &lt;/summary&gt;
+ &lt;param name="table"&gt;&lt;/param&gt;
+ &lt;param name="index"&gt;&lt;/param&gt;
+</next>
+    <luanet> &lt;summary&gt;
+ Basic CLR Interop
+ &lt;/summary&gt;
+</luanet>
+    <assert> &lt;summary&gt;
+ Issues an error when the value of its argument v is false (i.e., nil or false); otherwise, returns all its arguments. &lt;br /&gt;
+ message is an error message; when absent, it defaults to "assertion failed!" 
+ &lt;/summary&gt;
+ &lt;param name="v"&gt;Expression to verify is true&lt;/param&gt;
+ &lt;param name="message"&gt;Failure message&lt;/param&gt;
+</assert>
+    <clr> &lt;summary&gt;
+ Advanced CLR Interop
+ &lt;/summary&gt;
+</clr>
+    <call> &lt;summary&gt;
+ Calls a static CLR function with the passed args
+ &lt;/summary&gt;
+ &lt;param name="func"&gt;The function to call&lt;/param&gt;
+ &lt;param name="..."&gt;The function arguments&lt;/param&gt;
+</call>
+    <create> &lt;summary&gt;
+ Creates the specified CLR type with the given args
+ &lt;/summary&gt;
+ &lt;param name="type"&gt;The type to create&lt;/param&gt;
+ &lt;param name="..."&gt;The constructor args&lt;/param&gt;
+</create>
+    <ns> &lt;summary&gt;
+ Imported namespace to make creating types easier.
+ &lt;/summary&gt;
+</ns>
 </Documentation>

@@ -1,0 +1,14 @@
+﻿This file describes some the DEFINEs that you can edit.
+
+OVERRIDE_LOAD
+    This is unnecessary, as it is ignored. 
+    It should define whether #Lua overrides the default parser to allow its syntax 
+    extensions to be used.
+
+IMPLICIT_VARARG
+    This defines whether all functions are implicitly vararg or not. 
+    This is somewhat javascript-style, as js has implicit varargs.
+    It is enabled by default. If LUA_COMPAT_VARARG is also enabled, it defines the 'arg' variable
+
+LUA_COMPAT_VARARG
+    Whether vararg functions have an implicit 'arg' variable

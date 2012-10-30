@@ -31,7 +31,7 @@ namespace SharpLua
         public enum RESERVED
         {
             /* terminal symbols denoted by reserved words */
-            TK_AND = FIRST_RESERVED, TK_BREAK,
+            TK_AND = FIRST_RESERVED, TK_BREAK, TK_CONTINUE,
             TK_DO, TK_ELSE, TK_ELSEIF, TK_END, TK_FALSE, TK_FOR, TK_FUNCTION,
             TK_IF, TK_IN, TK_LOCAL, TK_NIL, TK_NOT, TK_OR, TK_REPEAT,
             TK_RETURN, TK_THEN, TK_TRUE, TK_UNTIL, TK_WHILE,
@@ -92,7 +92,7 @@ namespace SharpLua
 
         /* ORDER RESERVED */
         public static readonly string[] luaX_tokens = {
-            "and", "break", "do", "else", "elseif",
+            "and", "break", "continue", "do", "else", "elseif",
             "end", "false", "for", "function", "if",
             "in", "local", "nil", "not", "or", "repeat",
             "return", "then", "true", "until", "while",

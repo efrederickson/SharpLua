@@ -231,10 +231,11 @@ namespace SharpLua
             return 1;
         }
 
+        /*
         private static int luaB_next(LuaState L)
         {
             luaL_checktype(L, 1, LUA_TTABLE);
-            lua_settop(L, 2);  /* create a 2nd argument if there isn't one */
+            lua_settop(L, 2);  // create a 2nd argument if there isn't one
             if (lua_next(L, 1) != 0)
                 return 2;
             else
@@ -243,34 +244,94 @@ namespace SharpLua
                 return 1;
             }
         }
-
+        
         private static int luaB_pairs(LuaState L)
         {
             luaL_checktype(L, 1, LUA_TTABLE);
-            lua_pushvalue(L, lua_upvalueindex(1));  /* return generator, */
-            lua_pushvalue(L, 1);  /* state, */
-            lua_pushnil(L);  /* and initial value */
+            lua_pushvalue(L, lua_upvalueindex(1));  // return generator, 
+            lua_pushvalue(L, 1);  // state, 
+            lua_pushnil(L);  // and initial value
             return 3;
         }
 
+        
         private static int ipairsaux(LuaState L)
+        {
+            int i = luaL_checkint(L, 2);
+            luaL_checktype(L, 1, LUA_TTABLE);
+            i++;  // next value 
+            lua_pushinteger(L, i);
+            lua_rawgeti(L, 1, i);
+            return (lua_isnil(L, -1)) ? 0 : 2;
+        }
+        */
+
+        static int pairsmeta(LuaState L, CharPtr method, bool iszero, lua_CFunction iter)
+        {
+            if (luaL_getmetafield(L, 1, method) == 0)
+            {  /* no metamethod? */
+                luaL_checktype(L, 1, LUA_TTABLE);  /* argument must be a table */
+                lua_pushcfunction(L, iter);  /* will return generator, */
+                lua_pushvalue(L, 1);  /* state, */
+                if (iszero)
+                    lua_pushinteger(L, 0);  /* and initial value */
+                else lua_pushnil(L);
+            }
+            else
+            {
+                lua_pushvalue(L, 1);  /* argument 'self' to metamethod */
+                lua_call(L, 1, 3);  /* get 3 values from metamethod */
+            }
+            return 3;
+        }
+
+
+        static int luaB_next(LuaState L)
+        {
+            luaL_checktype(L, 1, LUA_TTABLE);
+            lua_settop(L, 2);  /* create a 2nd argument if there isn't one */
+            if (lua_next(L, 1) == 1)
+                return 2;
+            else
+            {
+                lua_pushnil(L);
+                return 1;
+            }
+        }
+
+
+        static int luaB_pairs(LuaState L)
+        {
+            return pairsmeta(L, new CharPtr("__pairs"), false, luaB_next);
+        }
+
+
+        static int ipairsaux(LuaState L)
         {
             int i = luaL_checkint(L, 2);
             luaL_checktype(L, 1, LUA_TTABLE);
             i++;  /* next value */
             lua_pushinteger(L, i);
             lua_rawgeti(L, 1, i);
-            return (lua_isnil(L, -1)) ? 0 : 2;
+            return (lua_isnil(L, -1)) ? 1 : 2;
         }
 
+
+        static int luaB_ipairs(LuaState L)
+        {
+            return pairsmeta(L, "__ipairs", true, ipairsaux);
+        }
+
+        /*
         private static int luaB_ipairs(LuaState L)
         {
             luaL_checktype(L, 1, LUA_TTABLE);
-            lua_pushvalue(L, lua_upvalueindex(1));  /* return generator, */
-            lua_pushvalue(L, 1);  /* state, */
-            lua_pushinteger(L, 0);  /* and initial value */
+            lua_pushvalue(L, lua_upvalueindex(1));  // return generator,
+            lua_pushvalue(L, 1);  // state,
+            lua_pushinteger(L, 0);  // and initial value
             return 3;
         }
+        */
 
         private static int load_aux(LuaState L, int status)
         {
@@ -440,6 +501,16 @@ namespace SharpLua
             }
             return 1;
         }
+        
+        public static int luaB_rawlen (LuaState L) 
+        {
+            int t = lua_type(L, 1);
+            luaL_argcheck(L, t == LUA_TTABLE || t == LUA_TSTRING, 1,
+                "table or string expected");
+            lua_pushinteger(L, (int)lua_objlen(L, 1));
+            return 1;
+        }
+
 
         private static int luaB_newproxy(LuaState L)
         {
@@ -501,6 +572,7 @@ namespace SharpLua
 		  new luaL_Reg("next", luaB_next),
 		  new luaL_Reg("pcall", luaB_pcall),
 		  new luaL_Reg("print", luaB_print),
+		  new luaL_Reg("rawlen", luaB_rawlen),
 		  new luaL_Reg("rawequal", luaB_rawequal),
 		  new luaL_Reg("rawget", luaB_rawget),
 		  new luaL_Reg("rawset", luaB_rawset),
@@ -515,6 +587,8 @@ namespace SharpLua
           new luaL_Reg("decompile", decompileFunction),
           new luaL_Reg("wait", luaB_wait),
           new luaL_Reg("sleep", luaB_wait),
+          new luaL_Reg("pairs", luaB_pairs),
+          new luaL_Reg("ipairs", luaB_ipairs),
 		  new luaL_Reg(null, null)
 		};
 
@@ -680,7 +754,10 @@ namespace SharpLua
             Decompiler.Decompiler d = new Decompiler.Decompiler();
             Lua.Proto p = Pget(L, 1);
             if (p == null)
+            {
                 lua_pushstring(L, "not a Lua function");
+                return 1;
+            }
             string s = d.Decompile(p);
             //Console.WriteLine(s);
             lua_pushstring(L, s);
@@ -711,8 +788,8 @@ namespace SharpLua
             lua_pushliteral(L, LUA_VERSION);
             lua_setglobal(L, "_VERSION");  /* set global _VERSION */
             /* `ipairs' and `pairs' need auxliliary functions as upvalues */
-            auxopen(L, "ipairs", luaB_ipairs, ipairsaux);
-            auxopen(L, "pairs", luaB_pairs, luaB_next);
+            //auxopen(L, "ipairs", luaB_ipairs, ipairsaux);
+            //auxopen(L, "pairs", luaB_pairs, luaB_next);
             /* `newproxy' needs a weaktable as upvalue */
             lua_createtable(L, 0, 1);  /* new table `w' */
             lua_pushvalue(L, -1);  /* `w' will be its own metatable */

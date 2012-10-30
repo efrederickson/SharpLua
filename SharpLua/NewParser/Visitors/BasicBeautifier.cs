@@ -12,7 +12,7 @@ namespace SharpLua.Visitors
     {
         //StringBuilder sb = new StringBuilder();
         public FormattingOptions options = new FormattingOptions();
-        
+
         internal int indent = 0;
         string nlindent()
         {
@@ -250,6 +250,10 @@ namespace SharpLua.Visitors
             {
                 // HAHAHA this is incredibly simple...
                 return "break";
+            }
+            else if (s is ContinueStatement)
+            {
+                return "continue";
             }
             else if (s is CallStatement)
             {

@@ -48,7 +48,7 @@ function string.gsub(s, pattern, repl, n) end
 --- <summary>
 --- Returns a formatted version of its variable number of arguments following the description given in its first argument (which must be a string).
 --- </summary>
---- <param name"formatstring">The string to format</param>
+--- <param name="formatstring">The string to format</param>
 --- <param name="...">The format args</param>
 function string.format(formatstring, ...) end
 
@@ -61,7 +61,7 @@ function string.lower(s) end
 --- <summary>
 --- Returns the substring of s that starts at i and continues until j; i and j can be negative
 --- </summary>
---- <param name="s">the string to get the substring of
+--- <param name="s">the string to get the substring of</param>
 --- <param name="i">The start index</param>
 --- <param name="j">The end index</param>
 function string.sub(s, i, j) end
@@ -158,7 +158,7 @@ package.preload = { }
 --- Dynamically links the host program with the C library libname. Inside this library, looks for a function funcname and returns this function as a C function. <br />
 --- It does not load C Libraries in #Lua
 --- </summary>
---- <param name="libname">The library to load</param>
+--- <param name="libname=">The library to load</param>
 --- <param name="funcname"></param>
 function package.loadlib(libname, funcname) end
 
@@ -189,7 +189,7 @@ package.path = ""
 function package.seeall(module) end
 
 --- <summary>
---- Receives an argument of any type and converts it to a string in a reasonable format.
+--- Receives an argument of any type and converts it to a string.
 --- </summary>
 --- <param name="e">The object to convert into a string</param>
 function tostring(e) end
@@ -244,27 +244,119 @@ function os.difftime(t2, t1) end
 --- <param name="fileOrDir">The file/dir to remove</param>
 function os.remove(fileOrDir) end
 
+--- <summary>
+--- Returns the current time when called without arguments, or a time representing the date and time specified by the given table.
+--- </summary>
+--- <param name="table">The format table</param>
+function os.time(table) end
+
+--- <summary>
+--- Returns an approximation of the amount in seconds of CPU time used by the program. 
+--- </summary>
+function os.clock() end
+
+--- <summary>
+--- Returns a string with a file name that can be used for a temporary file. The file must be explicitly opened before its use and explicitly removed when no longer needed. <br />
+--- It is recommended to use io.tmpfile(), as that removes the file when the application ends.
+--- </summary>
+function os.tmpname() end
+
+--- <summary>
+--- Renames file or directory named oldname to newname. If this function fails, it returns nil, plus a string describing the error. 
+--- </summary>
+--- <param name="oldname">The old filename</param>
+--- <param name="newname">The new filename</param>
+function os.rename(oldname, newname) end
+
+--- <summary>
+--- This function is equivalent to the C function system. <br />
+--- It passes 'command' to be executed by an operating system shell. <br />
+--- It returns a status code, which is system-dependent. If command is absent, then it returns nonzero if a shell is available and zero otherwise.
+--- </summary>
+--- <param name="command">The shell program to run</param>
+function os.execute(command) end
+
+--- <summary>
+--- Returns the elements from the given table. This function is equivalent to: <br />
+--- return list[i], list[i+1], ..., list[j]
+--- </summary>
+--- <param name="list">The list to unpack</param>
+--- <param name="i">The start index</param>
+--- <param name="j">The end index</param>
+function unpack(list, i, j) end
+
+--- <summary>
+--- Loads the given module, whether Lua or C, by looking on package.path and package.cpath
+--- </summary>
+---<param name="modulename">The module to load</param>
+function require(modulename) end
+
+--- <summary>
+--- Returns the current environment in use by the function. <br />
+--- 'f' can be a Lua function or a number that specifies the function at that stack level: Level 1 is the function calling getfenv. <br />
+--- If the given function is not a Lua function, or if 'f' is 0, getfenv returns the global environment. The default for 'f' is 1. 
+--- </summary>
+--- <param name="f">The function to get the environment of</param>
+function getfenv(f) end
+
+--- <summary>
+--- Sets the metatable for the given table. <br />
+--- You cannot change the metatable of other types from Lua, only from C. <br />
+--- If metatable is nil, removes the metatable of the given table. If the original metatable has a "__metatable" field, it raises an error. 
+--- </summary>
+function setmetatable(table, metatable) end
+
+--- <summary>
+--- Allows a program to traverse all fields of a table. Its first argument is a table and its second argument is an index in this table
+--- </summary>
+--- <param name="table"></param>
+--- <param name="index"></param>
+function next(table, index) end
+
+--- <summary>
+--- Basic CLR Interop
+--- </summary>
+luanet = { }
+
+--- <summary>
+--- Issues an error when the value of its argument v is false (i.e., nil or false); otherwise, returns all its arguments. <br />
+--- message is an error message; when absent, it defaults to "assertion failed!" 
+--- </summary>
+--- <param name="v">Expression to verify is true</param>
+--- <param name="message">Failure message</param>
+function assert(v, message) end
+
+--- <summary>
+--- Advanced CLR Interop
+--- </summary>
+clr = { }
+
+--- <summary>
+--- Calls a static CLR function with the passed args
+--- </summary>
+--- <param name="func">The function to call</param>
+--- <param name="...">The function arguments</param>
+function clr.call(func, ...) end
+
+--- <summary>
+--- Creates the specified CLR type with the given args
+--- </summary>
+--- <param name="type">The type to create</param>
+--- <param name="...">The constructor args</param>
+function clr.create(type, ...) end
+
+--- <summary>
+--- Imported namespace to make creating types easier.
+--- </summary>
+clr.ns = { }
+
+--- <summary>
+--- Imports a namespace to make creating types easier. Similar to "using" in C#
+--- </summary>
+--- <param name="ns"></param>
+function clr.usingns(ns) end
+
 --[[
-new CompletionItem("time"), 
-new CompletionItem("clock"), 
-new CompletionItem("tmpname"), 
-new CompletionItem("rename"), 
-new CompletionItem("execute"), 
-
-new CompletionItem("unpack"), 
-
-new CompletionItem("set_global_mt"), 
-new CompletionItem("require"), 
-new CompletionItem("getfenv"), 
-new CompletionItem("setmetatable"), 
-new CompletionItem("next"), 
-new CompletionItem("luanet"), 
-new CompletionItem("assert"), 
-
-new CompletionItem("clr"), 
-new CompletionItem("call"), 
-new CompletionItem("create"), 
-new CompletionItem("ns"), 
 new CompletionItem("usingns"), 
 new CompletionItem("getns"), 
 new CompletionItem("load"), 
@@ -419,5 +511,6 @@ new CompletionItem("wait"),
 new CompletionItem("dofile"), 
 new CompletionItem("error"), 
 new CompletionItem("loadfile"), 
+new CompletionItem("tobool"), 
 
 ]]

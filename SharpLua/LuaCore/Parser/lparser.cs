@@ -131,6 +131,7 @@ namespace SharpLua
         {
             public BlockCnt previous;  /* chain */
             public int breaklist;  /* list of jumps out of this loop */
+            public int continuelist;/* list of jumps to the loop's test */
             public lu_byte nactvar;  /* # active locals outside the breakable structure */
             public lu_byte upval;  /* true if some variable in the block is an upvalue */
             public lu_byte isbreakable;  /* true if `block' is a loop */
@@ -407,6 +408,7 @@ namespace SharpLua
         private static void enterblock(FuncState fs, BlockCnt bl, lu_byte isbreakable)
         {
             bl.breaklist = NO_JUMP;
+            bl.continuelist = NO_JUMP;
             bl.isbreakable = isbreakable;
             bl.nactvar = fs.nactvar;
             bl.upval = 0;
@@ -553,10 +555,22 @@ namespace SharpLua
         private static void yindex(LexState ls, expdesc v)
         {
             /* index . '[' expr ']' */
-            luaX_next(ls);  /* skip the '[' */
-            expr(ls, v);
-            luaK_exp2val(ls.fs, v);
+            //luaX_next(ls);  /* skip the '[' */
+            //expr(ls, v);
+            //luaK_exp2val(ls.fs, v);
+            //checknext(ls, ']');
+
+            luaX_next(ls); /* skip the '[' */
+            do
+            {
+                expr(ls, v);
+                luaK_exp2val(ls.fs, v);
+
+                //yindex(ls, key);
+                //luaK_indexed(ls.fs, v, key);
+            } while (testnext(ls, ',') == 1);
             checknext(ls, ']');
+
         }
 
 
@@ -698,6 +712,9 @@ namespace SharpLua
             Proto f = fs.f;
             int nparams = 0;
             f.is_vararg = 0;
+#if IMPLICIT_VARARG
+            bool wasvararg = false; // if the parlist contains a '...'
+#endif
             if (ls.t.token != ')')
             {  /* is `parlist' not empty? */
                 do
@@ -711,6 +728,9 @@ namespace SharpLua
                             }
                         case (int)RESERVED.TK_DOTS:
                             {  /* param . `...' */
+#if IMPLICIT_VARARG
+                                wasvararg = true;
+#endif
                                 luaX_next(ls);
 #if LUA_COMPAT_VARARG
                                 /* use `arg' as default name */
@@ -724,6 +744,21 @@ namespace SharpLua
                     }
                 } while ((f.is_vararg == 0) && (testnext(ls, ',') != 0));
             }
+#if IMPLICIT_VARARG
+            if (wasvararg == false)
+            {
+
+#if LUA_COMPAT_VARARG
+                /* use `arg' as default name */
+                new_localvarliteral(ls, "arg", nparams++);
+                f.is_vararg = VARARG_HASARG | VARARG_NEEDSARG;
+#else
+                f.is_vararg = 0;
+#endif
+
+                f.is_vararg |= VARARG_ISVARARG;
+            }
+#endif
             adjustlocalvars(ls, nparams);
             f.numparams = cast_byte(fs.nactvar - (f.is_vararg & VARARG_HASARG));
             luaK_reserveregs(fs, fs.nactvar);  /* reserve register for parameters */
@@ -751,7 +786,6 @@ namespace SharpLua
             pushclosure(ls, new_fs, e);
         }
 
-
         private static int explist1(LexState ls, expdesc v)
         {
             /* explist1 . expr { `,' expr } */
@@ -765,7 +799,6 @@ namespace SharpLua
             }
             return n;
         }
-
 
         private static void funcargs(LexState ls, expdesc f)
         {
@@ -823,15 +856,11 @@ namespace SharpLua
 									(unless changed) one result */
         }
 
-
-
-
         /*
          ** {======================================================================
          ** Expression parsing
          ** =======================================================================
          */
-
 
         private static void prefixexp(LexState ls, expdesc v)
         {
@@ -905,7 +934,6 @@ namespace SharpLua
             }
         }
 
-
         private static void simpleexp(LexState ls, expdesc v)
         {
             /* simpleexp . NUMBER | STRING | NIL | true | false | ... |
@@ -967,7 +995,6 @@ namespace SharpLua
             luaX_next(ls);
         }
 
-
         private static UnOpr getunopr(int op)
         {
             switch (op)
@@ -978,7 +1005,6 @@ namespace SharpLua
                 default: return UnOpr.OPR_NOUNOPR;
             }
         }
-
 
         private static BinOpr getbinopr(int op)
         {
@@ -1006,7 +1032,6 @@ namespace SharpLua
                 default: return BinOpr.OPR_NOBINOPR;
             }
         }
-
 
         private class priority_
         {
@@ -1050,7 +1075,6 @@ namespace SharpLua
 
         public const int UNARY_PRIORITY = 8;  /* priority for unary operators */
 
-
         /*
          ** subexpr . (simpleexp | unop subexpr) { binop subexpr }
          ** where `binop' is any binary operator with a priority higher than `limit'
@@ -1085,7 +1109,6 @@ namespace SharpLua
             return op;  /* return first untreated operator */
         }
 
-
         private static void expr(LexState ls, expdesc v)
         {
             subexpr(ls, v, 0);
@@ -1093,14 +1116,11 @@ namespace SharpLua
 
         /* }==================================================================== */
 
-
-
         /*
          ** {======================================================================
          ** Rules for Statements
          ** =======================================================================
          */
-
 
         private static int block_follow(int token)
         {
@@ -1242,6 +1262,24 @@ namespace SharpLua
             luaK_concat(fs, ref bl.breaklist, luaK_jump(fs));
         }
 
+        static void continuestat(LexState ls)
+        {
+            FuncState fs = ls.fs;
+            BlockCnt bl = fs.bl;
+            int upval = 0;
+            while (bl != null && bl.isbreakable == 0)
+            {
+                upval |= bl.upval;
+                bl = bl.previous;
+            }
+            if (bl == null)
+                luaX_syntaxerror(ls, "no loop to continue");
+            if (upval != 0)
+                luaK_codeABC(fs, OpCode.OP_CLOSE, bl.nactvar, 0, 0);
+            luaK_concat(fs, ref bl.continuelist, luaK_jump(fs));
+        }
+
+
 
         private static void whilestat(LexState ls, int line)
         {
@@ -1257,6 +1295,7 @@ namespace SharpLua
             checknext(ls, (int)RESERVED.TK_DO);
             block(ls);
             luaK_patchlist(fs, luaK_jump(fs), whileinit);
+            luaK_patchlist(fs, bl.continuelist, whileinit);  /* continue goes to start, too */
             check_match(ls, (int)RESERVED.TK_END, (int)RESERVED.TK_WHILE, line);
             leaveblock(fs);
             luaK_patchtohere(fs, condexit);  /* false conditions finish the loop */
@@ -1274,6 +1313,7 @@ namespace SharpLua
             enterblock(fs, bl2, 0);  /* scope block */
             luaX_next(ls);  /* skip REPEAT */
             chunk(ls);
+            luaK_patchtohere(fs, bl1.continuelist);
             check_match(ls, (int)RESERVED.TK_UNTIL, (int)RESERVED.TK_REPEAT, line);
             condexit = cond(ls);  /* read condition (inside scope block) */
             if (bl2.upval == 0)
@@ -1318,6 +1358,7 @@ namespace SharpLua
             block(ls);
             leaveblock(fs);  /* end of scope for declared variables */
             luaK_patchtohere(fs, prep);
+            luaK_patchtohere(fs, bl.previous.continuelist);	/* continue, if any, jumps to here */
             endfor = (isnum != 0) ? luaK_codeAsBx(fs, OpCode.OP_FORLOOP, base_, NO_JUMP) :
                 luaK_codeABC(fs, OpCode.OP_TFORLOOP, base_, 0, nvars);
             luaK_fixline(fs, line);  /* pretend that `OP_FOR' starts the loop */
@@ -1612,6 +1653,12 @@ namespace SharpLua
                         luaX_next(ls);  /* skip BREAK */
                         breakstat(ls);
                         return 1;  /* must be last statement */
+                    }
+                case (int)RESERVED.TK_CONTINUE:
+                    {  /* stat -> continuestat */
+                        luaX_next(ls);  /* skip CONTINUE */
+                        continuestat(ls);
+                        return 1;	  /* must be last statement */
                     }
                 default:
                     {

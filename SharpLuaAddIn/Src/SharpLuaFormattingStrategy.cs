@@ -12,7 +12,7 @@ using ICSharpCode.Core;
 namespace SharpLuaAddIn
 {
     /// <summary>
-    /// This class handles the auto and smart indenting in the textbuffer while
+    /// This class handles the auto and smart indenting in the text buffer while
     /// you type.
     /// </summary>
     public class SharpLuaFormattingStrategy : DefaultFormattingStrategy
@@ -20,7 +20,44 @@ namespace SharpLuaAddIn
         #region Smart Indentation
         public override void IndentLine(ITextEditor editor, IDocumentLine line)
         {
-            base.IndentLine(editor, line);
+            IDocumentLine above = editor.Document.GetLine(line.LineNumber - 1);
+            if (above != null)
+            {
+                string up = above.Text.Trim();
+                if (up.StartsWith("--") == false)
+                {
+                    // above line is an indent statement
+                    if (up.EndsWith("do") || up.EndsWith("then") || (up.StartsWith("function") && up.EndsWith(")")))
+                    {
+                        string indentation = DocumentUtilitites.GetWhitespaceAfter(editor.Document, above.Offset);
+                        string newLine = line.Text.TrimStart();
+                        newLine = indentation + editor.Options.IndentationString + newLine;
+                        editor.Document.SmartReplaceLine(line, newLine);
+                    }
+                    else // above line is not an indent statement
+                    {
+                        string indentation = DocumentUtilitites.GetWhitespaceAfter(editor.Document, above.Offset);
+                        string newLine = line.Text.TrimStart();
+                        newLine = indentation + newLine;
+                        editor.Document.SmartReplaceLine(line, newLine);
+                    }
+                }
+
+                if (line.Text.StartsWith("end"))
+                {
+                    string indentation = DocumentUtilitites.GetWhitespaceAfter(editor.Document, above.Offset);
+                    string newLine = line.Text.TrimStart();
+                    string newIndent = "";
+
+                    if (indentation.Length >= editor.Options.IndentationSize)
+                        newIndent = indentation.Substring(0, indentation.Length - editor.Options.IndentationSize);
+
+                    newLine = newIndent + newLine;
+                    editor.Document.SmartReplaceLine(line, newLine);
+                }
+            }
+            else
+                base.IndentLine(editor, line);
         }
 
         public override void IndentLines(ITextEditor editor, int beginLine, int endLine)
@@ -51,10 +88,10 @@ namespace SharpLuaAddIn
 
         bool IsInsideStringOrComment(ITextEditor textArea, IDocumentLine curLine, int cursorOffset)
         {
-            // scan cur line if it is inside a string or single line comment (//)
+            // scan cur line if it is inside a string or single line comment (--)
             bool insideString = false;
             char stringstart = ' ';
-            bool verbatim = false; // true if the current string is verbatim (@-string)
+            //bool verbatim = false; // true if the current string is verbatim (@-string)
             char c = ' ';
             char lastchar;
 
@@ -66,19 +103,19 @@ namespace SharpLuaAddIn
                 {
                     if (c == stringstart)
                     {
-                        if (verbatim && i + 1 < cursorOffset && textArea.Document.GetCharAt(i + 1) == '"')
-                        {
-                            ++i; // skip escaped character
-                        }
-                        else
-                        {
-                            insideString = false;
-                        }
+                        //if (verbatim && i + 1 < cursorOffset && textArea.Document.GetCharAt(i + 1) == '"')
+                        //{
+                        //    ++i; // skip escaped character
+                        //}
+                        //else
+                        //{
+                        insideString = false;
+                        //}
                     }
-                    else if (c == '\\' && !verbatim)
-                    {
-                        ++i; // skip escaped character
-                    }
+                    //else if (c == '\\' && !verbatim)
+                    //{
+                    //    ++i; // skip escaped character
+                    //}
                 }
                 else if (c == '/' && i + 1 < cursorOffset && textArea.Document.GetCharAt(i + 1) == '/')
                 {
@@ -88,7 +125,7 @@ namespace SharpLuaAddIn
                 {
                     stringstart = c;
                     insideString = true;
-                    verbatim = (c == '"') && (lastchar == '@');
+                    //verbatim = (c == '"') && (lastchar == '@');
                 }
             }
 
@@ -157,6 +194,18 @@ namespace SharpLuaAddIn
 
                     textArea.Caret.Offset = cursorOffset + indentation.Length + "--- ".Length + " <summary>".Length + terminator.Length;
                 }
+                else if (curLineText != null && curLineText.Trim() == "-" && (lineAboveText != null && lineAboveText.Trim().StartsWith("---")))
+                {
+                    StringBuilder sb = new StringBuilder();
+                    sb.Append("-- ");
+
+                    //sb.Append(terminator);
+                    //sb.Append(indentation);
+                    //sb.Append("--- <returns></returns>");
+                    textArea.Document.Insert(cursorOffset, sb.ToString());
+
+                    textArea.Caret.Offset = cursorOffset + "-- ".Length;
+                }
                 return;
             }
 
@@ -169,6 +218,7 @@ namespace SharpLuaAddIn
             }
 
             if (IsInsideStringOrComment(textArea, curLine, cursorOffset) == false
+                && textArea.Caret.Offset == curLine.EndOffset // end of line, not editing something inside the line
                 && (curLine.Text.TrimEnd().EndsWith("then")
                 || curLine.Text.TrimEnd().EndsWith("do")))
             {
@@ -188,7 +238,9 @@ namespace SharpLuaAddIn
                     ;
             }
 
-            if (curLine.Text.TrimStart().StartsWith("repeat"))
+            if (IsInsideStringOrComment(textArea, curLine, cursorOffset) == false
+                && textArea.Caret.Offset == curLine.EndOffset // end of line, not editing something inside the line
+                && curLine.Text.TrimStart().StartsWith("repeat"))
             {
                 string indentation = DocumentUtilitites.GetWhitespaceAfter(textArea.Document, curLine.Offset);
                 StringBuilder sb = new StringBuilder();

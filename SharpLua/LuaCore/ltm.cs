@@ -41,6 +41,9 @@ namespace SharpLua
             TM_LSHIFT,
             TM_BITAND,
             TM_BITOR,
+            TM_USEDINDEX,
+            TM_GETINDEX,
+            TM_ITER,
             TM_N		/* number of elements in the enum */
         };
 
@@ -64,7 +67,8 @@ namespace SharpLua
 			"__gc", "__mode", "__eq",
 			"__add", "__sub", "__mul", "__div", "__mod",
 			"__pow", "__unm", "__len", "__lt", "__le",
-			"__concat", "__call", "__rshift", "__lshift", "__bitand", "__bitor"
+			"__concat", "__call", "__rshift", "__lshift", "__bitand", "__bitor",
+			"__usedindex", "__getindex", "__iter"
 		  };
 
         public static void luaT_init(LuaState L)
@@ -92,7 +96,8 @@ namespace SharpLua
                 events.flags |= (byte)(1 << (int)event_);  /* cache this fact */
                 return null;
             }
-            else return tm;
+            else
+                return tm;
         }
 
 

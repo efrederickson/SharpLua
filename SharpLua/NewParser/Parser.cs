@@ -208,16 +208,29 @@ namespace SharpLua
                 }
                 else if (!onlyDotColon && reader.ConsumeSymbol('['))
                 {
-                    Expression ex = ParseExpr(scope);
+                    int pass = 0;
+                    const int maxamount = 100;
+                    do
+                    {
+                        Expression ex = ParseExpr(scope);
 
+                        //if (!reader.ConsumeSymbol(']'))
+                        //error("']' expected");
+
+                        IndexExpr i = new IndexExpr();
+                        i.Base = prim;
+                        i.Index = ex;
+
+                        prim = i;
+
+                        if (reader.ConsumeSymbol(',') == false)
+                            break;
+
+                        if (pass++ >= maxamount)
+                            error("Maximum index depth reached");
+                    } while (!(reader.Peek().Data == "]"));
                     if (!reader.ConsumeSymbol(']'))
                         error("']' expected");
-
-                    IndexExpr i = new IndexExpr();
-                    i.Base = prim;
-                    i.Index = ex;
-
-                    prim = i;
                 }
                 else if (!onlyDotColon && reader.ConsumeSymbol('('))
                 {
@@ -368,7 +381,7 @@ namespace SharpLua
 
                     if (reader.ConsumeSymbol(';') || reader.ConsumeSymbol(','))
                     {
-                        // I could have used just an empty ';' here, 
+                        // I could have used just an empty statement (';') here, instead of { }
                         // but that leaves a warning, which clutters up the output
                         // other than that, all is good
                     }
@@ -816,7 +829,7 @@ namespace SharpLua
             else if (reader.ConsumeKeyword("return"))
             {
                 List<Expression> exprList = new List<Expression>();
-                if (!reader.IsKeyword("end"))
+                if (!reader.IsKeyword("end") && !reader.IsEof())
                 {
                     Expression firstEx = ParseExpr(scope);
                     exprList.Add(firstEx);
@@ -833,6 +846,10 @@ namespace SharpLua
             else if (reader.ConsumeKeyword("break"))
             {
                 stat = new BreakStatement();
+            }
+            else if (reader.ConsumeKeyword("continue"))
+            {
+                stat = new ContinueStatement();
             }
             else if (reader.ConsumeKeyword("goto"))
             {

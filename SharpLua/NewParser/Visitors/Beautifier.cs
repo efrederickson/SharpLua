@@ -55,7 +55,10 @@ namespace SharpLua.Visitors
                     sb.Append(t2.Data);
                     cnt++;
                     if (t2.Type == TokenType.ShortComment || t2.Type == TokenType.DocumentationComment)
+                    {
                         shortComment = true;
+                        sb.Append(options.EOL);
+                    }
                 }
             }
             if (cnt > 0)
@@ -119,7 +122,7 @@ namespace SharpLua.Visitors
                 {
                     sb.Append(fromToken(tok[index++], s));
                     if (i2 != f.Arguments.Count - 1 || f.IsVararg)
-                        sb.Append(fromToken(tok[index++], s));
+                        sb.Append(fromToken(tok[index++], s) + " ");
                 }
                 if (f.IsVararg)
                     sb.Append(fromToken(tok[index++], s));
@@ -273,7 +276,8 @@ namespace SharpLua.Visitors
                         sb.Append(" ");
                     }
                 }
-                sb.Append(" ");
+                if (t.EntryList.Count > 0) // empty table constructor is just { }
+                    sb.Append(" ");
                 sb.Append(fromToken(tok[index++], s)); // '}'
                 ret = sb.ToString();
             }
@@ -281,7 +285,7 @@ namespace SharpLua.Visitors
             {
                 UnOpExpr u = e as UnOpExpr;
                 string sc = fromToken(tok[index++], s);
-                if (u.Op.Length == 1)
+                if (u.Op.Length != 1)
                     sc += " ";
                 ret = sc + DoExpr(u.Rhs, tok, ref index, s);
             }
@@ -379,6 +383,10 @@ namespace SharpLua.Visitors
                 else if (s is BreakStatement)
                 {
                     // HAHAHA this is incredibly simple...
+                    return fromTokens(s.ScannedTokens, s.Scope);
+                }
+                else if (s is ContinueStatement)
+                {
                     return fromTokens(s.ScannedTokens, s.Scope);
                 }
                 else if (s is CallStatement)
@@ -654,13 +662,15 @@ namespace SharpLua.Visitors
         internal string DoChunk(List<Statement> statements)
         {
             StringBuilder sb = new StringBuilder();
-            foreach (Statement s in statements)
+            for (int i = 0; i < statements.Count; i++)
             {
+                Statement s = statements[i];
                 sb.Append(writeIndent());
                 string ss = DoStatement(s);
                 sb.Append(ss);
-                if (ss.EndsWith(options.EOL) == false)
+                if (ss.EndsWith(options.EOL) == false && i != statements.Count - 1)
                     sb.Append(options.EOL);
+
                 if (s.HasSemicolon)
                     if (s.SemicolonToken != null)
                         sb.Append(fromToken(s.SemicolonToken, s.Scope));

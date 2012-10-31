@@ -272,7 +272,8 @@ namespace SharpLua
         private object getAsString(SharpLua.Lua.LuaState luaState, int stackPos)
         {
             string retVal = LuaDLL.lua_tostring(luaState, stackPos);
-            if (retVal == "" && !LuaDLL.lua_isstring(luaState, stackPos)) return null;
+            if (retVal == "" && !LuaDLL.lua_isstring(luaState, stackPos)) 
+                return null;
             return retVal;
         }
         private object getAsTable(SharpLua.Lua.LuaState luaState, int stackPos)

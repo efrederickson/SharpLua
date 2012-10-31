@@ -16,130 +16,130 @@ namespace SharpLua.LASM
             {
                 switch (i.Opcode)
                 {
-                    case Instruction.LuaOp.MOVE:
+                    case Instruction.LuaOpcode.MOVE:
                         assert(i.C == 0, "MOVE.C must equal 0");
                         assert(i.A < c.MaxStackSize, "MOVE.A out of bounds");
                         assert(i.B < c.MaxStackSize, "MOVE.B out of bounds");
                         break;
 
-                    case Instruction.LuaOp.LOADK:
+                    case Instruction.LuaOpcode.LOADK:
                         assert(i.A < c.MaxStackSize, "LOADK.A out of bounds");
                         assert(i.Bx < c.Constants.Count, "LOADK.Bx out of bounds");
                         break;
 
-                    case Instruction.LuaOp.LOADBOOL:
+                    case Instruction.LuaOpcode.LOADBOOL:
                         assert(i.A < c.MaxStackSize, "LOADBOOL.A out of bounds");
                         assert(i.B < 2, "LOADBOOL.B invalid value");
                         assert(i.C < 2, "LOADBOOL.C invalid value");
                         break;
 
-                    case Instruction.LuaOp.LOADNIL:
+                    case Instruction.LuaOpcode.LOADNIL:
                         assert(i.A < c.MaxStackSize, "LOADNIL.A out of bounds");
                         assert(i.B < c.MaxStackSize, "LOADNIL.B out of bounds");
                         break;
 
-                    case Instruction.LuaOp.GETUPVAL:
+                    case Instruction.LuaOpcode.GETUPVAL:
                         assert(i.A < c.MaxStackSize, "GETUPVAL.A out of bounds");
                         assert(i.B < c.Upvalues.Count, "GETUPVAL.B out of bounds");
                         break;
 
-                    case Instruction.LuaOp.GETGLOBAL:
+                    case Instruction.LuaOpcode.GETGLOBAL:
                         break;
 
-                    case Instruction.LuaOp.GETTABLE:
+                    case Instruction.LuaOpcode.GETTABLE:
                         break;
 
-                    case Instruction.LuaOp.SETGLOBAL:
+                    case Instruction.LuaOpcode.SETGLOBAL:
                         break;
 
-                    case Instruction.LuaOp.SETUPVAL:
+                    case Instruction.LuaOpcode.SETUPVAL:
                         break;
 
-                    case Instruction.LuaOp.SETTABLE:
+                    case Instruction.LuaOpcode.SETTABLE:
                         break;
 
-                    case Instruction.LuaOp.NEWTABLE:
+                    case Instruction.LuaOpcode.NEWTABLE:
                         break;
 
-                    case Instruction.LuaOp.SELF:
+                    case Instruction.LuaOpcode.SELF:
                         break;
 
-                    case Instruction.LuaOp.ADD:
+                    case Instruction.LuaOpcode.ADD:
                         break;
 
-                    case Instruction.LuaOp.SUB:
+                    case Instruction.LuaOpcode.SUB:
                         break;
 
-                    case Instruction.LuaOp.MUL:
+                    case Instruction.LuaOpcode.MUL:
                         break;
 
-                    case Instruction.LuaOp.DIV:
+                    case Instruction.LuaOpcode.DIV:
                         break;
 
-                    case Instruction.LuaOp.MOD:
+                    case Instruction.LuaOpcode.MOD:
                         break;
 
-                    case Instruction.LuaOp.POW:
+                    case Instruction.LuaOpcode.POW:
                         break;
 
-                    case Instruction.LuaOp.UNM:
+                    case Instruction.LuaOpcode.UNM:
                         break;
 
-                    case Instruction.LuaOp.NOT:
+                    case Instruction.LuaOpcode.NOT:
                         break;
 
-                    case Instruction.LuaOp.LEN:
+                    case Instruction.LuaOpcode.LEN:
                         break;
 
-                    case Instruction.LuaOp.CONCAT:
+                    case Instruction.LuaOpcode.CONCAT:
                         break;
 
-                    case Instruction.LuaOp.JMP:
+                    case Instruction.LuaOpcode.JMP:
                         break;
 
-                    case Instruction.LuaOp.EQ:
+                    case Instruction.LuaOpcode.EQ:
                         break;
 
-                    case Instruction.LuaOp.LT:
+                    case Instruction.LuaOpcode.LT:
                         break;
 
-                    case Instruction.LuaOp.LE:
+                    case Instruction.LuaOpcode.LE:
                         break;
 
-                    case Instruction.LuaOp.TEST:
+                    case Instruction.LuaOpcode.TEST:
                         break;
 
-                    case Instruction.LuaOp.TESTSET:
+                    case Instruction.LuaOpcode.TESTSET:
                         break;
 
-                    case Instruction.LuaOp.CALL:
+                    case Instruction.LuaOpcode.CALL:
                         break;
 
-                    case Instruction.LuaOp.TAILCALL:
+                    case Instruction.LuaOpcode.TAILCALL:
                         break;
 
-                    case Instruction.LuaOp.RETURN:
+                    case Instruction.LuaOpcode.RETURN:
                         break;
 
-                    case Instruction.LuaOp.FORLOOP:
+                    case Instruction.LuaOpcode.FORLOOP:
                         break;
 
-                    case Instruction.LuaOp.FORPREP:
+                    case Instruction.LuaOpcode.FORPREP:
                         break;
 
-                    case Instruction.LuaOp.TFORLOOP:
+                    case Instruction.LuaOpcode.TFORLOOP:
                         break;
 
-                    case Instruction.LuaOp.SETLIST:
+                    case Instruction.LuaOpcode.SETLIST:
                         break;
 
-                    case Instruction.LuaOp.CLOSE:
+                    case Instruction.LuaOpcode.CLOSE:
                         break;
 
-                    case Instruction.LuaOp.CLOSURE:
+                    case Instruction.LuaOpcode.CLOSURE:
                         break;
 
-                    case Instruction.LuaOp.VARARG:
+                    case Instruction.LuaOpcode.VARARG:
                         break;
 
                     default:

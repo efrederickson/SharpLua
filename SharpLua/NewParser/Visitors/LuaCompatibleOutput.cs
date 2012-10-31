@@ -15,6 +15,7 @@ namespace SharpLua.Visitors
     // - '!' unary operator           -> "not"
     // - '~ ' unary operator          -> bit.bnot(<expr>)
     // - <bit operators>              -> bit functions
+    // - '!='                         -> ~=
 
     /// <summary>
     /// Needs to be updated...
@@ -104,6 +105,9 @@ namespace SharpLua.Visitors
                 string left = DoExpr(b.Lhs);
                 string op = b.Op;
                 string right = DoExpr(b.Rhs);
+                if (op == "!=")
+                    op = "~=";
+
                 if (op == ">>")
                 {
                     ret = string.Format("bit.rshift({0}, {1})", left, right);
@@ -252,6 +256,15 @@ namespace SharpLua.Visitors
                 ret = "...";
             else if (e is VariableExpression)
                 ret = (e as VariableExpression).Var.Name;
+            else if (e is TableConstructorNamedFunctionExpr)
+            {
+                TableConstructorNamedFunctionExpr fs = e as TableConstructorNamedFunctionExpr;
+                AnonymousFunctionExpr a = new AnonymousFunctionExpr();
+                a.Arguments = fs.Value.Arguments;
+                a.Body = fs.Value.Body;
+                a.IsVararg = fs.Value.IsVararg;
+                ret = DoExpr(fs.Value.Name) + " = " + DoExpr(a);
+            }
 
             return string.Format("{0}{1}{2}", oparens(e.ParenCount), ret, cparens(e.ParenCount));
 

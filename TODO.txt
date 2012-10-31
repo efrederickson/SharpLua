@@ -17,7 +17,7 @@ Parser/Lexer
      - Link tokens together? (Next/Previous)
 
 Modify Parser to handle [,] differently, so it can be ExactReconstructed
-Modify table function <name> <ParseExprFunctionArgsAndBody> to be a new TableConstructor so it can be Reconstructed correctly.
+Modify named table functions so that Beautifier and ExactReconstructor can emit them correctly
 
 X Modify exact reconstructor to check Expressions before reconstructing
      ! then work exact reconstructor comment/ws logic into the other reconstructors
@@ -62,6 +62,7 @@ Supported Compilers/Debuggers
      - Yeuliang compiler
      - LuLu vm interpreter
      - LBI interpreter
+     - Kahlua
      - Other random Lua compilers/interpreters
  
  ? bundle MetaLua with SDAddIn

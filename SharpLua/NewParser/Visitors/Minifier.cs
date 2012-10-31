@@ -170,6 +170,8 @@ namespace SharpLua.Visitors
                 ret = "...";
             else if (e is VariableExpression)
                 ret = (e as VariableExpression).Var.Name;
+            else if (e is TableConstructorNamedFunctionExpr)
+                ret = DoStatement(((TableConstructorNamedFunctionExpr)e).Value);
 
             if (ret != null)
                 return string.Format("{0}{1}{2}", "(".Repeat(e.ParenCount), ret, ")".Repeat(e.ParenCount));

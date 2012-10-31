@@ -160,7 +160,7 @@ namespace SharpLua.LASM
                 instr2.A = 0;
                 instr2.B = 1;
                 instr2.C = 0;
-                if (instr1 != null && instr1.Opcode == Instruction.LuaOp.RETURN)
+                if (instr1 != null && instr1.Opcode == Instruction.LuaOpcode.RETURN)
                 { } //func.Instructions.Add(instr2);
                 else
                     func.Instructions.Add(instr2);
@@ -486,7 +486,7 @@ namespace SharpLua.LASM
             instr2.B = 1;
             instr2.C = 0;
             //getmetatable(func.Instructions).__newindex(func.Instructions, func.Instructions.Count, op)
-            if (instr1 == null || instr1.Opcode != Instruction.LuaOp.RETURN)
+            if (instr1 == null || instr1.Opcode != Instruction.LuaOpcode.RETURN)
                 func.Instructions.Add(instr1);
             return file;
         }

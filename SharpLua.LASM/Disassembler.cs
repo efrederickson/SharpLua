@@ -195,7 +195,7 @@ namespace SharpLua.LASM
             file.Main = ReadFunction();
             return file;
         }
-        
+
         /// <summary>
         /// Returns a decompiled chunk, with info based upon a default LuaFile
         /// </summary>

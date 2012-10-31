@@ -159,7 +159,7 @@ namespace SharpLua.LASM
             new Params(1, 1, 0), // vararg
         };
 
-        public enum LuaOp
+        public enum LuaOpcode
         {
             MOVE = 0,
             LOADK = 1,
@@ -211,11 +211,11 @@ namespace SharpLua.LASM
         }
         public int OpcodeNumber;
 
-        public LuaOp Opcode
+        public LuaOpcode Opcode
         {
             get
             {
-                return (LuaOp)OpcodeNumber;
+                return (LuaOpcode)OpcodeNumber;
             }
         }
 
@@ -252,7 +252,7 @@ namespace SharpLua.LASM
             LineNumber = 0;
         }
         public Instruction(string name, int num = 0)
-            : this((int)(LuaOp)Enum.Parse(typeof(LuaOp), name, true), num)
+            : this((int)(LuaOpcode)Enum.Parse(typeof(LuaOpcode), name, true), num)
         {
         }
 

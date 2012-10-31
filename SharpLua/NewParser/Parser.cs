@@ -367,18 +367,21 @@ namespace SharpLua
 
                         }
                     }
+#if !VANILLA_LUA
                     else if (reader.ConsumeKeyword("function"))
                     {
                         if (reader.Peek().Type != TokenType.Ident)
                             error("function name expected");
                         string name = reader.Get().Data;
-                        AnonymousFunctionExpr f = ParseExprFunctionArgsAndBody(scope);
-                        v.EntryList.Add(new TableConstructorStringKeyExpr
+                        FunctionStatement fs = ParseFunctionArgsAndBody(scope);
+                        fs.IsLocal = false;
+                        fs.Name = new StringExpr(name);
+                        v.EntryList.Add(new TableConstructorNamedFunctionExpr
                         {
-                            Key = name,
-                            Value = f
+                            Value = fs
                         });
                     }
+#endif
                     else if (reader.ConsumeSymbol('}'))
                         break;
                     else
@@ -413,6 +416,7 @@ namespace SharpLua
                 //func.IsLocal = true;
                 return func;
             }
+#if !VANILLA_LUA
             else if (reader.ConsumeSymbol('|'))
             {
                 // inline function... |<arg list>| -> <expr>, <expr>
@@ -470,13 +474,18 @@ namespace SharpLua
 
                 return func;
             }
+#endif
             else
                 return ParseSuffixedExpr(scope);
         }
 
         bool isUnOp(string o)
         {
-            foreach (string s in new string[] { "-", "not", "#", "!", "~" })
+            foreach (string s in new string[] { "-", "not", "#"
+#if !VANILLA_LUA
+                , "!", "~"
+#endif
+            })
                 if (s == o)
                     return true;
             return false;
@@ -514,11 +523,14 @@ namespace SharpLua
  		new priority_(">=", 3,3),
  		new priority_("and", 2,2),
  		new priority_("or", 1,1),
+#if !VANILLA_LUA
         new priority_(">>", 7, 7),
         new priority_("<<", 7, 7),
         new priority_("&", 7, 7),
         new priority_("|", 7, 7),
         new priority_("^^", 7, 7), // Xor
+        new priority_("!=", 3, 3),
+#endif
  	};
 
         priority_ getpriority(string d)
@@ -826,6 +838,7 @@ namespace SharpLua
                 else
                     error("local variable or function definition expected");
             }
+#if !VANILLA_LUA
             else if (reader.ConsumeSymbol("::"))
             {
                 if (!reader.Is(TokenType.Ident))
@@ -839,6 +852,7 @@ namespace SharpLua
                 l.Label = label;
                 stat = l;
             }
+#endif
             else if (reader.ConsumeKeyword("return"))
             {
                 List<Expression> exprList = new List<Expression>();
@@ -864,6 +878,7 @@ namespace SharpLua
             {
                 stat = new ContinueStatement();
             }
+#if !VANILLA_LUA
             else if (reader.ConsumeKeyword("goto"))
             {
                 if (!reader.Is(TokenType.Ident))
@@ -914,6 +929,7 @@ namespace SharpLua
                 us.Body = block;
                 stat = us;
             }
+#endif
             else
             {
                 // statementParseExpr
@@ -949,6 +965,7 @@ namespace SharpLua
                     a.Rhs = rhs;
                     stat = a;
                 }
+#if !VANILLA_LUA
                 else if (isAugmentedAssignment(reader.Peek()))
                 {
                     AugmentedAssignmentStatement aas = new AugmentedAssignmentStatement();
@@ -965,6 +982,7 @@ namespace SharpLua
                     aas.Rhs = new List<Expression> { nRight };
                     stat = aas;
                 }
+#endif
                 else if (suffixed is CallExpr ||
                        suffixed is TableCallExpr ||
                        suffixed is StringCallExpr)
@@ -989,6 +1007,7 @@ namespace SharpLua
             return stat;
         }
 
+#if !VANILLA_LUA
         bool isAugmentedAssignment(Token token)
         {
             switch (token.Data)
@@ -1011,10 +1030,11 @@ namespace SharpLua
                     return false;
             }
         }
+#endif
 
         bool isClosing(string s)
         {
-            foreach (string w in new string[] { "end", "else", "elseif", "until", "|" })
+            foreach (string w in new string[] { "end", "else", "elseif", "until" })
                 if (w == s)
                     return true;
             return false;

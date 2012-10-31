@@ -12,3 +12,8 @@ IMPLICIT_VARARG
 
 LUA_COMPAT_VARARG
     Whether vararg functions have an implicit 'arg' variable
+
+VANILLA_LUA
+    Whether the parser in the NewParser folder should have the extended #Lua syntax or 
+    just plain Lua syntax. It should not be defined, but if you wish to re-use a lua parser
+    somewhere else, it can be defined.

@@ -1118,6 +1118,7 @@ namespace SharpLua
             public static bool operator !=(CharPtr ptr, char ch) { return ptr[0] != ch; }
             public static bool operator !=(char ch, CharPtr ptr) { return ptr[0] != ch; }
 
+            /*
             public static CharPtr operator +(CharPtr ptr1, CharPtr ptr2)
             {
                 string result = "";
@@ -1127,6 +1128,18 @@ namespace SharpLua
                     result += ptr2[i];
                 return new CharPtr(result);
             }
+            */
+
+            public static CharPtr operator +(CharPtr ptr1, CharPtr ptr2)
+            {
+                string result = "";
+                for (int i = 0; i < ptr1.chars.Length - 1; i++)
+                    result += ptr1[i];
+                for (int i = 0; i < ptr2.chars.Length - 1; i++)
+                    result += ptr2[i];
+                return new CharPtr(result);
+            }
+
             public static int operator -(CharPtr ptr1, CharPtr ptr2)
             {
                 Debug.Assert(ptr1.chars == ptr2.chars); return ptr1.index - ptr2.index;
@@ -1167,10 +1180,20 @@ namespace SharpLua
             {
                 return 0;
             }
+            /*
             public override string ToString()
             {
                 string result = "";
                 for (int i = index; (i < chars.Length) && (chars[i] != '\0'); i++)
+                    result += chars[i];
+                return result;
+            }
+            */
+
+            public override string ToString()
+            {
+                string result = "";
+                for (int i = index; i < chars.Length - 1; i++)
                     result += chars[i];
                 return result;
             }

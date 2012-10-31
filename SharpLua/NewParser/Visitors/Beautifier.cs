@@ -295,6 +295,8 @@ namespace SharpLua.Visitors
                 ret = fromToken(tok[index++], s);
             else if (e is VariableExpression)
                 ret = fromToken(tok[index++], s);
+            else if (e is TableConstructorNamedFunctionExpr)
+                ret = DoStatement(((TableConstructorNamedFunctionExpr)e).Value);
 
             if (ret != null)
             {

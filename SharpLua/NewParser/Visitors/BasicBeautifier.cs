@@ -180,7 +180,7 @@ namespace SharpLua.Visitors
                 for (int i = 0; i < t.EntryList.Count; i++)
                 {
                     sb.Append(DoExpr(t.EntryList[i]));
-                    if (i != t.EntryList.Count - 1)
+                    if (i != t.EntryList.Count - 1 || t.EntryList.Count == 1)
                         sb.Append(", ");
                 }
                 sb.Append("} ");
@@ -200,6 +200,8 @@ namespace SharpLua.Visitors
                 ret = "...";
             else if (e is VariableExpression)
                 ret = (e as VariableExpression).Var.Name;
+            else if (e is TableConstructorNamedFunctionExpr)
+                ret = DoStatement(((TableConstructorNamedFunctionExpr)e).Value);
 
             if (ret != null)
                 return string.Format("{0}{1}{2}", "(".Repeat(e.ParenCount), ret, ")".Repeat(e.ParenCount));

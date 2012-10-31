@@ -43,7 +43,7 @@ namespace SharpLua
         {
             foreach (char c2 in (new char[] { '+', '-', '*', '/', '^', '%', ',', 
                 '{', '}', '[', ']', '(', ')', ';', '#',
-            '!', '|', '&', }))
+            '|', '&', }))
                 if (c == c2)
                     return true;
             return false;
@@ -78,8 +78,10 @@ namespace SharpLua
                 word == "false" ||
                 word == "for" ||
                 word == "function" ||
-                word == "goto" ||
-                word == "if" ||
+#if !VANILLA_LUA
+ word == "goto" ||
+#endif
+ word == "if" ||
                 word == "in" ||
                 word == "local" ||
                 word == "nil" ||
@@ -91,13 +93,12 @@ namespace SharpLua
                 word == "true" ||
                 word == "until" ||
                 word == "while"
-                ||
-                word == "using"
-                ||
-                word == "continue";
-            // ||
-            //word == "class" ||
-            //word == "static";
+#if !VANILLA_LUA
+ || word == "using"
+                || word == "continue";
+#else
+;
+#endif
         }
 
         string readnl()
@@ -167,10 +168,14 @@ namespace SharpLua
                         }
                         if (peek(numEquals + 2) == '[' && embedded)
                         {
+#if !VANILLA_LUA
                             // oh look, there was
                             depth = depth + 1;
                             for (int i = 0; i < numEquals + 2; i++)
                                 read();
+#else
+                            error("Embedded long strings is deprecated");
+#endif
                         }
                     }
                     foundEnd = false;
@@ -319,6 +324,7 @@ namespace SharpLua
                         while (IsHexDigit(peek()))
                             num += read();
                     }
+#if !VANILLA_LUA
                     else if (c == '0' && matchpeek("bB"))
                     {
                         num = "0" + read(); // read 'bB'
@@ -331,6 +337,7 @@ namespace SharpLua
                         while (char.IsDigit(peek()))// || peek() == '_')
                             num += read();
                     }
+#endif
                     else
                     {
                         num = c.ToString();
@@ -347,6 +354,7 @@ namespace SharpLua
                             }
                         }
                     }
+#if !VANILLA_LUA
                     if (matchpeek("PpEe")) // exponent
                     {
                         num += read();
@@ -355,6 +363,7 @@ namespace SharpLua
                         while (char.IsDigit(peek()))
                             num += read();
                     }
+#endif
                     t.Data = num;
                     t.Type = TokenType.Number;
                 }
@@ -402,8 +411,10 @@ namespace SharpLua
                         (c == '>' && peek() == '>'))
                     {
                         t.Data = c.ToString() + read().ToString();
+#if !VANILLA_LUA
                         if (peek() == '=' && (c == '<' || c == '>'))
                             t.Data += read(); // augmented, e.g. >>=, but not ===
+#endif
                     }
                     else
                         t.Data = c.ToString();
@@ -434,11 +445,13 @@ namespace SharpLua
                             t.Data = "...";
                             read(); // read third '.'
                         }
+#if !VANILLA_LUA
                         else if (peek() == '=') // ..=
                         {
                             t.Data = "..=";
                             read(); // read '='
                         }
+#endif
                         else
                             t.Data = "..";
                     }
@@ -450,12 +463,14 @@ namespace SharpLua
                 else if (c == ':')
                 {
                     t.Type = TokenType.Symbol;
+#if !VANILLA_LUA
                     if (peek() == ':')
                     {
                         read();
                         t.Data = "::";
                     }
                     else
+#endif
                         t.Data = ":";
                 }
                 else if (c == '-' && peek() == '>')
@@ -467,30 +482,47 @@ namespace SharpLua
                 else if (c == '^')
                 {
                     t.Type = TokenType.Symbol;
-                    
+
                     if (peek() == '^')
                     {
                         read();
+#if !VANILLA_LUA
                         if (peek() == '=')
                         {
                             read();
                             t.Data = "^^=";
                         }
                         else
+#endif
                             t.Data = "^^";
                     }
+#if !VANILLA_LUA
                     else if (peek() == '=')
                     {
                         read();
                         t.Data = "^=";
                     }
+#endif
                     else
                         t.Data = "^";
                 }
+#if !VANILLA_LUA
+                else if (c == '!')
+                {
+                    t.Type = TokenType.Symbol;
+                    if (peek() == '=')
+                    {
+                        read();
+                        t.Data = "!=";
+                    }
+                    else t.Data = "!";
+                }
+#endif
                 else if (IsSymbol(c))
                 {
                     t.Type = TokenType.Symbol;
                     t.Data = c.ToString();
+#if !VANILLA_LUA
                     if (peek() == '=')
                     {
                         char c2 = peek();
@@ -507,6 +539,7 @@ namespace SharpLua
                             read();
                         }
                     }
+#endif
                 }
                 else
                 {

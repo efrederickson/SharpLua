@@ -366,79 +366,71 @@ m.head = m.first
 m.take = m.first
 
 m.initial = function(array, n, guard)
-    return slice.call(array, 0, array.length - ((n == null) || guard ? 1 : n));
+    return slice.call(array, 0, array.length - (((n == nil) or guard) and 1 or n))
 end
 
--- Get the last element of an array. Passing **n** will return the last N
--- values in the array. The **guard** check allows it to work with `_.map`.
-_.last = function(array, n, guard) {
-if (array == null) return void 0;
-if ((n != null) && !guard) {
-  return slice.call(array, Math.max(array.length - n, 0));
-} else {
-  return array[array.length - 1];
-}
-};
+m.last = function(array, n, guard)
+    if array == nil then
+        return nil
+    end
+    if (n ~= nil and not guard) then
+        return m.slice(array, math.max(#array - n, 0))
+    else
+        return array[#array - 1]
+    end
+end
 
--- Returns everything but the first entry of the array. Aliased as `tail` and `drop`.
--- Especially useful on the arguments object. Passing an **n** will return
--- the rest N values in the array. The **guard**
--- check allows it to work with `_.map`.
-_.rest = _.tail = _.drop = function(array, n, guard) {
-return slice.call(array, (n == null) || guard ? 1 : n);
-};
+m.rest = function(array, n, guard)
+    return m.slice(array, (n == nil or guard) and 1 or n)
+end
+m.tail = m.tail
+m.drop = m.rest
 
--- Trim out all falsy values from an array.
-_.compact = function(array) {
-return _.filter(array, function(value){ return !!value; });
-};
+m.compact = function(array)
+    return m.filter(array, function(value) return not not value end)
+end
 
--- Internal implementation of a recursive `flatten` function.
-var flatten = function(input, shallow, output) {
-each(input, function(value) {
-  if (_.isArray(value)) {
-    shallow ? push.apply(output, value) : flatten(value, shallow, output);
-  } else {
-    output.push(value);
-  }
-});
-return output;
-};
+m.flattenInternal = function(input, shallow, output)
+    m.each(input, function(value)
+        if m.isArray(value) then
+            if shallow then
+                m.push(output, value)
+            else
+                flatten(value, shallow, output)
+            end
+        else
+            m.push(output, value)
+        end
+    end)
+    return output
+end
 
--- Return a completely flattened version of an array.
-_.flatten = function(array, shallow) {
-return flatten(array, shallow, []);
-};
+m.flatten = function(array, shallow)
+    return m.flattenInternal(array, shallow, { })
+end
 
--- Return a version of the array that does not contain the specified value(s).
-_.without = function(array) {
-return _.difference(array, slice.call(arguments, 1));
-};
+m.without = function(array)
+    return m.difference(array, m.slice(arguments, 1))
+end
 
--- Produce a duplicate-free version of the array. If the array has already
--- been sorted, you have the option of using a faster algorithm.
--- Aliased as `unique`.
-_.uniq = _.unique = function(array, isSorted, iterator, context) {
-var initial = iterator ? _.map(array, iterator, context) : array;
-var results = [];
-var seen = [];
-each(initial, function(value, index) {
-  if (isSorted ? (!index || seen[seen.length - 1] !== value) : !_.contains(seen, value)) {
-    seen.push(value);
-    results.push(array[index]);
-  }
-});
-return results;
-};
+m.unique = function(array, isSorted, iterator)
+    local initial = iterator and m.map(array, iterator) or array
+    local results = { }
+    local seen = { }
+    m.each(initial, function(value, index)
+        if (isSorted and not index or seen[#seen - 1]) ~= value or not m.contains(seen, value) then
+            m.push(seen, value);
+            m.push(results, array[index])
+        end
+    end)
+    return results
+end
+m.uniq = m.unique
 
--- Produce an array that contains the union: each distinct element from all of
--- the passed-in arrays.
-_.union = function() {
-return _.uniq(concat.apply(ArrayProto, arguments));
-};
+m.union = function(...)
+    return m.uniq(concat.apply(ArrayProto, ...))
+end
 
--- Produce an array that contains every item shared between all the
--- passed-in arrays.
 _.intersection = function(array) {
 var rest = slice.call(arguments, 1);
 return _.filter(_.uniq(array), function(item) {

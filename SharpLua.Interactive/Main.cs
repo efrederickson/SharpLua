@@ -5,6 +5,7 @@ using System.Text;
 using SharpLua;
 using System.Windows.Forms;
 using System.IO;
+using System.Diagnostics;
 
 namespace SharpLua.Interactive
 {
@@ -29,11 +30,20 @@ namespace SharpLua.Interactive
             // Create global variables
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+
+            //Stopwatch sw = new Stopwatch();
+            //sw.Start();
+
             LuaRuntime.PrintBanner();
 
+            //sw.Stop();
+            //Console.WriteLine(sw.ElapsedMilliseconds);
+
 #if DEBUG
+#if false
             LuaRuntime.RegisterModule(typeof(TestModule));
             LuaRuntime.RegisterModule(typeof(TestModule2));
+#endif
 
             // how to handle errors
             LuaRuntime.SetVariable("DEBUG", true);
@@ -161,6 +171,7 @@ namespace SharpLua.Interactive
         }
     }
 
+#if false
     // Lua Test Modules
     // Used primarily for testing the LuaModule and LuaFunction attributes.
     // Feel free to expand or delete them.
@@ -185,4 +196,5 @@ namespace SharpLua.Interactive
             Console.WriteLine("hi");
         }
     }
+#endif
 }

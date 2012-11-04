@@ -20,14 +20,17 @@ namespace SharpLuaAddIn
         #region Smart Indentation
         public override void IndentLine(ITextEditor editor, IDocumentLine line)
         {
-            IDocumentLine above = editor.Document.GetLine(line.LineNumber - 1);
-            if (above != null)
+            if (line.LineNumber > 1)
             {
+                IDocumentLine above = editor.Document.GetLine(line.LineNumber - 1);
                 string up = above.Text.Trim();
                 if (up.StartsWith("--") == false)
                 {
                     // above line is an indent statement
-                    if (up.EndsWith("do") || up.EndsWith("then") || (up.StartsWith("function") && up.EndsWith(")")))
+                    if (up.EndsWith("do")
+                        || up.EndsWith("then")
+                        || (up.StartsWith("function") && up.EndsWith(")"))
+                        || (up.Contains("function") && up.EndsWith(")"))) // e.g. aTable.x = function([...])
                     {
                         string indentation = DocumentUtilitites.GetWhitespaceAfter(editor.Document, above.Offset);
                         string newLine = line.Text.TrimStart();
@@ -57,7 +60,10 @@ namespace SharpLuaAddIn
                 }
             }
             else
-                base.IndentLine(editor, line);
+            {
+
+            }
+            //base.IndentLine(editor, line);
         }
 
         public override void IndentLines(ITextEditor editor, int beginLine, int endLine)

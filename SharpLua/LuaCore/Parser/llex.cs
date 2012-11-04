@@ -269,7 +269,7 @@ namespace SharpLua
             {
                 save_and_next(ls);
             } while (isdigit(ls.current) || ls.current == '.');
-            if (check_next(ls, "Ee") != 0)  /* `E'? */
+            if (check_next(ls, "EePp") != 0)  /* 'E' or 'P'? */
                 check_next(ls, "+-");  /* optional exponent sign */
             while (isalnum(ls.current) || ls.current == '_')
                 save_and_next(ls);

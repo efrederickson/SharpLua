@@ -72,7 +72,6 @@ namespace SharpLua
                     Console.WriteLine("- Unused Local Variables -");
                     foreach (Variable v in unused)
                         Console.WriteLine("  " + v.Name);
-
                     Refactoring.AddModuleDependency(c, "module1");
                     Refactoring.AddModuleDependency(c, "module2", "local_module2");
 
@@ -81,6 +80,9 @@ namespace SharpLua
                     Console.WriteLine("- With Added Dependencies -");
                     Console.WriteLine(new Visitors.Beautifier().Beautify(c));
 
+                    c.Scope.ObfuscateLocals();
+                    Console.WriteLine("- With obfuscated locals");
+                    Console.WriteLine(new Visitors.Beautifier().Beautify(c));
                 }
                 catch (LuaSourceException ex)
                 {

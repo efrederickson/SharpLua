@@ -302,7 +302,8 @@ namespace SharpLua
         private static int ll_loadfunc(LuaState L, CharPtr path, CharPtr sym)
         {
             object reg = ll_register(L, path);
-            if (reg == null) reg = ll_load(L, path);
+            if (reg == null)
+                reg = ll_load(L, path);
             if (reg == null)
                 return ERRLIB;  /* unable to load library */
             else
@@ -437,9 +438,22 @@ namespace SharpLua
             if (filename == null)
                 return 1;  /* library not found in this path */
             Assembly a = Assembly.LoadFrom(filename);
+            int i = 0;
             foreach (Type t in a.GetTypes())
-                L.Interface.RegisterModule(t);
-            return 0;
+            {
+                if (t.IsClass == true && t.GetCustomAttributes(typeof(LuaModuleAttribute), false).Length > 0)
+                {
+                    i++;
+                    //L.Interface.RegisterModule(t);
+                    lua_pushcfunction(L, (l) =>
+                    {
+                        LuaTable tbl = l.Interface.RegisterModule(t);
+                        tbl.push(l);
+                        return 1;
+                    });
+                }
+            }
+            return i;
         }
 
         private static int loader_Croot(LuaState L)
@@ -671,9 +685,12 @@ namespace SharpLua
         public readonly static lua_CFunction[] loaders = { 
             loader_preload, 
             loader_Lua, 
+
+            loader_CLRModule,
+
             loader_C, 
             loader_Croot, 
-            loader_CLRModule,
+            
             null 
         };
 
@@ -713,6 +730,8 @@ namespace SharpLua
             string cpath = Environment.GetEnvironmentVariable(LUA_CPATH);
             if (cpath != null && !string.IsNullOrWhiteSpace(cpath))
                 cpath = cpath + ";" + LUA_CPATH_DEFAULT;
+            else
+                cpath = LUA_CPATH_DEFAULT;
             setpath(L, "cpath", LUA_CPATH, cpath); /* set field `cpath' */
             /* store config information */
             lua_pushliteral(L, LUA_DIRSEP + "\n" + LUA_PATHSEP + "\n" + LUA_PATH_MARK + "\n" +

@@ -122,7 +122,8 @@ namespace SharpLua
             if (version != 0)
             {
                 Lua.printf("%s  %s\n", Lua.LUA_RELEASE, Lua.LUA_COPYRIGHT);
-                if (version == argc - 1) Environment.Exit(Lua.EXIT_SUCCESS);
+                if (version == argc - 1)
+                    Environment.Exit(Lua.EXIT_SUCCESS);
             }
             return i;
         }
@@ -179,11 +180,15 @@ namespace SharpLua
             string[] argv = s.argv;
             Lua.Proto f;
             int i;
-            if (Lua.lua_checkstack(L, argc) == 0) fatal("too many input files");
+            if (Lua.lua_checkstack(L, argc) == 0)
+                fatal("too many input files");
             for (i = 0; i < argc; i++)
             {
                 Lua.CharPtr filename = (Lua.strcmp(argv[i], "-") == 0) ? null : argv[i];
-                if (Lua.luaL_loadfile(L, filename) != 0) fatal(Lua.lua_tostring(L, -1));
+                if (Lua.luaL_loadfile(L, filename) != 0)
+                {
+                    fatal(Lua.lua_tostring(L, -1));
+                }
             }
             f = combine(L, argc);
             if (listing != 0) Lua.luaU_print(f, (listing > 1) ? 1 : 0);
@@ -217,10 +222,12 @@ namespace SharpLua
             argc -= i; args = (string[])newargs.ToArray();
             if (argc <= 0) usage("no input files given");
             L = Lua.lua_open();
-            if (L == null) fatal("not enough memory for state");
+            if (L == null)
+                fatal("not enough memory for state");
             s.argc = argc;
             s.argv = args;
-            if (Lua.lua_cpcall(L, pmain, s) != 0) fatal(Lua.lua_tostring(L, -1));
+            if (Lua.lua_cpcall(L, pmain, s) != 0)
+                fatal(Lua.lua_tostring(L, -1));
             Lua.lua_close(L);
             return Lua.EXIT_SUCCESS;
         }

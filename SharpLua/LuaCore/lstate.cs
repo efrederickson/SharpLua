@@ -601,8 +601,16 @@ namespace SharpLua
             public void CheckInterface()
             {
                 if (initializing == false)
+                {
                     if (_interface == null)
-                        _interface = new LuaInterface(this);
+                    {
+                        // STILL CAUSING ISSUES :O
+
+                        //StkId top = this._top;
+                        //_interface = new LuaInterface(this);
+                        //lua_settop(this, top);
+                    }
+                }
             }
         };
 

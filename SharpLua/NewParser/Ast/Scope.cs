@@ -235,5 +235,24 @@ namespace SharpLua.Ast
             v = GetGlobal(name);
             return v;
         }
+
+        public void ObfuscateLocals(int recommendedMaxLength = 7)
+        {
+            Random r = new Random(DateTime.Now.Millisecond);
+
+            string valid = "abcdefghijklmopqrstuvwxyz1234567890_";
+            foreach (Variable v in Locals)
+            {
+                string newName = "";
+                int length = r.Next(1, v.Name.Length > recommendedMaxLength ? recommendedMaxLength : v.Name.Length);
+                for (int i = 0; i < length; i++)
+                    newName += valid[r.Next(0, valid.Length - 1)];
+                if (!char.IsLetter(newName[0]) && newName[0] != '_')
+                    newName = "_" + newName;
+                while (GetVariable(newName) != null)
+                    newName += valid[r.Next(0, valid.Length - 1)];
+                RenameLocal(v.Name, newName);
+            }
+        }
     }
 }

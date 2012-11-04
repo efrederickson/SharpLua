@@ -2,8 +2,8 @@
 lasm = luanet.namespace"SharpLua.LASM"
 dis = lasm.Disassembler
 assert(dis, "Could not load LASM Disassembler!")
---print(lasm, lasm.Disassembler)
-func = nil
+
+local func = nil
 function Load(s)
     local a = loadstring(s)
     func = a

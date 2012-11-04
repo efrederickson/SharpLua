@@ -923,11 +923,6 @@
             new priority_(2, 2),
             new priority_(1, 1),				/* logical (and/or) */
             new priority_(0, 0),               // OP_NOBINOPR
-            new priority_(7, 7),               // >> (right shift)
-            new priority_(7, 7),               // << (left shift)
-            new priority_(7, 7),               // &  (bitwise and)
-            new priority_(7, 7),               // |  (bitwise or)
-            new priority_(7, 7),               // ^^  (bitwise xor)
         };
 
         public const int UNARY_PRIORITY = 8;  /* priority for unary operators */
@@ -949,7 +944,8 @@
                 subexpr(ls, v, UNARY_PRIORITY);
                 Lua.luaK_prefix(ls.fs, uop, v);
             }
-            else simpleexp(ls, v);
+            else
+                simpleexp(ls, v);
             /* expand while operators have priorities higher than `limit' */
             op = getbinopr(ls.t.token);
             while (op != BinOpr.OPR_NOBINOPR && priority[(int)op].left > limit)
@@ -1094,7 +1090,8 @@
             /* cond . exp */
             expdesc v = new expdesc();
             expr(ls, v);  /* read condition */
-            if (v.k == expkind.VNIL) v.k = expkind.VFALSE;  /* `falses' are all equal here */
+            if (v.k == expkind.VNIL)
+                v.k = expkind.VFALSE;  /* `falses' are all equal here */
             Lua.luaK_goiftrue(ls.fs, v);
             return v.f;
         }

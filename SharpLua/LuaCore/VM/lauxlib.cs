@@ -740,7 +740,8 @@ namespace SharpLua
             ungetc(c, lf.f);
             status = lua_load(L, getF, lf, lua_tostring(L, -1));
             readstatus = ferror(lf.f);
-            if (filename != null) fclose(lf.f);  /* close file (even in case of errors) */
+            if (filename != null) 
+                fclose(lf.f);  /* close file (even in case of errors) */
             if (readstatus != 0)
             {
                 lua_settop(L, fnameindex);  /* ignore results from `lua_load' */

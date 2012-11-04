@@ -751,8 +751,10 @@ namespace SharpLua
         /// the LuaFunctionAttribute into this instance of SharpLua
         /// </summary>
         /// <param name="t"></param>
-        public void RegisterModule(Type t)
+        /// <returns>The modules name, or null if there wasn't one</returns>
+        /*public string RegisterModule(Type t)
         {
+            string ret = null;
             if (t.IsClass == false)
                 throw new ArgumentException("Not a class", "t");
 
@@ -763,6 +765,7 @@ namespace SharpLua
                     attribs[0].ModuleName = t.Name; // Default to class name if not specified
                 // its a module
                 string module = attribs[0].ModuleName;
+                ret = module;
                 this.NewTable(module);
                 foreach (MethodInfo mi in t.GetMethods())
                 {
@@ -775,6 +778,41 @@ namespace SharpLua
                     }
                 }
             }
+            return ret;
+        }*/
+
+        /// <summary>
+        /// If the class has the ModuleAttribute, it registers all the methods with
+        /// the LuaFunctionAttribute into this instance of SharpLua
+        /// </summary>
+        /// <param name="t"></param>
+        /// <returns>The module, or null if there wasn't one</returns>
+        public LuaTable RegisterModule(Type t)
+        {
+            LuaTable ret = null;
+            if (t.IsClass == false)
+                throw new ArgumentException("Not a class", "t");
+
+            LuaModuleAttribute[] attribs = (LuaModuleAttribute[])t.GetCustomAttributes(typeof(LuaModuleAttribute), false);
+            if (attribs.Length > 0)
+            {
+                if (attribs[0].ModuleName == "")
+                    attribs[0].ModuleName = t.Name; // Default to class name if not specified
+                // its a module
+                string module = attribs[0].ModuleName;
+                ret = this.NewTable(module);
+                foreach (MethodInfo mi in t.GetMethods())
+                {
+                    LuaFunctionAttribute[] a2 = (LuaFunctionAttribute[])mi.GetCustomAttributes(typeof(LuaFunctionAttribute), false);
+                    if (a2.Length > 0 && mi.IsStatic)
+                    {
+                        if (a2[0].FunctionName == "")
+                            a2[0].FunctionName = mi.Name;
+                        this.RegisterFunction(module + "." + a2[0].FunctionName, t, mi);
+                    }
+                }
+            }
+            return ret;
         }
 
         public virtual void Dispose()

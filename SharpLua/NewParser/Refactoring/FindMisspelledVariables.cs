@@ -22,15 +22,26 @@ namespace SharpLua
             List<Variable> vars = c.Scope.GetAllVariables();
             List<Tuple<Variable, Variable>> scanned = new List<Tuple<Variable, Variable>>();
             //Console.WriteLine(vars.Count);
+
             Func<Variable, Variable, bool> get = new Func<Variable, Variable, bool>(delegate(Variable a, Variable b)
                 {
                     bool found = false;
                     foreach (Tuple<Variable, Variable> t in scanned)
                     {
                         if (t.Item1 == a)
-                            found = t.Item2 == b;
+                        {
+                            if (t.Item2 == b)
+                            {
+                                found = true;
+                            }
+                        }
                         else if (t.Item1 == b)
-                            found = t.Item1 == a;
+                        {
+                            if (t.Item2 == a)
+                            {
+                                found = true;
+                            }
+                        }
 
                         if (found)
                             return found;
@@ -76,10 +87,10 @@ namespace SharpLua
                                         fails++;
                                     }
                                 }
-                                if ((beginFailing == a.Length - fails && a.Length - fails > 0)
+                                if (((beginFailing == a.Length - fails && a.Length - fails > 0)
                                     || (beginFailing == b.Length - fails && b.Length - fails > 0)
-                                    || fails < ((a.Length > 6 ? a.Length / 4 : 3))
-                                    && Math.Abs(a.Length - b.Length) < 3
+                                    || fails < (a.Length > 6 ? a.Length / 4 : 3))
+                                    && Math.Abs(a.Length - b.Length) <= 3
                                     && (a.Length > 1 && b.Length > 1))
                                 {
                                     misspelled.Add(new Tuple<Variable, Variable>(v, v2));

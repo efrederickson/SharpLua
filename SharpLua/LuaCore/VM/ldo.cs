@@ -185,8 +185,10 @@ namespace SharpLua
                 f(L, ud);
             }
 #if CATCH_EXCEPTIONS
-            catch
+            catch (Exception ex)
             {
+                Debug.WriteLine("Caught exception: " + ex.ToString());
+
                 if (lj.status == 0)
                     lj.status = -1;
             }
@@ -598,7 +600,17 @@ namespace SharpLua
             return status;
         }
 
+        static Proto NewParser(LuaState L, ZIO z, Mbuffer buff, CharPtr name)
+        {
+            string s = "";
+            while (z.n-- > 0)
+                s += z.p[0];
 
+            Lexer l = new Lexer();
+            Parser p = new Parser(l.Lex(s));
+            Ast.Chunk c = p.Parse();
+            return new Compiler.Compiler().Compile(c, name.ToString());
+        }
 
         /*
          ** Execute a protected parser.
@@ -620,6 +632,7 @@ namespace SharpLua
             luaC_checkGC(L);
             tf = (c == LUA_SIGNATURE[0]) ?
                 luaU_undump(L, p.z, p.buff, p.name) :
+                //NewParser(L, p.z, p.buff, p.name);
                 luaY_parser(L, p.z, p.buff, p.name);
             cl = luaF_newLclosure(L, tf.nups, hvalue(gt(L)));
             cl.l.p = tf;

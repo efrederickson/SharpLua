@@ -16,6 +16,7 @@ namespace TestModule
         }
 
         [LuaFunction]
+        // Doesn't show up - not static
         public int X()
         {
             return 9;

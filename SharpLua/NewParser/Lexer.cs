@@ -170,7 +170,7 @@ namespace SharpLua
                         {
 #if !VANILLA_LUA
                             // oh look, there was
-                            depth = depth + 1;
+                            depth++;
                             for (int i = 0; i < numEquals + 2; i++)
                                 read();
 #else
@@ -182,7 +182,7 @@ namespace SharpLua
                 }
                 if (foundEnd)
                 {
-                    depth = depth - 1;
+                    depth--;
                     if (depth == 0)
                         break;
                     else
@@ -200,7 +200,7 @@ namespace SharpLua
             for (int i = 0; i < numEquals + 2; i++) // read closing ](=*)]
                 if (peek() == '=' || peek() == ']')
                     read();
-                else
+                else // wat
                     break;
             return "[" + "=".Repeat(numEquals) + "[" + content + "]" + "=".Repeat(numEquals) + "]";
         }
@@ -334,7 +334,7 @@ namespace SharpLua
                     else if (c == '0' && matchpeek("oO"))
                     {
                         num = "0" + read(); // read 'oO'
-                        while (char.IsDigit(peek()))// || peek() == '_')
+                        while (char.IsDigit(peek()) || peek() == '_')
                             num += read();
                     }
 #endif
@@ -342,7 +342,13 @@ namespace SharpLua
                     {
                         num = c.ToString();
                         bool dec = false;
-                        while (char.IsDigit(peek()) || peek() == '.')
+                        while (char.IsDigit(peek())
+                            || peek() == '.'
+#if !VANILLA_LUA
+ || peek() == '_')
+#else
+                            )
+#endif
                         {
                             num += read();
                             if (peek() == '.')

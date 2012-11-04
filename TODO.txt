@@ -17,7 +17,6 @@ Parser/Lexer
      - Link tokens together? (Next/Previous)
 
 Modify Parser to handle [,] differently, so it can be ExactReconstructed
-Modify named table functions so that Beautifier and ExactReconstructor can emit them correctly
 
 X Modify exact reconstructor to check Expressions before reconstructing
      ! then work exact reconstructor comment/ws logic into the other reconstructors
@@ -71,8 +70,7 @@ Supported Compilers/Debuggers
      - do a regex check to see if it worked. If it didn't, prompt user to send report data.
 
  X Find unused variables
- ! Find misspelled variables(only used once, similar to other var names)
-     ! (not fully working hello and helko would return both (Hello, Helko) and (Helko, Hello)
+ X Find misspelled variables(only used once, similar to other var names)
  X Goto Definition
  - Find eternal loops
  X Optimize simple functions to inline functions
@@ -94,6 +92,7 @@ Supported Compilers/Debuggers
      - Lua to SharpLua
      - Rbx.Lua to SharpLua
      - MetaLua to SharpLua
+     - C# to #Lua
  - WinForms/Wpf designer
  - Asp/Web integration
  - MSBuild task to build luac/dependencies

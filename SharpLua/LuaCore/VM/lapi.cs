@@ -980,7 +980,7 @@ namespace SharpLua
             if (data is LoadS)
             {
                 LoadS d = data as LoadS;
-                if (d.size > 0 && d.s.ToString()[0] != 27) // if its not binary
+                if (d.size > 0 && d.s.chars[0] != LUA_SIGNATURE[0]) // if its not binary
                 {
                     Lexer l = new Lexer();
                     try
@@ -1000,17 +1000,29 @@ namespace SharpLua
                         throw ex;
                     }
                 }
+                else
+                {
+                    d.s.index = 0;
+
+                    // Why isn't the size equal to the chars.Length? 
+                    Debug.WriteLine("Binary data: d.size=" + d.size + " d.s.chars.Length=" + d.s.chars.Length);
+                    Debug.WriteLine("Equal: " + (d.size == d.s.chars.Length));
+                    //Debug.Assert(d.size == d.s.chars.Length);
+                    d.size = (uint)d.s.chars.Length;
+                }
             }
             else if (data is LoadF)
             {
                 LoadF lf = data as LoadF;
 
-                MemoryStream ms = new MemoryStream();
-                while (lf.f.Position < lf.f.Length)
-                    ms.WriteByte((byte)lf.f.ReadByte());
-                ms.Position = 0;
-                if (ms.ReadByte() != 27) // if its not binary
+                if (lf.f.ReadByte() != LUA_SIGNATURE[0]) // if its not binary
                 {
+                    lf.f.Position = 0;
+                    MemoryStream ms = new MemoryStream();
+                    while (lf.f.Position < lf.f.Length)
+                        ms.WriteByte((byte)lf.f.ReadByte());
+                    ms.Position = 0;
+
                     // not binary file 
                     ms.Position = 0;
                     StringBuilder sb = new StringBuilder();
@@ -1023,7 +1035,6 @@ namespace SharpLua
                         TokenReader tr = l.Lex(sb.ToString());
                         Parser p = new Parser(tr);
                         Ast.Chunk c = p.Parse();
-
                         Visitors.LuaCompatibleOutput lco = new Visitors.LuaCompatibleOutput();
                         string s = lco.Format(c);
                         ms = new MemoryStream();
@@ -1035,8 +1046,14 @@ namespace SharpLua
                     }
                     catch (LuaSourceException ex)
                     {
-                        throw ex;
+                        lua_pushstring(L, ex.GenerateMessage(chunkname));
+                        return 1;
+                        //throw ex;
                     }
+                }
+                else
+                {
+                    lf.f.Position = 0; // reset the read character
                 }
             }
 #endif

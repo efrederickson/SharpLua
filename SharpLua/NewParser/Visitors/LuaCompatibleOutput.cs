@@ -16,6 +16,7 @@ namespace SharpLua.Visitors
     // - '~ ' unary operator          -> bit.bnot(<expr>)
     // - <bit operators>              -> bit functions
     // - '!='                         -> ~=
+    // - Underscores in numbers       -> remove them
 
     /// <summary>
     /// Needs to be updated...
@@ -201,7 +202,10 @@ namespace SharpLua.Visitors
             else if (e is NilExpr)
                 ret = "nil";
             else if (e is NumberExpr)
+            {
                 ret = (e as NumberExpr).Value;
+                ret = ret.Replace("_", "");
+            }
             else if (e is StringExpr)
             {
                 StringExpr se = e as StringExpr;

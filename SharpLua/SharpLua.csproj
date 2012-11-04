@@ -11,12 +11,14 @@
     <AssemblyName>SharpLua</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <NoStdLib>False</NoStdLib>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
+    <DebugType>Full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\bin\</OutputPath>
     <DefineConstants>TRACE;DEBUG;IMPLICIT_VARARG;OVERRIDE_LOAD;LUA_CORE;_WIN32;LUA_COMPAT_VARARG;LUA_COMPAT_MOD;LUA_COMPAT_GFIND;CATCH_EXCEPTIONS</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -29,6 +31,15 @@
     <DefineConstants>DEBUG;TRACE;LUA_CORE;_WIN32;LUA_COMPAT_VARARG;LUA_COMPAT_MOD;LUA_COMPAT_GFIND;CATCH_EXCEPTIONS</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>4194304</BaseAddress>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -147,7 +158,9 @@
     <Compile Include="NewParser\Ast\Variable.cs" />
     <Compile Include="NewParser\Compiler\Compiler.cs" />
     <Compile Include="NewParser\Compiler\Compiler2.cs" />
+    <Compile Include="NewParser\Compiler\Compiler3.cs" />
     <Compile Include="NewParser\Compiler\K2Reg.cs" />
+    <Compile Include="NewParser\Compiler\Unescaper.cs" />
     <Compile Include="NewParser\Compiler\Var2Reg.cs" />
     <Compile Include="NewParser\XmlDocumentation\DocumentationComment.cs" />
     <Compile Include="NewParser\XmlDocumentation\Documentation.cs" />
@@ -173,12 +186,24 @@
     <Compile Include="NewParser\Visitors\LuaCompatibleOutput.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="LuaCore\printf.cs" />
+    <None Include="Resources\BuildResources.bat" />
+    <None Include="Resources\clrlib.slua" />
+    <EmbeddedResource Include="Resources\clrlib.sluac" />
+    <None Include="Resources\extlib.slua" />
+    <EmbeddedResource Include="Resources\extlib.sluac" />
+    <None Include="Resources\luanet.slua" />
+    <EmbeddedResource Include="Resources\luanet.sluac" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="NewParser\Todo.txt" />
     <Content Include="NewParser\XmlDocumentation\Format.txt" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

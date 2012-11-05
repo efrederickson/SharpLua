@@ -35,7 +35,9 @@ namespace SharpLua.Compiler
         FuncState currentFunc = null;
 
         string ChunkName;
+
         LuaState L = Lua.luaL_newstate();
+
         public Compiler() { }
 
         void DoExpr(Expression e, expdesc v)
@@ -67,21 +69,21 @@ namespace SharpLua.Compiler
             else if (e is CallExpr)//&& (!(e is StringCallExpr) && !(e is TableCallExpr)))
             {
                 DoExpr((e as CallExpr).Base, v);
-                Lua.luaK_exp2nextreg(currentFunc, v);
+                //Lua.luaK_exp2nextreg(currentFunc, v);
                 funcargs(e as CallExpr, v);
                 return;
             }
             else if (e is StringCallExpr)
             {
                 DoExpr((e as CallExpr).Base, v);
-                Lua.luaK_exp2nextreg(currentFunc, v);
+                //Lua.luaK_exp2nextreg(currentFunc, v);
                 funcargs(e as CallExpr, v);
                 return;
             }
             else if (e is TableCallExpr)
             {
                 DoExpr((e as CallExpr).Base, v);
-                Lua.luaK_exp2nextreg(currentFunc, v);
+                //Lua.luaK_exp2nextreg(currentFunc, v);
                 funcargs(e as CallExpr, v);
                 return;
             }
@@ -124,8 +126,7 @@ namespace SharpLua.Compiler
                     expdesc key = new expdesc();
                     checkname(me.Ident, key);
                     Lua.luaK_self(currentFunc, v, key);
-                    //funcargs(v);
-
+                    //funcargs(, v);
                 }
                 else
                     throw new LuaSourceException(0, 0, "Unknown indexer: " + me.Indexer);
@@ -334,6 +335,8 @@ namespace SharpLua.Compiler
                                     needself = 1;
                                 tmp = null;
                             }
+                            else
+                                tmp = null;
                         } while (tmp != null);
                     }
                     DoExpr(f.Name, v);
@@ -481,26 +484,30 @@ namespace SharpLua.Compiler
             int line = 0;
 
             if (!(e is StringCallExpr) && !(e is TableCallExpr))
-            {  /* funcargs . `(' [ explist1 ] `)' */
+            {
+                Lua.luaK_exp2nextreg(currentFunc, f);
                 //if (line != ls.lastline)
                 //    Lua.luaX_syntaxerror(ls, "ambiguous syntax (function call or new statement)");
                 if (e.Arguments.Count == 0)
                     args.k = expkind.VVOID;
                 else
                 {
-                    die
                     explist1(e.Arguments, args);
                     Lua.luaK_setmultret(currentFunc, args);
                 }
             }
             else if (e is TableCallExpr)
             {  /* funcargs . constructor */
+                Lua.luaK_exp2nextreg(currentFunc, f);
                 constructor(e.Arguments[0] as TableConstructorExpr, args);
             }
             else if (e is StringCallExpr)
             {  /* funcargs . STRING */
+                Lua.luaK_exp2nextreg(currentFunc, f);
                 codestring(args, new TString(new CharPtr(Unescaper.Unescape((e.Arguments[0] as StringExpr).Value))));
             }
+            else
+                throw new LuaSourceException(0, 0, "Unknown function call type: " + e.GetType().Name);
 
             Lua.lua_assert(f.k == expkind.VNONRELOC);
             base_ = f.u.s.info;  /* base_ register for call */
@@ -692,9 +699,13 @@ namespace SharpLua.Compiler
         {
             /* explist1 . expr { `,' expr } */
             //int n = 0;  /* at least one expression */
+            bool first = true;
             foreach (Expression e in exprs)
             {
-                Lua.luaK_exp2nextreg(currentFunc, v);
+                if (!first)
+                    Lua.luaK_exp2nextreg(currentFunc, v);
+                else
+                    first = false;
                 DoExpr(e, v);
                 //n++;
             }
@@ -707,6 +718,8 @@ namespace SharpLua.Compiler
             /* forbody . DO block */
             BlockCnt bl = new BlockCnt();
             FuncState fs = currentFunc;
+            bl.previous = fs.bl;
+            fs.bl = bl;
             int prep, endfor;
             adjustlocalvars(3);  /* control variables */
             prep = (isnum != 0) ? Lua.luaK_codeAsBx(fs, OpCode.OP_FORPREP, base_, Lua.NO_JUMP) : Lua.luaK_jump(fs);
@@ -716,7 +729,8 @@ namespace SharpLua.Compiler
             DoChunk(chunk);
             leaveblock(fs);  /* end of scope for declared variables */
             Lua.luaK_patchtohere(fs, prep);
-            Lua.luaK_patchtohere(fs, bl.previous.continuelist);	/* continue, if any, jumps to here */
+            if (bl.previous != null)
+                Lua.luaK_patchtohere(fs, bl.previous.continuelist);	/* continue, if any, jumps to here */
             endfor = (isnum != 0) ? Lua.luaK_codeAsBx(fs, OpCode.OP_FORLOOP, base_, Lua.NO_JUMP) :
                 Lua.luaK_codeABC(fs, OpCode.OP_TFORLOOP, base_, 0, nvars);
             Lua.luaK_fixline(fs, line);  /* pretend that `OP_FOR' starts the loop */

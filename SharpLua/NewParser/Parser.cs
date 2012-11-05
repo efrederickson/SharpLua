@@ -20,9 +20,18 @@ namespace SharpLua
             reader = tr;
         }
 
-        void error(string msg)
+        void error(string msg, int line = -1, int col = -1, Token tok = null)
         {
-            LuaSourceException ex = new LuaSourceException(reader.Peek().Line, reader.Peek().Column, msg + ", got '" + reader.Peek().Data + "'");
+            if (tok == null)
+                tok = reader.Peek();
+
+            if (line == -1)
+                line = tok.Line;
+            if (col == -1)
+                col = tok.Column;
+            msg += ", got '" + tok.Data + "'";
+
+            LuaSourceException ex = new LuaSourceException(line, col, msg);
             Errors.Add(ex);
             //Console.WriteLine(ex.GenerateMessage("sd"));
             if (ThrowParsingErrors)
@@ -210,10 +219,16 @@ namespace SharpLua
                 {
                     int pass = 0;
                     const int maxamount = 100;
+                    bool wasLastNumeric = false;
+                    bool first = true;
+                    bool hadComma = false;
                     do
                     {
-                        Expression ex = ParseExpr(scope);
+                        Token tok = reader.Peek();
+                        int col = tok.Column;
+                        int line = tok.Line;
 
+                        Expression ex = ParseExpr(scope);
                         //if (!reader.ConsumeSymbol(']'))
                         //error("']' expected");
 
@@ -223,11 +238,46 @@ namespace SharpLua
 
                         prim = i;
 
-                        if (reader.ConsumeSymbol(',') == false)
-                            break;
+                        if ((first || wasLastNumeric) && ex is NumberExpr && hadComma == false)
+                        {
+                            tok = reader.Peek();
+                            bool cma = reader.ConsumeSymbol(',');
+                            if (cma && hadComma == false && first == false)
+                                error("Unexpected ',' in matrice indexing", tok.Line, tok.Column, tok);
+                            //else if (cma == false && hadComma)
+                            //    ;
+                            hadComma = cma;
+                        }
+                        else
+                        {
+                            tok = reader.Peek();
+                            bool cma = reader.ConsumeSymbol(',');
+                            //if (cma == false)
+                            //    break;
+                            if (cma && hadComma == false)
+                                error("Unexpected ',' in matrice indexing", -1, -1, tok);
+                            else if (cma == false && ex is NumberExpr == false && wasLastNumeric && hadComma == false)
+                            {
+                                error("Expected numeric constant in matrice indexing", line, col, tok);
+                            }
+                            else if (cma == false && hadComma)
+                                error("Expected ','", -1, -1, tok);
+                            else if (cma == false)
+                            {
+                                break;
+                            }
+                            else
+                            {
+                                hadComma = true;
+                            }
+                            hadComma = cma;
+                        }
 
                         if (pass++ >= maxamount)
                             error("Maximum index depth reached");
+
+                        wasLastNumeric = ex is NumberExpr;
+                        first = false;
                     } while (!(reader.Peek().Data == "]"));
                     if (!reader.ConsumeSymbol(']'))
                         error("']' expected");

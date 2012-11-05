@@ -810,7 +810,8 @@ namespace SharpLua
         {
             CharPtr endptr;
             result = lua_str2number(s, out endptr);
-            if (endptr == s) return 0;  /* conversion failed */
+            if (endptr == s)
+                return 0;  /* conversion failed */
             if (endptr[0] == 'x' || endptr[0] == 'X')  /* maybe an hexadecimal constant? */
                 result = cast_num(strtoul(s, out endptr, 16));
 
@@ -819,9 +820,12 @@ namespace SharpLua
             if ((endptr[0] == 'b' || endptr[0] == 'B') && (endptr + 1 != '\0'))
                 result = cast_num(strtoul(endptr + 1, out endptr, 2));
 
-            if (endptr[0] == '\0') return 1;  /* most common case */
-            while (isspace(endptr[0])) endptr = endptr.next();
-            if (endptr[0] != '\0') return 0;  /* invalid trailing characters? */
+            if (endptr[0] == '\0')
+                return 1;  /* most common case */
+            while (isspace(endptr[0]))
+                endptr = endptr.next();
+            if (endptr[0] != '\0')
+                return 0;  /* invalid trailing characters? */
             return 1;
         }
 

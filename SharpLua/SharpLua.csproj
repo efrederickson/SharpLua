@@ -156,12 +156,9 @@
     <Compile Include="NewParser\Ast\Statement\UsingStatement.cs" />
     <Compile Include="NewParser\Ast\Statement\WhileStatement.cs" />
     <Compile Include="NewParser\Ast\Variable.cs" />
-    <Compile Include="NewParser\Compiler\Compiler.cs" />
     <Compile Include="NewParser\Compiler\Compiler2.cs" />
     <Compile Include="NewParser\Compiler\Compiler3.cs" />
-    <Compile Include="NewParser\Compiler\K2Reg.cs" />
     <Compile Include="NewParser\Compiler\Unescaper.cs" />
-    <Compile Include="NewParser\Compiler\Var2Reg.cs" />
     <Compile Include="NewParser\XmlDocumentation\DocumentationComment.cs" />
     <Compile Include="NewParser\XmlDocumentation\Documentation.cs" />
     <Compile Include="NewParser\XmlDocumentation\ExtractDocumentationComments.cs" />

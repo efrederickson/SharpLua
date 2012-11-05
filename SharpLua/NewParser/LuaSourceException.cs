@@ -19,7 +19,7 @@ namespace SharpLua
 
         public string GenerateMessage(string filename)
         {
-            return filename + ":" + Line + ":" + Column + ":" + Message;
+            return filename + ":" + Line + ":" + Column + ": " + Message;
         }
     }
 }

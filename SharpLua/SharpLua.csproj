@@ -159,6 +159,7 @@
     <Compile Include="NewParser\Compiler\Compiler2.cs" />
     <Compile Include="NewParser\Compiler\Compiler3.cs" />
     <Compile Include="NewParser\Compiler\Unescaper.cs" />
+    <Compile Include="NewParser\Refactoring\FindReferencesBeforeDefinition.cs" />
     <Compile Include="NewParser\XmlDocumentation\DocumentationComment.cs" />
     <Compile Include="NewParser\XmlDocumentation\Documentation.cs" />
     <Compile Include="NewParser\XmlDocumentation\ExtractDocumentationComments.cs" />

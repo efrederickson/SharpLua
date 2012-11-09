@@ -533,7 +533,7 @@ namespace SharpLua
         {
             foreach (string s in new string[] { "-", "not", "#"
 #if !VANILLA_LUA
-                , "!", "~"
+                , "!", "~", "+"
 #endif
             })
                 if (s == o)

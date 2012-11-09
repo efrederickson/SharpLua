@@ -96,6 +96,7 @@
         <Word>until</Word>
         <Word>while</Word>
         <Word>using</Word>
+    <Word>continue</Word>
 		</Keywords>
 		
 		<Keywords color="GotoKeywords">

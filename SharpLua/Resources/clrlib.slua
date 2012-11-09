@@ -87,7 +87,7 @@ end
 
 local clr = { }
 
-clr.ns = { "System", "System.IO", "System.Windows.Forms", "System.Collections.Generic", "System.Text" }
+clr.ns = { "System", "System.IO", "System.Windows.Forms", "System.Collections.Generic", "System.Text", "SharpLua", "System.Threading" }
 
 clr.load = luanet.load_assembly
 
@@ -156,3 +156,4 @@ setmetatable(clr, {
 
 _G.clr = clr
 System = luanet.namespace("System")
+new = clr.create

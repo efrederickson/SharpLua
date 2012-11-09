@@ -185,33 +185,33 @@ namespace SharpLua
             for (i = 0; i < argc; i++)
             {
                 Lua.CharPtr filename = (Lua.strcmp(argv[i], "-") == 0) ? null : argv[i];
-                try
-                {
-                    Lexer l = new Lexer();
-                    Parser p = new Parser(l.Lex(System.IO.File.ReadAllText(filename)));
-                    Ast.Chunk c = p.Parse();
+                //try
+                //{
+                //    Lexer l = new Lexer();
+                //    Parser p = new Parser(l.Lex(System.IO.File.ReadAllText(filename)));
+                //    Ast.Chunk c = p.Parse();
 
                     //Console.WriteLine(vars.Count);
-                    foreach (Tuple<Ast.Variable, Ast.Variable> v in Refactoring.FindMisspelledVariables(c))
-                    {
-                        Console.WriteLine("Warning: Possible misspelled variable: " + v.Item1.Name + " is close to " + v.Item2.Name);
-                        Console.Write("\t");
-                        if (v.Item1.References > v.Item2.References)
-                            Console.WriteLine(v.Item1.Name + " is the best match choice " + v.Item1.References + " references");
-                        else if (v.Item1.References < v.Item2.References)
-                            Console.WriteLine(v.Item2.Name + " is the best match choice " + v.Item2.References + " references");
-                        else
-                            Console.WriteLine("Both have the same amount of references (" + v.Item1.References + ")!");
-
-                    }
-                    foreach (Ast.Variable v in Refactoring.FindUnusedVariables(c))
-                        Console.WriteLine("Warning: Unused variable '" + v.Name + "'");
+                    //foreach (Tuple<Ast.Variable, Ast.Variable> v in Refactoring.FindMisspelledVariables(c))
+                    //{
+                    //    Console.WriteLine("Warning: Possible misspelled variable: " + v.Item1.Name + " is close to " + v.Item2.Name);
+                    //    Console.Write("\t");
+                    //    if (v.Item1.References > v.Item2.References)
+                    //        Console.WriteLine(v.Item1.Name + " is the best match with" + v.Item1.References + " references");
+                    //    else if (v.Item1.References < v.Item2.References)
+                    //        Console.WriteLine(v.Item2.Name + " is the best match with" + v.Item2.References + " references");
+                    //    else
+                    //        Console.WriteLine("Both have the same amount of references (" + v.Item1.References + ")!");
+                    //
+                    //}
+                    //foreach (Ast.Variable v in Refactoring.FindUnusedVariables(c))
+                    //    Console.WriteLine("Warning: Unused variable '" + v.Name + "'");
                     //Refactoring.FindReferencesBeforeDefinition(c);
-                }
-                catch (System.Exception ex)
-                {
-                    System.Diagnostics.Debug.WriteLine(ex.ToString());
-                }
+                //}
+                //catch (System.Exception ex)
+                //{
+                //    System.Diagnostics.Debug.WriteLine(ex.ToString());
+                //}
                 if (Lua.luaL_loadfile(L, filename) != 0)
                 {
                     fatal(Lua.lua_tostring(L, -1));

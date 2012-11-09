@@ -12,7 +12,7 @@ namespace SharpLuaAddIn
     /// <summary>
     /// Description of LuaLanguageBinding.
     /// </summary>
-    public class SharpLuaLanguageBinding : DefaultLanguageBinding
+    public class SharpLuaLanguageBinding : DefaultLanguageBinding, ILanguageBinding
     {
         public SharpLuaLanguageBinding()
         {

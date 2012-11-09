@@ -94,14 +94,17 @@ namespace SharpLua.Visitors
                 {
                     sb.Append(fromToken(tok[index++], s));
                     if (i2 != f.Arguments.Count - 1 || f.IsVararg)
-                        sb.Append(fromToken(tok[index++], s));
+                        sb.Append(fromToken(tok[index++], s)); // ','
                 }
                 if (f.IsVararg)
                     sb.Append(fromToken(tok[index++], s));
                 sb.Append(fromToken(tok[index++], s)); // ')'
 
                 sb.Append(DoChunk(f.Body));
-                sb.Append(fromToken(tok[tok.Count - 1], s)); // <end>
+
+                //sb.Append(fromToken(tok[tok.Count - 1], s)); // <end>
+                string str = fromToken(tok[tok.Count - 1], s);
+                sb.Append(str);
 
                 ret = sb.ToString();
             }
@@ -367,7 +370,7 @@ namespace SharpLua.Visitors
                     if (f.IsLocal)
                         sb.Append(fromToken(s.ScannedTokens[i++], s.Scope)); // 'local'
                     sb.Append(fromToken(s.ScannedTokens[i++], s.Scope)); // 'function'
-                    sb.Append(fromToken(s.ScannedTokens[i++], s.Scope)); // <name>
+                    sb.Append(DoExpr(f.Name, s.ScannedTokens, ref i, s.Scope));
                     sb.Append(fromToken(s.ScannedTokens[i++], s.Scope)); // '('
                     for (int i2 = 0; i2 < f.Arguments.Count; i2++)
                     {

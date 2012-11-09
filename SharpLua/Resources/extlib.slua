@@ -130,6 +130,12 @@ function dostring(s)
     return loadstring(s)()
 end
 
+function table.copy(new, old)
+	for k, v in pairs(old) do
+		new[k] = v
+	end
+end
+
 -- Courtesy of lua-users.org and metalua
 
 function string.split(str, pat)

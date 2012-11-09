@@ -78,13 +78,22 @@ namespace SharpLuaAddIn
                 Parser p = new Parser(l.Lex(editor.Document.Text));
                 SharpLua.Ast.Chunk c = p.Parse();
                 SharpLua.Visitors.Beautifier b = new SharpLua.Visitors.Beautifier();
+                //SharpLua.Visitors.ExactReconstruction b = new SharpLua.Visitors.ExactReconstruction();
                 b.options.Tab = editor.Options.IndentationString;
                 b.options.TabsToSpaces = editor.Options.ConvertTabsToSpaces;
+                int off = editor.Caret.Offset;
+                //editor.Document.Text = b.Reconstruct(c);
                 editor.Document.Text = b.Beautify(c);
+                editor.Caret.Offset = off >= editor.Document.TextLength ? 0 : off;
+            }
+            catch (LuaSourceException ex)
+            {
+                LoggingService.Warn("Error parsing document: " + System.IO.Path.GetFileName(ex.GenerateMessage(editor.FileName)));
             }
             catch (System.Exception ex)
             {
-                LoggingService.Error("Error parsing document:", ex);
+                LoggingService.Error("Error formatting document:", ex);
+                System.Windows.Forms.MessageBox.Show("Error formatting Lua script: " + ex.ToString() + "\r\n\r\nPlease report this to the SharpLua GitHub page so it can get fixed");
                 // probably parse exception
             }
         }
@@ -94,6 +103,10 @@ namespace SharpLuaAddIn
 
         bool IsInsideStringOrComment(ITextEditor textArea, IDocumentLine curLine, int cursorOffset)
         {
+            // quick comment scan:
+            if (curLine.Text.Contains("--"))
+                return true;
+
             // scan cur line if it is inside a string or single line comment (--)
             bool insideString = false;
             char stringstart = ' ';

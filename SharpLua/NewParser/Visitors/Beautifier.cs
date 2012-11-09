@@ -46,6 +46,7 @@ namespace SharpLua.Visitors
             StringBuilder sb = new StringBuilder();
             int cnt = 0;
             bool shortComment = false;
+            int i = 0;
             foreach (Token t2 in t.Leading)
             {
                 if (t2.Type == TokenType.LongComment
@@ -54,16 +55,17 @@ namespace SharpLua.Visitors
                 {
                     sb.Append(t2.Data);
                     cnt++;
-                    if (t2.Type == TokenType.ShortComment || t2.Type == TokenType.DocumentationComment)
+                    if (t2.Type == TokenType.ShortComment || t2.Type == TokenType.DocumentationComment || (t.Leading.Count > i && (t.Leading[i + 1].Type == TokenType.WhitespaceR || t.Leading[i + 1].Type == TokenType.WhitespaceN)))
                     {
                         shortComment = true;
                         sb.Append(options.EOL);
                     }
                 }
+                i++;
             }
             if (cnt > 0)
             {
-                if (shortComment)
+                if (shortComment && (sb[sb.Length - 1] != '\r' || sb[sb.Length - 1] != '\n'))
                 {
                     sb.Append(options.EOL);
                     sb.Append(writeIndent());
@@ -146,7 +148,8 @@ namespace SharpLua.Visitors
                 }
 
                 //sb.Append(DoChunk(f.Body));
-                sb.Append(fromToken(tok[tok.Count - 1], s)); // <end>
+                // Ugh.
+                sb.Append(fromToken(tok[index++], s)); // <end>
 
                 ret = sb.ToString();
             }
@@ -318,7 +321,7 @@ namespace SharpLua.Visitors
             throw new NotImplementedException(e.GetType().Name + " is not implemented");
         }
 
-        internal string DoStatement(Statement s)
+        internal string DoStatement(Statement s, ref int i)
         {
             // If the statement contains a body, we cant just fromTokens it, as it's body might not be 
             // fully tokenized input. Therefore, we run DoChunk on Body's
@@ -329,32 +332,31 @@ namespace SharpLua.Visitors
                 {
                     AssignmentStatement a = s as AssignmentStatement;
                     StringBuilder sb = new StringBuilder();
-                    int p = 0;
                     if (a.IsLocal)
                     {
-                        sb.Append(fromToken(a.ScannedTokens[p++], a.Scope));
+                        sb.Append(fromToken(a.ScannedTokens[i++], a.Scope));
                         sb.Append(" ");
                     }
-                    for (int i = 0; i < a.Lhs.Count; i++)
+                    for (int i2 = 0; i2 < a.Lhs.Count; i2++)
                     {
-                        sb.Append(DoExpr(a.Lhs[i], s.ScannedTokens, ref p, s.Scope));
-                        if (i != a.Lhs.Count - 1)
+                        sb.Append(DoExpr(a.Lhs[i2], s.ScannedTokens, ref i, s.Scope));
+                        if (i2 != a.Lhs.Count - 1)
                         {
-                            sb.Append(fromToken(a.ScannedTokens[p++], a.Scope));
+                            sb.Append(fromToken(a.ScannedTokens[i++], a.Scope));
                             sb.Append(" ");
                         }
                     }
                     if (a.Rhs.Count > 0)
                     {
                         sb.Append(" ");
-                        sb.Append(fromToken(a.ScannedTokens[p++], a.Scope));
+                        sb.Append(fromToken(a.ScannedTokens[i++], a.Scope));
                         sb.Append(" ");
-                        for (int i = 0; i < a.Rhs.Count; i++)
+                        for (int i2 = 0; i2 < a.Rhs.Count; i2++)
                         {
-                            sb.Append(DoExpr(a.Rhs[i], s.ScannedTokens, ref p, s.Scope));
-                            if (i != a.Rhs.Count - 1)
+                            sb.Append(DoExpr(a.Rhs[i2], s.ScannedTokens, ref i, s.Scope));
+                            if (i2 != a.Rhs.Count - 1)
                             {
-                                sb.Append(fromToken(a.ScannedTokens[p++], s.Scope));
+                                sb.Append(fromToken(a.ScannedTokens[i++], s.Scope));
                                 sb.Append(" ");
                             }
                         }
@@ -367,19 +369,18 @@ namespace SharpLua.Visitors
                     AugmentedAssignmentStatement a = s as AugmentedAssignmentStatement;
                     StringBuilder sb = new StringBuilder();
                     //sb.Append(DoExpr(a.Lhs[0]));
-                    int p = 0;
                     if (a.IsLocal)
                     {
-                        sb.Append(fromToken(a.ScannedTokens[p++], a.Scope));
+                        sb.Append(fromToken(a.ScannedTokens[i++], a.Scope));
                         sb.Append(" ");
                     }
                     Expression assignment = ((BinOpExpr)a.Rhs[0]).Rhs;
                     Expression tmp = ((BinOpExpr)a.Rhs[0]).Lhs;
-                    sb.Append(DoExpr(tmp, s.ScannedTokens, ref p, s.Scope));
+                    sb.Append(DoExpr(tmp, s.ScannedTokens, ref i, s.Scope));
                     sb.Append(" ");
-                    sb.Append(fromToken(s.ScannedTokens[p++], s.Scope));
+                    sb.Append(fromToken(s.ScannedTokens[i++], s.Scope));
                     sb.Append(" ");
-                    sb.Append(DoExpr(assignment, s.ScannedTokens, ref p, s.Scope));
+                    sb.Append(DoExpr(assignment, s.ScannedTokens, ref i, s.Scope));
                     return sb.ToString();
                 }
                 else if (s is BreakStatement)
@@ -394,8 +395,7 @@ namespace SharpLua.Visitors
                 else if (s is CallStatement)
                 {
                     // Also incredibly simple...
-                    int p = 0;
-                    return DoExpr(((CallStatement)s).Expression, s.ScannedTokens, ref p, s.Scope);
+                    return DoExpr(((CallStatement)s).Expression, s.ScannedTokens, ref i, s.Scope);
                 }
                 else if (s is DoStatement)
                 {
@@ -404,7 +404,7 @@ namespace SharpLua.Visitors
                     sb.Append(fromToken(d.ScannedTokens[0], s.Scope)); // 'do'
                     sb.Append(options.EOL);
                     indent++;
-                    sb.Append(DoChunk(d.Body));
+                    sb.Append(DoChunk(d.Body, ref i));
                     sb.Append(nldedent());
                     sb.Append(fromToken(d.ScannedTokens[d.ScannedTokens.Count - 1], s.Scope)); // end
                     return sb.ToString();
@@ -413,7 +413,6 @@ namespace SharpLua.Visitors
                 {
                     GenericForStatement g = s as GenericForStatement;
                     StringBuilder sb = new StringBuilder();
-                    int i = 0;
                     sb.Append(fromToken(g.ScannedTokens[i++], s.Scope)); // 'for'
                     sb.Append(" ");
                     for (int x = 0; x < g.VariableList.Count; x++)
@@ -430,7 +429,8 @@ namespace SharpLua.Visitors
                     sb.Append(" ");
                     for (int x = 0; x < g.Generators.Count; x++)
                     {
-                        sb.Append(fromToken(s.ScannedTokens[i++], s.Scope));
+                        //sb.Append(fromToken(s.ScannedTokens[i++], s.Scope));
+                        DoExpr(g.Generators[x], g.ScannedTokens, ref i, s.Scope);
                         if (x != g.VariableList.Count - 1)
                         {
                             sb.Append(fromToken(s.ScannedTokens[i++], s.Scope)); // ','
@@ -450,26 +450,26 @@ namespace SharpLua.Visitors
                 {
                     NumericForStatement n = s as NumericForStatement;
                     StringBuilder sb = new StringBuilder();
-                    int i = 0;
                     sb.Append(fromToken(n.ScannedTokens[i++], s.Scope)); // 'for'
                     sb.Append(" ");
                     sb.Append(fromToken(n.ScannedTokens[i++], s.Scope)); // <var>
                     sb.Append(" ");
                     sb.Append(fromToken(n.ScannedTokens[i++], s.Scope)); // '='
                     sb.Append(" ");
-                    sb.Append(fromToken(n.ScannedTokens[i++], s.Scope)); // <start>
-                    sb.Append(" ");
+                    sb.Append(DoExpr(n.Start, n.ScannedTokens, ref i, s.Scope)); // <start>
+                    //sb.Append(" ");
                     sb.Append(fromToken(n.ScannedTokens[i++], s.Scope)); // ','
                     sb.Append(" ");
-                    sb.Append(fromToken(n.ScannedTokens[i++], s.Scope)); // <end>
-                    sb.Append(" ");
+                    sb.Append(DoExpr(n.End, n.ScannedTokens, ref i, s.Scope)); // <end>
                     if (n.Step != null)
                     {
                         sb.Append(fromToken(n.ScannedTokens[i++], s.Scope)); // ','
                         sb.Append(" ");
-                        sb.Append(fromToken(n.ScannedTokens[i++], s.Scope)); // <step>
+                        sb.Append(DoExpr(n.Step, n.ScannedTokens, ref i, s.Scope)); // <step>
                         sb.Append(" ");
                     }
+                    else
+                        sb.Append(" ");
                     sb.Append(fromToken(n.ScannedTokens[i++], s.Scope)); // 'do'
                     sb.Append(options.EOL);
                     indent++;
@@ -483,29 +483,35 @@ namespace SharpLua.Visitors
                     FunctionStatement f = s as FunctionStatement;
                     StringBuilder sb = new StringBuilder();
 
-                    int i = 0;
                     sb.Append(fromToken(s.ScannedTokens[i++], s.Scope)); // 'function' 
                     sb.Append(" ");
-                    sb.Append(fromToken(s.ScannedTokens[i++], s.Scope)); // <name>
+                    sb.Append(DoExpr(f.Name, s.ScannedTokens, ref i, s.Scope));
                     sb.Append(fromToken(s.ScannedTokens[i++], s.Scope)); // '('
                     for (int i2 = 0; i2 < f.Arguments.Count; i2++)
                     {
                         sb.Append(fromToken(s.ScannedTokens[i++], s.Scope));
-                        if (i2 != f.Arguments.Count - 1 || f.IsVararg)
+                        if (i2 != f.Arguments.Count - 1)// || f.IsVararg)
                         {
                             sb.Append(fromToken(s.ScannedTokens[i++], s.Scope));
                             sb.Append(" ");
                         }
                     }
                     if (f.IsVararg)
+                    {
                         sb.Append(fromToken(s.ScannedTokens[i++], s.Scope));
+                        sb.Append(" ");
+                        sb.Append(fromToken(s.ScannedTokens[i++], s.Scope));
+                    }
                     sb.Append(fromToken(s.ScannedTokens[i++], s.Scope)); // ')'
                     sb.Append(options.EOL);
                     indent++;
                     sb.Append(DoChunk(f.Body));
                     indent--;
+                    sb.Append(options.EOL);
                     sb.Append(writeIndent());
                     sb.Append(fromToken(s.ScannedTokens[s.ScannedTokens.Count - 1], s.Scope)); // <end>
+
+                    sb.Append(options.EOL);
 
                     return sb.ToString();
                 }
@@ -517,10 +523,10 @@ namespace SharpLua.Visitors
                 }
                 else if (s is IfStmt)
                 {
-                    IfStmt i = s as IfStmt;
+                    IfStmt ifs = s as IfStmt;
                     StringBuilder sb = new StringBuilder();
 
-                    foreach (SubIfStmt clause in i.Clauses)
+                    foreach (SubIfStmt clause in ifs.Clauses)
                     {
                         int i3 = 0;
                         if (clause is ElseIfStmt)
@@ -563,15 +569,8 @@ namespace SharpLua.Visitors
                     sb.Append(fromToken(r.ScannedTokens[0], s.Scope));
                     sb.Append(options.EOL);
                     indent++;
-                    sb.Append(DoChunk(r.Body));
+                    sb.Append(DoChunk(r.Body, ref i));
                     sb.Append(nldedent());
-                    int i = -1;
-                    for (int k = r.ScannedTokens.Count - 1; k > 0; k--)
-                        if (r.ScannedTokens[k].Type == TokenType.Keyword && r.ScannedTokens[k].Data == "until")
-                        {
-                            i = k;
-                            break;
-                        }
                     sb.Append(fromToken(r.ScannedTokens[i++], r.Scope));
                     sb.Append(" ");
                     sb.Append(DoExpr(r.Condition, r.ScannedTokens, ref i, r.Scope));
@@ -581,7 +580,6 @@ namespace SharpLua.Visitors
                 {
                     ReturnStatement rs = s as ReturnStatement;
                     StringBuilder sb = new StringBuilder();
-                    int i = 0;
                     sb.Append(fromToken(s.ScannedTokens[i++], s.Scope)); // 'return'
                     sb.Append(" ");
                     for (int x = 0; x < rs.Arguments.Count; x++)
@@ -599,7 +597,6 @@ namespace SharpLua.Visitors
                 {
                     UsingStatement u = s as UsingStatement;
                     StringBuilder sb = new StringBuilder();
-                    int i = 0;
                     sb.Append(fromToken(s.ScannedTokens[i++], s.Scope)); // 'using'
                     sb.Append(" ");
 
@@ -641,7 +638,6 @@ namespace SharpLua.Visitors
                 {
                     WhileStatement w = s as WhileStatement;
                     StringBuilder sb = new StringBuilder();
-                    int i = 0;
                     sb.Append(fromToken(s.ScannedTokens[i++], s.Scope)); // 'while'
                     sb.Append(" ");
                     sb.Append(DoExpr(w.Condition, w.ScannedTokens, ref i, s.Scope));
@@ -661,16 +657,31 @@ namespace SharpLua.Visitors
             throw new NotImplementedException(s.GetType().Name + " is not implemented");
         }
 
+        internal string DoStatement(Statement s)
+        {
+            int x = 0;
+            string str = DoStatement(s, ref x);
+            return str;
+        }
+
         internal string DoChunk(List<Statement> statements)
         {
+            int i = 0;
+            return DoChunk(statements, ref i);
+        }
+
+        internal string DoChunk(List<Statement> stmts, ref int index)
+        {
             StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < statements.Count; i++)
+            for (int i = 0; i < stmts.Count; i++)
             {
-                Statement s = statements[i];
+                Statement s = stmts[i];
                 sb.Append(writeIndent());
+                int newIndex = 0;
+                //string ss = DoStatement(s, ref index);
                 string ss = DoStatement(s);
                 sb.Append(ss);
-                if (ss.EndsWith(options.EOL) == false && i != statements.Count - 1)
+                if (ss.EndsWith(options.EOL) == false && i != stmts.Count - 1)
                     sb.Append(options.EOL);
 
                 if (s.HasSemicolon)

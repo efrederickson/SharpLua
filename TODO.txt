@@ -18,7 +18,7 @@ Parser/Lexer
 
 Modify Parser to handle [,] differently, so it can be ExactReconstructed
 
-X Modify exact reconstructor to check Expressions before reconstructing
+X Modify exact reconstructor to check comments/ws before reconstructing
      ! then work exact reconstructor comment/ws logic into the other reconstructors
         ! - not in the LuaCompat
 
@@ -62,6 +62,7 @@ Supported Compilers/Debuggers
      - LuLu vm interpreter
      - LBI interpreter
      - Kahlua
+     - ModMaker.Lua
      - Other random Lua compilers/interpreters
  
  ? bundle MetaLua with SDAddIn

@@ -14,6 +14,7 @@ namespace SharpLua.Visitors
     // - using                        -> do/end
     // - '!' unary operator           -> "not"
     // - '~ ' unary operator          -> bit.bnot(<expr>)
+    // - '+' unary operator           -> math.abs(<expr>)
     // - <bit operators>              -> bit functions
     // - '!='                         -> ~=
     // - Underscores in numbers       -> remove them
@@ -243,15 +244,19 @@ namespace SharpLua.Visitors
                 if (op == "!")
                     op = "not";
                 string s = op;
-                if (s != "~")
+                if (s == "~")
+                {
+                    ret = "bit.bnot(" + DoExpr((e as UnOpExpr).Rhs) + ")";
+                }
+                else if (s == "+")
+                {
+                    ret = "math.abs(" + DoExpr((e as UnOpExpr).Rhs) + ")";
+                }
+                else
                 {
                     if (s.Length != 1)
                         s += " ";
                     ret = s + DoExpr((e as UnOpExpr).Rhs);
-                }
-                else
-                {
-                    ret = "bit.bnot(" + DoExpr((e as UnOpExpr).Rhs) + ")";
                 }
             }
             else if (e is TableConstructorValueExpr)

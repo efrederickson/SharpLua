@@ -501,8 +501,8 @@ namespace SharpLua
             }
             return 1;
         }
-        
-        public static int luaB_rawlen (LuaState L) 
+
+        public static int luaB_rawlen(LuaState L)
         {
             int t = lua_type(L, 1);
             luaL_argcheck(L, t == LUA_TTABLE || t == LUA_TSTRING, 1,
@@ -555,7 +555,8 @@ namespace SharpLua
                     wait *= 1000;
             }
             System.Threading.Thread.Sleep(wait);
-            return 0;
+            lua_pushinteger(L, wait);
+            return 1;
         }
 
         private readonly static luaL_Reg[] base_funcs = {

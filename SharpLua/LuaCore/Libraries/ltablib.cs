@@ -129,6 +129,7 @@ namespace SharpLua
 
         private static int tremove(LuaState L)
         {
+
             int e = aux_getn(L, 1);
             int pos = luaL_optint(L, 2, e);
             if (!(1 <= pos && pos <= e))  /* position is outside bounds? */

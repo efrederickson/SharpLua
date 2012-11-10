@@ -948,7 +948,7 @@ namespace SharpLua
                 List<Expression> lhs = new List<Expression> { ParseExpr(us.Scope) };
                 while (reader.ConsumeSymbol(','))
                 {
-                    lhs.Add(ParseSuffixedExpr(us.Scope));
+                    lhs.Add(ParseSuffixedExpr(us.Scope, true));
                 }
 
                 // equals
@@ -966,6 +966,7 @@ namespace SharpLua
                 AssignmentStatement a = new AssignmentStatement();
                 a.Lhs = lhs;
                 a.Rhs = rhs;
+                a.IsLocal = true;
 
                 if (!reader.ConsumeKeyword("do"))
                     error("'do' expected");

@@ -11,6 +11,8 @@ X set "..." to command line args in _G
 X set              - set (table, key, value)
 X table.removeitem - removes an item from a table
 
+- Implicit 'self' arg
+
 Parser/Lexer
      X option to continue parsing after a parse error (add to error list)
      - allow embedded LASM (?)

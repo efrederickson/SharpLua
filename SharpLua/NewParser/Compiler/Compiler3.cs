@@ -99,16 +99,9 @@ namespace SharpLua.Compiler
             }
             else if (e is InlineFunctionExpression) // |<args>| -> <exprs>
             {
-                // I
-                // AM
-                // HOGGING
-                // SCREEN
-                // SPACE
-                // SO
-                // THAT
-                // I 
-                // GET
-                // IMPLEMENTED
+                InlineFunctionExpression ife = e as InlineFunctionExpression;
+                body(new AnonymousFunctionExpr() { Arguments = ife.Arguments, IsVararg = ife.IsVararg, ParenCount = ife.ParenCount, Body = new List<Statement>() { new ReturnStatement() { Arguments = ife.Expressions } } }, v, 0, 0);
+                return;
             }
             else if (e is MemberExpr)
             {
@@ -144,11 +137,27 @@ namespace SharpLua.Compiler
                 double result;
                 Lua.luaO_str2d(n.Value, out result);
                 v.u.nval = result;
+                //Lua.luaK_numberK(currentFunc, result);
                 return;
             }
             else if (e is StringExpr)
             {
-                string actual = Unescaper.Unescape((e as StringExpr).Value);
+                StringExpr se = e as StringExpr;
+                string actual;
+                if (se.StringType == TokenType.LongString)
+                {
+                    int numEquals = 0;
+                    int ptr = 1; // skip first '['
+                    while (se.Value[ptr] == '=')
+                    {
+                        numEquals++;
+                        ptr++;
+                    }
+                    ptr++; // second '['
+                    actual = se.Value.Substring(ptr, se.Value.Length - ptr - ptr);
+                }
+                else
+                    actual = Unescaper.Unescape((e as StringExpr).Value);
                 init_exp(v, expkind.VK, Lua.luaK_stringK(currentFunc, new TString(new CharPtr(actual))));
                 return;
             }
@@ -267,7 +276,7 @@ namespace SharpLua.Compiler
             }
             else if (s is DoStatement)
             {
-                DoChunk(((DoStatement)s).Body);
+                block(((DoStatement)s).Body);
                 return;
             }
             else if (s is GenericForStatement)
@@ -430,7 +439,13 @@ namespace SharpLua.Compiler
                 return;
             }
             else if (s is UsingStatement)
-                ;
+            {
+                UsingStatement u = s as UsingStatement;
+                List<Statement> body = u.Body;
+                body.Insert(0, u.Vars);
+                block(body);
+                return;
+            }
             else if (s is WhileStatement)
             {
                 int whileinit;
@@ -475,6 +490,15 @@ namespace SharpLua.Compiler
             close_func(fs);
 
             return fs.f;
+        }
+
+        void block(List<Statement> s)
+        {
+            BlockCnt bl = new BlockCnt();
+            enterblock(currentFunc, bl, 0);
+            DoChunk(s);
+            Lua.lua_assert(bl.breaklist == Lua.NO_JUMP);
+            leaveblock(currentFunc);
         }
 
         void funcargs(CallExpr e, expdesc f)
@@ -878,6 +902,7 @@ namespace SharpLua.Compiler
             parlist(func);
             DoChunk(func.Body);
             close_func(new_fs);
+            new_fs.f.lastlinedefined = line;
             pushclosure(new_fs, e);
         }
 

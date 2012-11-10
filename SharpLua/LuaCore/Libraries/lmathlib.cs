@@ -201,6 +201,21 @@ namespace SharpLua
             return 1;
         }
 
+        static int factorial(int n)
+        {
+            if (n <= 1)
+                return n;
+            else
+                return n * factorial(n - 1);
+        }
+
+        private static int math_factorial(LuaState L)
+        {
+            int num = luaL_checkint(L, 1);
+            lua_pushnumber(L, factorial(num));
+            return 1;
+        }
+
         private static Random rng = new Random();
 
         private static int math_random(LuaState L)
@@ -274,6 +289,7 @@ namespace SharpLua
 		  new luaL_Reg("sqrt",  math_sqrt),
 		  new luaL_Reg("tanh",   math_tanh),
 		  new luaL_Reg("tan",   math_tan),
+          new luaL_Reg("factorial", math_factorial),
 		  new luaL_Reg(null, null)
 		};
 

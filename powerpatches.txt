@@ -1,6 +1,0 @@
-http://lua-users.org/files/wiki_insecure/power_patches/5.2/jh-lua-bin-5.2.1.patch http://hoelz.ro/projects/lua-power-patches -> allow _ in numbers
-
-http://math2.org/david/lua/tablescope.patch
-http://lua-users.org/wiki/TableScope -> Table scope
-
-http://lua-users.org/wiki/LuaPowerPatches

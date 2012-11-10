@@ -115,7 +115,11 @@ namespace SharpLua.Interactive
                         {
                             object[] v = LuaRuntime.Run(line);
                             if (v == null || v.Length == 0)
+#if DEBUG
                                 Console.WriteLine("=> [no returned value]");
+#else
+                                ;
+#endif
                             else
                             {
                                 Console.Write("=> ");

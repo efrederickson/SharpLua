@@ -8,7 +8,7 @@ mkdir net40
 cd net40
 
 :: copy binaries
-copy /Y ..\..\..\..\SharpLua\bin\debug\SharpLua.dll .
+copy /Y ..\..\..\..\bin\SharpLua.dll .
 
 :: create NuGet package
 cd ..\..

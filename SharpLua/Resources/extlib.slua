@@ -52,7 +52,9 @@ function table.pack(...)
 end
 
 function table.removeitem(t, i)
+    local ret = t[i]
     t[i] = nil
+    return ret
 end
 
 function set(t, k, v)

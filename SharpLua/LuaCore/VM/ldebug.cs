@@ -23,7 +23,7 @@ namespace SharpLua
             Debug.Assert(pc.codes == p.code);
             return pc.pc - 1;
         }
-        public static int getline(Proto f, int pc) { return (f.lineinfo != null) ? f.lineinfo[pc] : 0; }
+        public static int getline(Proto f, int pc) { return (f.lineinfo != null && f.lineinfo.Length - 1 >= pc) ? f.lineinfo[pc] : 0; }
         public static void resethookcount(LuaState L) { L.hookcount = L.basehookcount; }
 
 

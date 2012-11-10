@@ -185,13 +185,21 @@ namespace SharpLua
                 f(L, ud);
             }
 #if CATCH_EXCEPTIONS
-            catch (Exception ex)
+            catch (LuaException ex)
             {
                 Debug.WriteLine("Caught exception: " + ex.ToString());
 
                 if (lj.status == 0)
                     lj.status = -1;
             }
+            /*catch (Exception ex)
+            {
+                Debug.WriteLine("Caught exception: " + ex.ToString());
+
+                throw ex;
+                //if (lj.status == 0)
+                //    lj.status = -1;
+            }*/
 #endif
             L.errorJmp = lj.previous;  /* restore old error handler */
             return lj.status;

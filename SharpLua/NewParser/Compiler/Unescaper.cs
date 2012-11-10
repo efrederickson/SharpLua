@@ -42,6 +42,8 @@ namespace SharpLua.Compiler
                             int got = 0;
                             while (char.IsDigit(c))
                             {
+                                if (s.Length <= i + 1)
+                                    break;
                                 num += c;
                                 c = s[++i];
                                 got++;

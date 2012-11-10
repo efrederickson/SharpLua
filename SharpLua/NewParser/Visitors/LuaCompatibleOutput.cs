@@ -270,6 +270,7 @@ namespace SharpLua.Visitors
                 TableConstructorNamedFunctionExpr fs = e as TableConstructorNamedFunctionExpr;
                 AnonymousFunctionExpr a = new AnonymousFunctionExpr();
                 a.Arguments = fs.Value.Arguments;
+                a.Arguments.Insert(0, new Variable() { Name = "self", IsGlobal = false, References = -1 });
                 a.Body = fs.Value.Body;
                 a.IsVararg = fs.Value.IsVararg;
                 ret = DoExpr(fs.Value.Name) + " = " + DoExpr(a);

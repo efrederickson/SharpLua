@@ -35,10 +35,8 @@ namespace SharpLua
             return ((ttype(o1) == ttype(o2)) && (luaV_equalval(L, o1, o2) != 0)) ? 1 : 0;
         }
 
-
         /* limit for table tag-method chains (to avoid loops) */
         public const int MAXTAGLOOP = 100;
-
 
         public static TValue luaV_tonumber(TValue obj, TValue n)
         {
@@ -53,7 +51,6 @@ namespace SharpLua
                 return null;
         }
 
-
         public static int luaV_tostring(LuaState L, StkId obj)
         {
             if (!ttisnumber(obj))
@@ -66,7 +63,6 @@ namespace SharpLua
                 return 1;
             }
         }
-
 
         private static void traceexec(LuaState L, InstructionPtr pc)
         {
@@ -136,6 +132,10 @@ namespace SharpLua
                     }
                     else // __GETINDEX meta function
                     {
+                        // This makes __getindex the get all end all of table functions.
+                        // If someone wanted to lock the key "a", __getindex could return nil 
+                        // for a key of "a", ending all searches there.
+                        // Otherwise, return rawget(t, k, v) ...
                         goto callfunc;
                     }
 
@@ -155,7 +155,7 @@ namespace SharpLua
                         setobj2s(L, val, res);
                         return;
                     }
-                    */
+                     */
                     /* else will try the tag method */
                 }
                 else if (ttisnil(tm = luaT_gettmbyobj(L, t, TMS.TM_INDEX)))
@@ -175,6 +175,7 @@ namespace SharpLua
 
         public static void luaV_settable(LuaState L, TValue t, TValue key, StkId val)
         {
+            Table h = null;
             int loop;
             TValue temp = null;
             for (loop = 0; loop < MAXTAGLOOP; loop++)
@@ -182,7 +183,7 @@ namespace SharpLua
                 TValue tm;
                 if (ttistable(t))
                 {  /* `t' is a table? */
-                    Table h = hvalue(t);
+                    h = hvalue(t);
                     TValue oldval = luaH_set(L, h, key); /* do a primitive set */
                     if (!ttisnil(oldval)) /* old is not nil? */
                     {
@@ -191,6 +192,7 @@ namespace SharpLua
                             setobj2t(L, oldval, val); /* write barrier */
                             h.flags = 0;
                             luaC_barriert(L, h, val);
+                            CallMTChanged(L, h, t, key, val);
                             return;
                         }
                         else
@@ -207,6 +209,7 @@ namespace SharpLua
                             h.flags = 0;
                             luaC_barriert(L, h, val);
                             /* write barrier */
+                            CallMTChanged(L, h, t, key, val);
                             return;
                         }
                         else
@@ -224,6 +227,7 @@ namespace SharpLua
                 if (ttisfunction(tm))
                 {
                     callTM(L, tm, t, key, val);
+                    CallMTChanged(L, h, t, key, val);
                     return;
                 }
                 //t = tm;
@@ -231,9 +235,85 @@ namespace SharpLua
                 // TODO: potential issue here, it occured all of one time.
                 setobj(L, temp, tm);  /* avoid pointing inside table (may rehash) */
                 t = temp;
-
             }
             luaG_runerror(L, "loop in settable");
+        }
+
+        private static void CallMTChanged(LuaState L, Table table, TValue a, TValue b, TValue c)
+        {
+            // TODO: Nested table's parents aren't updated when a subtable is changed...
+
+            if (table != null)
+            {
+                TValue tm = fasttm(L, table.metatable, TMS.TM_CHANGED);
+                if (tm != null)
+                {
+                    callTM(L, tm, a, b, c);
+                }
+            }
+        }
+
+        static int gettablescope(LuaState L, TValue ra, TValue rb,
+                   InstructionPtr pc, LClosure cl, StkId pbase)
+        {
+            /* Look for closest containing "o {....}" where o
+               has a __scope metamethod. */
+            StkId base_ = pbase;
+            InstructionPtr pi;
+            TValue tm = null;
+            int previousIndex = pc.pc;
+            for (pi = new InstructionPtr(pc.codes, pc.pc); ; pi.pc++)
+            {
+                /* Search forward for end of any "o {....}".
+                   Note: "o {....}" is terminated by
+                     (NEWTABLE,CALL) for empty table
+                     (SETLIST,CALL)  for table with array part or "..."
+                     (SETTABLE,CALL) for table with hash part only
+                 */
+                if (pi.pc >= /*cl.p.code + */cl.p.sizecode)// || pi.pc >= pi.codes.Length)
+                    break;
+                if (GET_OPCODE(pi.codes[pi.pc]) == OpCode.OP_CALL &&
+                    (GET_OPCODE(pi.codes[pi.pc - 1]) == OpCode.OP_SETLIST ||
+                     GET_OPCODE(pi.codes[pi.pc - 1]) == OpCode.OP_SETTABLE))
+                {
+                    /* Determine whether this "o {....}" contains the GETGLOBAL by
+                       searching for start of this "o {....}", which is implied
+                       by condition RA(NEWTABLE) == RA(SETLIST or SETTABLE).
+                     */
+                    InstructionPtr pi2;
+                    bool is_containing = false;
+                    for (pi2 = new InstructionPtr(pi.codes, pi.pc); ; pi2.pc--)
+                    {
+                        lua_assert(pi2.pc >= /*cl.p.code*/cl.p.sizecode);
+                        if (GET_OPCODE(pi2.codes[pi2.pc]) == OpCode.OP_NEWTABLE &&
+                            RA(L, base_, pi2.codes[pi2.pc]) == RA(L, base_, pi.codes[pi.pc - 1]))
+                        {
+                            is_containing = (pi2 < pc);
+                            break;
+                        }
+                    }
+                    /* Search complete if o has __scope metamethod (tm). */
+                    if (is_containing &&
+                        !ttisnil(tm = luaT_gettmbyobj(L, RA(L, base_, pi.codes[pi.pc]), TMS.TM_SCOPE)))
+                    {
+                        break;
+                    }
+                }
+                //Console.WriteLine(pi.pc);
+            } /* pi */
+
+            pc.pc = previousIndex;
+            /* Lookup key first in __scope (if available). Found if non-nil. */
+            if (tm != null && !ttisnil(tm))
+            {
+                luaV_gettable(L, tm, rb, ra);
+                if (!ttisnil(ra))
+                {
+                    //Console.WriteLine("Found __scope object!");
+                    return 1;
+                }
+            }
+            return 0;
         }
 
 
@@ -247,7 +327,6 @@ namespace SharpLua
             callTMres(L, res, tm, p1, p2);
             return 1;
         }
-
 
         private static TValue get_compTM(LuaState L, Table mt1, Table mt2,
                                          TMS event_)
@@ -263,7 +342,6 @@ namespace SharpLua
             return null;
         }
 
-
         private static int call_orderTM(LuaState L, TValue p1, TValue p2,
                                         TMS event_)
         {
@@ -276,7 +354,6 @@ namespace SharpLua
             callTMres(L, L._top, tm1, p1, p2);
             return l_isfalse(L._top) == 0 ? 1 : 0;
         }
-
 
         private static int l_strcmp(TString ls, TString rs)
         {
@@ -316,7 +393,6 @@ namespace SharpLua
                 return res;
             return luaG_ordererror(L, l, r);
         }
-
 
         private static int lessequal(LuaState L, TValue l, TValue r)
         {
@@ -434,8 +510,6 @@ namespace SharpLua
                 luaG_aritherror(L, rb, rc);
         }
 
-
-
         /*
          ** some macros for common tasks in `luaV_execute'
          */
@@ -461,9 +535,7 @@ namespace SharpLua
         internal static TValue RKC(LuaState L, StkId base_, Instruction i, TValue[] k) { return ISK(GETARG_C(i)) != 0 ? k[INDEXK(GETARG_C(i))] : base_ + GETARG_C(i); }
         internal static TValue KBx(LuaState L, Instruction i, TValue[] k) { return k[GETARG_Bx(i)]; }
 
-
         public static void dojump(LuaState L, InstructionPtr pc, int i) { pc.pc += i; luai_threadyield(L); }
-
 
         //#define Protect(x)	{ L.savedpc = pc; {x;}; base = L.base_; }
 
@@ -637,6 +709,10 @@ namespace SharpLua
                             TValue rb = KBx(L, i, k);
                             sethvalue(L, g, cl.env);
                             lua_assert(ttisstring(rb));
+
+                            /* PATCH - TABLESCOPE */
+                            if (gettablescope(L, ra, rb, pc, cl, L.base_) == 1)
+                                continue;
 
                             //Protect(
                             L.savedpc = InstructionPtr.Assign(pc);

@@ -203,7 +203,7 @@ namespace SharpLua
                 if (reader.IsSymbol('.') || reader.IsSymbol(':'))
                 {
                     string symb = reader.Get().Data; // '.' or ':'
-                    // TODO: should we allow keywords?
+                    // TODO: should we allow keywords? I vote no.
                     if (!reader.Is(TokenType.Ident))
                         error("<Ident> expected");
 

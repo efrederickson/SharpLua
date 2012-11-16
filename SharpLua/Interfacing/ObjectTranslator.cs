@@ -484,6 +484,7 @@ namespace SharpLua
             if (true) 
                 // 11/16/12 - Fix function pushing (Dirk Weltz metatable problem)
                 // SharpLua.InterfacingTests still works
+                // This allows metatables to have CLR defined functions
                 Lua.lua_pushcfunction(luaState, func);
             else
                 pushObject(luaState, func, "luaNet_function");

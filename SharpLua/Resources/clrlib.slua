@@ -87,7 +87,10 @@ end
 
 local clr = { }
 
-clr.ns = { "System", "System.IO", "System.Windows.Forms", "System.Collections.Generic", "System.Text", "SharpLua", "System.Threading" }
+clr.ns = { 
+    "System", "System.IO", "System.Windows.Forms", "System.Collections.Generic", 
+    "System.Text", "SharpLua", "System.Threading",
+    "System.Drawing" }
 
 clr.load = luanet.load_assembly
 

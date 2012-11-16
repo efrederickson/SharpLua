@@ -56,7 +56,6 @@ namespace SharpLua
             if (File.Exists(spath + ".exe"))
                 return spath + ".exe";
             */
-            // TODO: .cs, .luac; possibly C
 
             return spath; // let the caller handle the invalid filename
         }

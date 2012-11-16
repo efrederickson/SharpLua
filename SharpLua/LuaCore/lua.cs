@@ -189,6 +189,7 @@ namespace SharpLua
         public static void lua_pushliteral(LuaState L, CharPtr s)
         {
             //TODO: Implement use using lua_pushlstring instead of lua_pushstring
+            //lua_pushlstring(L, s, s.chars.Length);
             //lua_pushlstring(L, "" s, (sizeof(s)/GetUnmanagedSize(typeof(char)))-1)
             lua_pushstring(L, s);
         }
@@ -226,50 +227,6 @@ namespace SharpLua
         {
             return lua_gc(L, LUA_GCCOUNT, 0);
         }
-
-        /*
-        public static lua_Unsigned luaL_checkunsigned(LuaState L, int narg)
-        {
-            bool isnum = false;
-            lua_Unsigned d = lua_tounsignedx(L, narg, ref isnum);
-            if (!isnum)
-                tag_error(L, narg, LUA_TNUMBER);
-            return d;
-        }
-
-        public static lua_Unsigned lua_tounsignedx(LuaState L, int idx, ref bool isnum)
-        {
-            TValue n = null;
-            TValue o = index2adr(L, idx);
-            if (tonumber(ref o, n) == 1)
-            {
-                lua_Unsigned res;
-                lua_Number num = nvalue(o);
-                res = (lua_Unsigned)num;
-                if (isnum)
-                    isnum = true;
-                return res;
-            }
-            else
-            {
-                if (isnum)
-                    isnum = false;
-                return 0;
-            }
-        }
-
-        public static void lua_pushunsigned(LuaState L, lua_Unsigned u)
-        {
-            lua_Number n;
-            lua_lock(L);
-            n = (((u) <= (lua_Unsigned)int.MaxValue) ? (lua_Number)(int)(u) : (lua_Number)(u));
-            setnvalue(L._top, n);
-            api_incr_top(L);
-            lua_unlock(L);
-        }
-        */
-
-
 
         //#define lua_Chunkreader		lua_Reader
         //#define lua_Chunkwriter		lua_Writer

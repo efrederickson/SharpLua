@@ -63,7 +63,7 @@ namespace SharpLua
             panicCallback = new SharpLua.Lua.lua_CFunction(PanicCallback);
             Lua.lua_CFunction oldpanicFunc =
                 //LuaDLL.lua_atpanic(luaState, tracebackFunction);
-            LuaDLL.lua_atpanic(luaState, panicCallback);
+                LuaDLL.lua_atpanic(luaState, panicCallback);
 
             LuaDLL.luaL_dostring(luaState, ScriptStrings.InitClrLib);
             LuaDLL.luaL_dostring(luaState, ScriptStrings.InitExtLib);
@@ -125,7 +125,7 @@ namespace SharpLua
         }
 
         /// <summary>
-        /// Called for each lua_lock call 
+        /// Called for each lua_lock call
         /// </summary>
         /// <param name="luaState"></param>
         /// Not yet used
@@ -135,7 +135,7 @@ namespace SharpLua
         }
 
         /// <summary>
-        /// Called for each lua_unlock call 
+        /// Called for each lua_unlock call
         /// </summary>
         /// <param name="luaState"></param>
         /// Not yet used
@@ -166,19 +166,34 @@ namespace SharpLua
         /// <exception cref="LuaScriptException">Thrown if the script caused an exception</exception>
         void ThrowExceptionFromError(int oldTop)
         {
-            object err = translator.getObject(luaState, -1);
-            LuaDLL.lua_settop(luaState, oldTop);
+            string msg = "";
+            if (Lua.lua_isstring(luaState, -1) == 1)
+                msg = Lua.lua_tostring(luaState, -1);
+            else if (Lua.lua_isnumber(luaState, -1) == 1
+                     || Lua.lua_isboolean(luaState, -1)
+                     || Lua.lua_iscfunction(luaState, -1)
+                     || Lua.lua_isfunction(luaState, -1)
+                     || Lua.lua_isthread(luaState, -1)
+                     || Lua.lua_istable(luaState, -1)
+                    )
+                     msg = "Unknown Lua Error";
+            else
+            {
+                object err = translator.getObject(luaState, -1);
+                LuaDLL.lua_settop(luaState, oldTop);
 
-            // A pre-wrapped exception - just rethrow it (stack trace of InnerException will be preserved)
-            LuaException luaEx = err as LuaException;
-            if (luaEx != null)
-                throw luaEx;
+                // A pre-wrapped exception - just rethrow it (stack trace of InnerException will be preserved)
+                LuaException luaEx = err as LuaException;
+                if (luaEx != null)
+                    throw luaEx;
 
-            // A non-wrapped Lua error (best interpreted as a string) - wrap it and throw it
-            if (err == null)
-                err = "Unknown Lua Error";
-
-            throw new LuaException(err.ToString());
+                // A non-wrapped Lua error (best interpreted as a string) - wrap it and throw it
+                if (err == null)
+                    msg = "Unknown Lua Error";
+                else
+                    msg = err.ToString();
+            }
+            throw new LuaException(msg);
         }
 
 
@@ -269,13 +284,14 @@ namespace SharpLua
         /// <returns></returns>
         public object[] DoString(string chunk, string chunkName)
         {
+            LuaDLL.lua_pushstdcallcfunction(luaState, tracebackFunction);
             int oldTop = LuaDLL.lua_gettop(luaState);
             executing = true;
             if (LuaDLL.luaL_loadbuffer(luaState, chunk, chunk.Length, chunkName) == 0)
             {
                 try
                 {
-                    if (LuaDLL.lua_pcall(luaState, 0, -1, 0) == 0)
+                    if (LuaDLL.lua_pcall(luaState, 0, -1, -2) == 0)
                         return translator.popValues(luaState, oldTop);
                     else
                         ThrowExceptionFromError(oldTop);

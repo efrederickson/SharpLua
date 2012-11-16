@@ -46,7 +46,14 @@ namespace SharpLua.Interactive
 #endif
 
             // how to handle errors
-            LuaRuntime.SetVariable("DEBUG", true);
+            //LuaRuntime.SetVariable("DEBUG", true);
+            LuaRuntime.SetVariable("DEBUG", false); 
+            // We don't need the C# traceback.
+            // All it is is [error]
+            //     at LuaInterface.ThrowErrorFromException
+            //     [...]
+            // Which we don't need
+            
 #else
             LuaRuntime.SetVariable("DEBUG", false);
 #endif
@@ -113,7 +120,7 @@ namespace SharpLua.Interactive
                     {
                         try
                         {
-                            object[] v = LuaRuntime.Run(line);
+                            object[] v = LuaRuntime.GetLua().DoString(line, "<stdin>");
                             if (v == null || v.Length == 0)
 #if DEBUG
                                 Console.WriteLine("=> [no returned value]");
@@ -148,25 +155,12 @@ namespace SharpLua.Interactive
                         }
                         catch (Exception error)
                         {
-                            // TODO: show lua script traceback
-                            // Possible fix... this isn't safe though.
-
-                            //Console.WriteLine(error.Message);
-                            // doesnt work :(
-                            //LuaRuntime.Run("pcall(function() print(debug.traceback()) end)");
-                            //Console.WriteLine();
-
-                            //Lua.LuaState l = LuaRuntime.GetLua().LuaState;
-                            //LuaRuntime.GetLua().traceback(l);
-                            //Lua.lua_getglobal(l, "print");
-                            //Lua.lua_call(l, 1, 0);
-
                             object dbg = LuaRuntime.GetVariable("DEBUG");
 
-                            if ((dbg is bool && (bool)dbg == true) || dbg is int == false)
+                            if (dbg != null && (dbg is bool && (bool)dbg == true))
                                 Console.WriteLine(error.ToString());
                             else
-                                Console.WriteLine("Error: " + error.Message);
+                                Console.WriteLine(error.Message);
                             LuaRuntime.SetVariable("LASTERROR", error);
                         }
                     }

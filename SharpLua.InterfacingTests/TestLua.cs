@@ -1604,7 +1604,9 @@ namespace LuaInterface.Tests
             Console.WriteLine("Test event exceptions...");
             obj.TestEventException();
 
-            Console.ReadLine();
+            Console.Write("Press any key to continue...");
+            Console.ReadKey(true);
+            //Console.ReadLine();
         }
     }
 

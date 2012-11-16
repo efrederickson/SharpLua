@@ -480,7 +480,13 @@ namespace SharpLua
          */
         internal void pushFunction(SharpLua.Lua.LuaState luaState, SharpLua.Lua.lua_CFunction func)
         {
-            pushObject(luaState, func, "luaNet_function");
+            //Console.WriteLine("function push");
+            if (true) 
+                // 11/16/12 - Fix function pushing (Dirk Weltz metatable problem)
+                // SharpLua.InterfacingTests still works
+                Lua.lua_pushcfunction(luaState, func);
+            else
+                pushObject(luaState, func, "luaNet_function");
         }
         /*
          * Pushes a CLR object into the Lua stack as an userdata

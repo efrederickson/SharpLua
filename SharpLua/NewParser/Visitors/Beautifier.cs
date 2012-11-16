@@ -55,7 +55,7 @@ namespace SharpLua.Visitors
                 {
                     sb.Append(t2.Data);
                     cnt++;
-                    if (t2.Type == TokenType.ShortComment || t2.Type == TokenType.DocumentationComment || (t.Leading.Count > i && (t.Leading[i + 1].Type == TokenType.WhitespaceR || t.Leading[i + 1].Type == TokenType.WhitespaceN)))
+                    if (t2.Type == TokenType.ShortComment || t2.Type == TokenType.DocumentationComment || (t.Leading.Count >= i + 1 && (t.Leading[i + 1].Type == TokenType.WhitespaceR || t.Leading[i + 1].Type == TokenType.WhitespaceN)))
                     {
                         shortComment = true;
                         sb.Append(options.EOL);
@@ -567,6 +567,7 @@ namespace SharpLua.Visitors
                     RepeatStatement r = s as RepeatStatement;
                     StringBuilder sb = new StringBuilder();
                     sb.Append(fromToken(r.ScannedTokens[0], s.Scope));
+                    i = 1;
                     sb.Append(options.EOL);
                     indent++;
                     sb.Append(DoChunk(r.Body, ref i));

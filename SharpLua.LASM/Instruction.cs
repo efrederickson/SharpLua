@@ -42,7 +42,8 @@ namespace SharpLua.LASM
             "SETLIST",
             "CLOSE",
             "CLOSURE",
-            "VARARG"
+            "VARARG",
+            "BREAKPOINT",
         };
 
         public static readonly OpcodeType[] LuaOpTypeLookup = new OpcodeType[]{
@@ -83,7 +84,8 @@ namespace SharpLua.LASM
             OpcodeType.ABC,
             OpcodeType.ABC,
             OpcodeType.ABx,
-            OpcodeType.ABC
+            OpcodeType.ABC,
+            OpcodeType.ABC,
         };
 
         // Parameter types (likely to change):
@@ -157,6 +159,7 @@ namespace SharpLua.LASM
             new Params(1, 0, 0), // close
             new Params(1, 0, 0), // closure
             new Params(1, 1, 0), // vararg
+            new Params(0, 0, 0), // breakpoint
         };
 
         public enum LuaOpcode
@@ -198,7 +201,8 @@ namespace SharpLua.LASM
             SETLIST = 34,
             CLOSE = 35,
             CLOSURE = 36,
-            VARARG = 37
+            VARARG = 37,
+            BREAKPOINT = 38,
         }
 
         public long A, B, C, Bx, sBx;

@@ -80,7 +80,7 @@ namespace SharpLua
                 int npc = pcRel(pc, p);
                 int newline = getline(p, npc);
                 /* call linehook when enter a new function, when jump back (loop),
-			   or when enter a new line */
+               or when enter a new line */
                 if (npc == 0 || pc <= oldpc || newline != getline(p, pcRel(oldpc, p)))
                     luaD_callhook(L, LUA_HOOKLINE, newline);
             }
@@ -209,7 +209,7 @@ namespace SharpLua
                             h.flags = 0;
                             luaC_barriert(L, h, val);
                             /* write barrier */
-                            CallMTChanged(L, h, t, key, val);
+                                                        CallMTChanged(L, h, t, key, val);
                             return;
                         }
                         else
@@ -668,7 +668,8 @@ namespace SharpLua
                 lua_assert(L._top == L.ci.top || (luaG_checkopenop(i) != 0));
                 //Dump(pc.pc, i);
 
-                raiseOnOpcodeRun(i);
+                if (OnOpcodeRun != null)
+                    OnOpcodeRun(i);
 
                 switch (GET_OPCODE(i))
                 {
@@ -1190,16 +1191,19 @@ namespace SharpLua
                             }
                             continue;
                         }
+                    case OpCode.OP_BREAKPOINT:
+                        {
+#if DEBUG
+                            Debug.WriteLine("BREAKPOINT");
+                            Debugger.Break();
+#else
+#endif
+                            continue;
+                        }
                     default:
                         throw new InvalidProgramException(GET_OPCODE(i).ToString() + " is not supported");
                 }
             }
-        }
-
-        static void raiseOnOpcodeRun(Instruction i)
-        {
-            if (OnOpcodeRun != null)
-                OnOpcodeRun(i);
         }
 
         public delegate void OpcodeRan(Instruction opcode);

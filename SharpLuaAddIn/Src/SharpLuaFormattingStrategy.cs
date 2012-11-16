@@ -77,7 +77,7 @@ namespace SharpLuaAddIn
                 Lexer l = new Lexer();
                 Parser p = new Parser(l.Lex(editor.Document.Text));
                 SharpLua.Ast.Chunk c = p.Parse();
-                SharpLua.Visitors.Beautifier b = new SharpLua.Visitors.Beautifier();
+                SharpLua.Visitors.NonModifiedAstBeautifier b = new SharpLua.Visitors.NonModifiedAstBeautifier();
                 //SharpLua.Visitors.ExactReconstruction b = new SharpLua.Visitors.ExactReconstruction();
                 b.options.Tab = editor.Options.IndentationString;
                 b.options.TabsToSpaces = editor.Options.ConvertTabsToSpaces;

@@ -1,0 +1,94 @@
+﻿
+AnonymousFunctionExpr
+
+BinOpExpr
+    Lhs
+    Rhs
+    <Op>
+
+BoolExpr
+    Constant <Value>
+
+CallExpr
+    <Full name expansion>
+    <Args>
+    CALL <stored registers start> <args + 1> <stored results + 1>
+
+StringCallExpr
+    <Full name expansion>
+    <Args>
+    CALL <stored registers start> 2 <stored results + 1>
+
+TableCallExpr
+    <Full name expansion>
+    <Args>
+    CALL <stored registers start> 2 <stored results + 1>
+
+IndexExpr
+
+InlineFunctionExpr
+    DoExpr(AnonymousFunctionExpr)
+        -> function (<args>, <vararg>) return <expressions> end
+
+TableConstructorKeyExpr
+
+MemberExpr
+
+NilExpr
+
+NumberExpr
+    Constant <Value>
+
+StringExpr
+    Constant <Value>
+
+TableConstructorStringKeyExpr
+
+TableConstructorExpr
+
+UnOpExpr
+    Rhs
+    <Unary Operator call>
+
+TableConstructorValueExpr
+
+VarargExpr
+
+VariableExpression
+
+AssignmentStatement
+    Local
+
+    Global
+
+AugmentedAssignmentStatement
+
+BreakStatement
+
+CallStatement
+
+DoStatement
+
+GenericForStatement
+
+NumericForStatement
+
+FunctionStatement
+
+GotoStatement
+
+IfStmt
+
+LabelStatement
+
+RepeatStatement
+
+ReturnStatement
+
+UsingStatement
+
+WhileStatement
+
+ElseIfStmt
+
+ElseStmt

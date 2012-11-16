@@ -187,7 +187,7 @@ namespace SharpLua.LASM
             string l = line.ToLower();
             while (true)
             {
-                if (i > l.Length)
+                if (i >= l.Length)
                     break;
                 if (!char.IsLetter(l[i]))
                     break;
@@ -487,7 +487,7 @@ namespace SharpLua.LASM
             instr2.C = 0;
             //getmetatable(func.Instructions).__newindex(func.Instructions, func.Instructions.Count, op)
             if (instr1 == null || instr1.Opcode != Instruction.LuaOpcode.RETURN)
-                func.Instructions.Add(instr1);
+                func.Instructions.Add(instr2);
             return file;
         }
     }

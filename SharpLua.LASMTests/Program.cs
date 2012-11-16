@@ -24,7 +24,7 @@ namespace SharpLua.LASMTests
             string code = file.Compile();
             try
             {
-            	LuaFile f = Disassembler.Disassemble(code);
+                LuaFile f = Disassembler.Disassemble(code);
                 System.IO.FileStream fs = new System.IO.FileStream("lasm.luac", System.IO.FileMode.Create);
                 //foreach (char c in code)
                 foreach (char c in f.Compile())
@@ -47,8 +47,19 @@ namespace SharpLua.LASMTests
             {
                 Console.WriteLine(ex.ToString());
             }
-            Console.WriteLine("Test(s) done");
-            Console.Read();
+
+            try
+            {
+                LuaFile lf = p.Parse("breakpoint 0 0 0");
+                LuaRuntime.Run(lf.Compile());
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+
+            Console.WriteLine("Test(s) done. Press any key to continue.");
+            Console.ReadKey(true);
         }
     }
 }

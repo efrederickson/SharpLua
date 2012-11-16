@@ -261,7 +261,10 @@ namespace SharpLua
                                 error("Expected numeric constant in matrice indexing", line, col, tok);
                             }
                             else if (cma == false && hadComma)
-                                error("Expected ','", -1, -1, tok);
+                                if (tok.Type == TokenType.Symbol && tok.Data == "]")
+                                    ;
+                                else
+                                    error("Expected ','", -1, -1, tok);
                             else if (cma == false)
                             {
                                 break;

@@ -252,21 +252,23 @@ namespace SharpLua
             OP_RETURN,/*	A B	return R(A), ... ,R(A+B-2)	(see note)	*/
 
             OP_FORLOOP,/*	A sBx	R(A)+=R(A+2);
-					if R(A) <?= R(A+1) then { pc+=sBx; R(A+3)=R(A) }*/
+                    if R(A) <?= R(A+1) then { pc+=sBx; R(A+3)=R(A) }*/
             OP_FORPREP,/*	A sBx	R(A)-=R(A+2); pc+=sBx				*/
 
             OP_TFORLOOP,/*	A C	R(A+3), ... ,R(A+2+C) := R(A)(R(A+1), R(A+2));
-								if R(A+3) ~= nil then R(A+2)=R(A+3) else pc++	*/
+                                if R(A+3) ~= nil then R(A+2)=R(A+3) else pc++	*/
             OP_SETLIST,/*	A B C	R(A)[(C-1)*FPF+i] := R(A+i), 1 <= i <= B	*/
 
             OP_CLOSE,/*	A 	close all variables in the stack up to (>=) R(A)*/
             OP_CLOSURE,/*	A Bx	R(A) := closure(KPROTO[Bx], R(A), ... ,R(A+n))	*/
 
             OP_VARARG/*	A B	R(A), R(A+1), ..., R(A+B-1) = vararg		*/
+            ,
+            OP_BREAKPOINT,
         };
 
 
-        public const int NUM_OPCODES = (int)OpCode.OP_VARARG;
+        public const int NUM_OPCODES = (int)OpCode.OP_BREAKPOINT;
 
 
 
@@ -361,6 +363,7 @@ namespace SharpLua
             "CLOSE",
             "CLOSURE",
             "VARARG",
+            "BREAKPOINT",
         };
 
 
@@ -409,6 +412,7 @@ namespace SharpLua
                 ,opmode(0, 0, OpArgMask.OpArgN, OpArgMask.OpArgN, OpMode.iABC)		/* OP_CLOSE */
                 ,opmode(0, 1, OpArgMask.OpArgU, OpArgMask.OpArgN, OpMode.iABx)		/* OP_CLOSURE */
                 ,opmode(0, 1, OpArgMask.OpArgU, OpArgMask.OpArgN, OpMode.iABC)		/* OP_VARARG */
+                ,opmode(0, 0, OpArgMask.OpArgN, OpArgMask.OpArgN, OpMode.iABC)      /* OP_BREAKPOINT */
         };
 
     }

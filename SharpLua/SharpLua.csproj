@@ -156,10 +156,12 @@
     <Compile Include="NewParser\Ast\Statement\UsingStatement.cs" />
     <Compile Include="NewParser\Ast\Statement\WhileStatement.cs" />
     <Compile Include="NewParser\Ast\Variable.cs" />
+    <Compile Include="NewParser\Compiler\Compiler.cs" />
     <Compile Include="NewParser\Compiler\Compiler2.cs" />
     <Compile Include="NewParser\Compiler\Compiler3.cs" />
     <Compile Include="NewParser\Compiler\Unescaper.cs" />
     <Compile Include="NewParser\Refactoring\FindReferencesBeforeDefinition.cs" />
+    <Compile Include="NewParser\Visitors\NonModifiedAstBeautifier.cs" />
     <Compile Include="NewParser\XmlDocumentation\DocumentationComment.cs" />
     <Compile Include="NewParser\XmlDocumentation\Documentation.cs" />
     <Compile Include="NewParser\XmlDocumentation\ExtractDocumentationComments.cs" />
@@ -193,6 +195,7 @@
     <EmbeddedResource Include="Resources\luanet.sluac" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="NewParser\Compiler\AstToCodeMap.txt" />
     <Content Include="NewParser\Todo.txt" />
     <Content Include="NewParser\XmlDocumentation\Format.txt" />
   </ItemGroup>

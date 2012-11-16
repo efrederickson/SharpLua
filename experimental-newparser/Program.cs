@@ -48,6 +48,8 @@ namespace SharpLua
                     Console.WriteLine(new Visitors.Minifier().Minify(c));
                     Console.WriteLine("- Beautifier -");
                     Console.WriteLine(new Visitors.Beautifier().Beautify(c));
+                    Console.WriteLine("- NonModifiedAstBeautifer -");
+                    Console.WriteLine(new Visitors.NonModifiedAstBeautifier().Beautify(c));
                     Console.WriteLine("- Misspelled Variables -");
                     List<Tuple<Variable, Variable>> vars = Refactoring.FindMisspelledVariables(c);
                     //Console.WriteLine(vars.Count);

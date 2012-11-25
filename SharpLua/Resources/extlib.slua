@@ -107,8 +107,12 @@ Lua.Clr = Lua.CLR
 
 SharpLua = luanet.namespace"SharpLua"
 
-function math.round(x)
-    return math.floor(x + 0.5)
+function math.round(x, y)
+    if not y then
+        return math.floor(x + 0.5)
+    end
+    local mult = 10 ^ y
+    return math.floor(x * mult + 0.5) / mult
 end
 
 function table.find(table, obj)

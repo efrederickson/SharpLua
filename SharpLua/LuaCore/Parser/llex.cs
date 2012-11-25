@@ -400,8 +400,8 @@ namespace SharpLua
                                                 c = 10 * c + (ls.current - '0');
                                                 next(ls);
                                             } while (++i < 3 && isdigit(ls.current));
-                                            if (c > System.Byte.MaxValue)
-                                                luaX_lexerror(ls, "escape sequence too large", (int)RESERVED.TK_STRING);
+                                            //if (c > System.Byte.MaxValue)
+                                            //    luaX_lexerror(ls, "escape sequence too large", (int)RESERVED.TK_STRING);
                                             save(ls, c);
                                         }
                                         continue;

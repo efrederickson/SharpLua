@@ -39,7 +39,8 @@ namespace SharpLua
 #if XBOX || SILVERLIGHT
 			luaL_error(L, "os_execute not supported on XBox360");
 #else
-			CharPtr strCmdLine = "/C regenresx " + luaL_optstring(L, 1, null);
+			//CharPtr strCmdLine = "/C regenresx " + luaL_optstring(L, 1, null);
+                        CharPtr strCmdLine = "/C" + luaL_optstring(L, 1, null);
 			System.Diagnostics.Process proc = new System.Diagnostics.Process();
 			proc.EnableRaisingEvents=false;
 			proc.StartInfo.FileName = "CMD.exe";

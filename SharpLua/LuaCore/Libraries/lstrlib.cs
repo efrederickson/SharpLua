@@ -111,7 +111,7 @@ namespace SharpLua
             luaL_error(L, "string slice too long");
             luaL_checkstack(L, n, "string slice too long");
             for (i=0; i<n; i++)
-                lua_pushinteger(L, (byte)(s[posi + i - 1]));
+                lua_pushinteger(L, (int)(s[posi + i - 1]));
             return n;
         }
 
@@ -123,8 +123,10 @@ namespace SharpLua
             luaL_buffinit(L, b);
             for (i=1; i<=n; i++) {
                 int c = luaL_checkint(L, i);
-                luaL_argcheck(L, (byte)(c) == c, i, "invalid value");
-                luaL_addchar(b, (char)(byte)c);
+                //luaL_argcheck(L, (byte)(c) == c, i, "invalid value");
+                //luaL_addchar(b, (char)(byte)c);
+                luaL_argcheck(L, c < 65536, i, "invalid value");
+                luaL_addchar(b, (char)c);
             }
             luaL_pushresult(b);
             return 1;

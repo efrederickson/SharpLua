@@ -438,6 +438,7 @@ namespace SharpLua
             if (filename == null)
                 return 1;  /* library not found in this path */
             Assembly a = Assembly.LoadFrom(filename);
+            string sfn = System.IO.Path.GetFileNameWithoutExtension(filename);
             int i = 0;
             foreach (Type t in a.GetTypes())
             {
@@ -451,6 +452,18 @@ namespace SharpLua
                         tbl.push(l);
                         return 1;
                     });
+                }
+                else if (t.IsClass)
+                {
+                    MethodInfo mi = t.GetMethod("luaopen_" + sfn, BindingFlags.Static | BindingFlags.Public);
+                    if (mi != null)
+                    {
+                        i++;
+                        lua_pushcfunction(L, (l) =>
+                        {
+                            return (int)mi.Invoke(null, new object[] { l });
+                        });
+                    }
                 }
             }
             return i;

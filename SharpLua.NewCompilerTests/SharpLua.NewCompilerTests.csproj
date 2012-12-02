@@ -49,12 +49,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SharpLua.LASM\SharpLua.LASM.csproj">
-      <Project>{150CED9A-888B-4783-8ACA-57599A3A43EF}</Project>
-      <Name>SharpLua.LASM</Name>
-    </ProjectReference>
     <ProjectReference Include="..\SharpLua\SharpLua.csproj">
-      <Project>{90A9C907-11AD-4754-8B70-51CCB3A6C98A}</Project>
+      <Project>{90a9c907-11ad-4754-8b70-51ccb3a6c98a}</Project>
       <Name>SharpLua</Name>
     </ProjectReference>
   </ItemGroup>

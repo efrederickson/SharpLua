@@ -199,20 +199,23 @@ namespace SharpLua
                 }
             }
 
-            internal StkId _top;
-            public StkId top  /* first free slot in the stack */
+            /*
+            internal StkId top;
+            public StkId top  // first free slot in the stack
             {
                 get
                 {
                     CheckInterface();
-                    return _top;
+                    return top;
                 }
                 set
                 {
                     CheckInterface();
-                    _top = value;
+                    top = value;
                 }
             }
+            */
+            public StkId top;
 
             internal StkId _base_;
             public StkId base_  /* base of current function */
@@ -771,13 +774,13 @@ namespace SharpLua
             /* initialize stack array */
             L1.stack = luaM_newvector<TValue>(L, BASIC_STACK_SIZE + EXTRA_STACK);
             L1.stacksize = BASIC_STACK_SIZE + EXTRA_STACK;
-            L1._top = L1.stack[0];
+            L1.top = L1.stack[0];
             L1.stack_last = L1.stack[L1.stacksize - EXTRA_STACK - 1];
             /* initialize first ci */
-            L1.ci.func = L1._top;
-            setnilvalue(StkId.inc(ref L1._top));  /* `function' entry for this `ci' */
-            L1.base_ = L1.ci.base_ = L1._top;
-            L1.ci.top = L1._top + LUA_MINSTACK;
+            L1.ci.func = L1.top;
+            setnilvalue(StkId.inc(ref L1.top));  /* `function' entry for this `ci' */
+            L1.base_ = L1.ci.base_ = L1.top;
+            L1.ci.top = L1.top + LUA_MINSTACK;
         }
 
 
@@ -946,7 +949,7 @@ namespace SharpLua
             do
             {  /* repeat until no more errors */
                 L.ci = L.base_ci[0];
-                L.base_ = L._top = L.ci.base_;
+                L.base_ = L.top = L.ci.base_;
                 L.nCcalls = L.baseCcalls = 0;
             } while (luaD_rawrunprotected(L, callallgcTM, null) != 0);
             lua_assert(G(L).tmudata == null);

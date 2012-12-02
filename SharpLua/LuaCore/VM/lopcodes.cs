@@ -173,18 +173,18 @@ namespace SharpLua
          */
 
         /* this bit 1 means constant (0 means register) */
-        internal readonly static int BITRK = (1 << (SIZE_B - 1));
+        public readonly static int BITRK = (1 << (SIZE_B - 1));
 
         /* test whether value is a constant */
-        internal static int ISK(int x) { return x & BITRK; }
+        public static int ISK(int x) { return x & BITRK; }
 
         /* gets the index of the constant */
-        internal static int INDEXK(int r) { return r & (~BITRK); }
+        public static int INDEXK(int r) { return r & (~BITRK); }
 
-        internal static readonly int MAXINDEXRK = BITRK - 1;
+        public static readonly int MAXINDEXRK = BITRK - 1;
 
         /* code a constant index as a RK value */
-        internal static int RKASK(int x) { return x | BITRK; }
+        public static int RKASK(int x) { return x | BITRK; }
 
 
         /*
@@ -324,7 +324,7 @@ namespace SharpLua
 
         /* ORDER OP */
 
-        private readonly static CharPtr[] luaP_opnames = {
+        public readonly static CharPtr[] luaP_opnames = {
             "MOVE",
             "LOADK",
             "LOADBOOL",
@@ -372,7 +372,7 @@ namespace SharpLua
             return (lu_byte)(((t) << 7) | ((a) << 6) | (((lu_byte)b) << 4) | (((lu_byte)c) << 2) | ((lu_byte)m));
         }
 
-        private readonly static lu_byte[] luaP_opmodes = {
+        public readonly static lu_byte[] luaP_opmodes = {
             /*       T  A    B       C     mode		   opcode	*/
             opmode(0, 1, OpArgMask.OpArgR, OpArgMask.OpArgN, OpMode.iABC) 		/* OP_MOVE */
                 ,opmode(0, 1, OpArgMask.OpArgK, OpArgMask.OpArgN, OpMode.iABx)		/* OP_LOADK */

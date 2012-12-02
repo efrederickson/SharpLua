@@ -124,11 +124,13 @@ namespace SharpLua
             public lua_TValue this[int offset]
             {
                 get { return this.values[this.index + offset]; }
+                set { this.values[this.index + offset] = value; }
             }
 
             public lua_TValue this[uint offset]
             {
                 get { return this.values[this.index + (int)offset]; }
+                set { this.values[this.index + (int)offset] = value; }
             }
 
             public static lua_TValue operator +(lua_TValue value, int offset)
@@ -160,6 +162,7 @@ namespace SharpLua
 
             public static bool operator <(lua_TValue a, lua_TValue b)
             {
+                //Console.WriteLine(a.values.Length + " " + b.values.Length);
                 Debug.Assert(a.values == b.values);
                 return a.index < b.index;
             }
@@ -833,7 +836,7 @@ namespace SharpLua
 
         private static void pushstr(LuaState L, CharPtr str)
         {
-            setsvalue2s(L, L._top, luaS_new(L, str));
+            setsvalue2s(L, L.top, luaS_new(L, str));
             incr_top(L);
         }
 
@@ -848,7 +851,7 @@ namespace SharpLua
             {
                 CharPtr e = strchr(fmt, '%');
                 if (e == null) break;
-                setsvalue2s(L, L._top, luaS_newlstr(L, fmt, (uint)(e - fmt)));
+                setsvalue2s(L, L.top, luaS_newlstr(L, fmt, (uint)(e - fmt)));
                 incr_top(L);
                 switch (e[1])
                 {
@@ -872,13 +875,13 @@ namespace SharpLua
                         }
                     case 'd':
                         {
-                            setnvalue(L._top, (int)argp[parm_index++]);
+                            setnvalue(L.top, (int)argp[parm_index++]);
                             incr_top(L);
                             break;
                         }
                     case 'f':
                         {
-                            setnvalue(L._top, (l_uacNumber)argp[parm_index++]);
+                            setnvalue(L.top, (l_uacNumber)argp[parm_index++]);
                             incr_top(L);
                             break;
                         }
@@ -909,9 +912,9 @@ namespace SharpLua
                 fmt = e + 2;
             }
             pushstr(L, fmt);
-            luaV_concat(L, n + 1, cast_int(L._top - L.base_) - 1);
-            L._top -= n;
-            return svalue(L._top - 1);
+            luaV_concat(L, n + 1, cast_int(L.top - L.base_) - 1);
+            L.top -= n;
+            return svalue(L.top - 1);
         }
 
         public static CharPtr luaO_pushfstring(LuaState L, CharPtr fmt, params object[] args)

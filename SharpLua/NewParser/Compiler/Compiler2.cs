@@ -350,9 +350,9 @@
             f.maxstacksize = 2;  /* registers 0/1 are always valid */
             fs.h = Lua.luaH_new(L, 0, 0);
             /* anchor table of constants and prototype (to avoid being collected) */
-            Lua.sethvalue2s(L, L._top, fs.h);
+            Lua.sethvalue2s(L, L.top, fs.h);
             Lua.incr_top(L);
-            Lua.setptvalue2s(L, L._top, f);
+            Lua.setptvalue2s(L, L.top, f);
             Lua.incr_top(L);
         }
 
@@ -385,7 +385,7 @@
             ls.fs = fs.prev;
             /* last token read was anchored in defunct function; must reanchor it */
             if (fs != null) anchor_token(ls);
-            L._top -= 2;  /* remove table and prototype from the stack */
+            L.top -= 2;  /* remove table and prototype from the stack */
         }
 
         public static Proto luaY_parser(LuaState L, ZIO z, Mbuffer buff, CharPtr name)

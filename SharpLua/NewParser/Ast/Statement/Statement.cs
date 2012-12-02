@@ -9,6 +9,7 @@ namespace SharpLua.Ast.Statement
     {
         public Scope Scope = null;
         public bool HasSemicolon = false;
+        public int LineNumber = 0;
 
         public List<Token> ScannedTokens = new List<Token>();
         public Token SemicolonToken;

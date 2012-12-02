@@ -35,7 +35,7 @@ namespace SharpLua
     {
         public static void luaD_checkstack(LuaState L, int n)
         {
-            if ((L.stack_last - L._top) <= n)
+            if ((L.stack_last - L.top) <= n)
                 luaD_growstack(L, n);
             else
             {
@@ -48,7 +48,7 @@ namespace SharpLua
         public static void incr_top(LuaState L)
         {
             luaD_checkstack(L, 1);
-            StkId.inc(ref L._top);
+            StkId.inc(ref L.top);
         }
 
         // in the original C code these values save and restore the stack by number of bytes. marshalling sizeof
@@ -103,11 +103,11 @@ namespace SharpLua
                 case LUA_ERRSYNTAX:
                 case LUA_ERRRUN:
                     {
-                        setobjs2s(L, oldtop, L._top - 1);  /* error message on current top */
+                        setobjs2s(L, oldtop, L.top - 1);  /* error message on current top */
                         break;
                     }
             }
-            L._top = oldtop + 1;
+            L.top = oldtop + 1;
         }
 
 
@@ -273,7 +273,7 @@ namespace SharpLua
             lua_Hook hook = L.hook;
             if ((hook != null) && (L.allowhook != 0))
             {
-                ptrdiff_t top = savestack(L, L._top);
+                ptrdiff_t top = savestack(L, L.top);
                 ptrdiff_t ci_top = savestack(L, L.ci.top);
                 lua_Debug ar = new lua_Debug();
                 ar.event_ = event_;
@@ -283,7 +283,7 @@ namespace SharpLua
                 else
                     ar.i_ci = L.ci - L.base_ci;
                 luaD_checkstack(L, LUA_MINSTACK);  /* ensure minimum stack size */
-                L.ci.top = L._top + LUA_MINSTACK;
+                L.ci.top = L.top + LUA_MINSTACK;
                 lua_assert(L.ci.top <= L.stack_last);
                 L.allowhook = 0;  /* cannot call hooks inside a hook */
                 lua_unlock(L);
@@ -292,7 +292,7 @@ namespace SharpLua
                 lua_assert(L.allowhook == 0);
                 L.allowhook = 1;
                 L.ci.top = restorestack(L, ci_top);
-                L._top = restorestack(L, top);
+                L.top = restorestack(L, top);
             }
         }
 
@@ -304,7 +304,7 @@ namespace SharpLua
             Table htab = null;
             StkId base_, fixed_;
             for (; actual < nfixargs; ++actual)
-                setnilvalue(StkId.inc(ref L._top));
+                setnilvalue(StkId.inc(ref L.top));
 #if LUA_COMPAT_VARARG
             if ((p.is_vararg & VARARG_NEEDSARG) != 0)
             { /* compat. with old-style vararg? */
@@ -314,24 +314,24 @@ namespace SharpLua
                 luaD_checkstack(L, p.maxstacksize);
                 htab = luaH_new(L, nvar, 1);  /* create `arg' table */
                 for (i = 0; i < nvar; i++)  /* put extra arguments into `arg' table */
-                    setobj2n(L, luaH_setnum(L, htab, i + 1), L._top - nvar + i);
+                    setobj2n(L, luaH_setnum(L, htab, i + 1), L.top - nvar + i);
                 /* store counter in field `n' */
                 setnvalue(luaH_setstr(L, htab, luaS_newliteral(L, "n")), cast_num(nvar));
             }
 #endif
             /* move fixed parameters to final position */
-            fixed_ = L._top - actual;  /* first fixed argument */
-            base_ = L._top;  /* final position of first argument */
+            fixed_ = L.top - actual;  /* first fixed argument */
+            base_ = L.top;  /* final position of first argument */
             for (i = 0; i < nfixargs; i++)
             {
-                setobjs2s(L, StkId.inc(ref L._top), fixed_ + i);
+                setobjs2s(L, StkId.inc(ref L.top), fixed_ + i);
                 setnilvalue(fixed_ + i);
             }
             /* add `arg' parameter */
             if (htab != null)
             {
-                StkId top = L._top;
-                StkId.inc(ref L._top);
+                StkId top = L.top;
+                StkId.inc(ref L.top);
                 sethvalue(L, top, htab);
                 lua_assert(iswhite(obj2gco(htab)));
             }
@@ -348,7 +348,7 @@ namespace SharpLua
             if (!ttisfunction(tm))
                 luaG_typeerror(L, func, "call");
             /* Open a hole inside the stack at `func' */
-            for (p = L._top; p > func; StkId.dec(ref p)) setobjs2s(L, p, p - 1);
+            for (p = L.top; p > func; StkId.dec(ref p)) setobjs2s(L, p, p - 1);
             incr_top(L);
             func = restorestack(L, funcr);  /* previous call may change stack */
             setobj2s(L, func, tm);  /* tag method is the new function to be called */
@@ -385,12 +385,12 @@ namespace SharpLua
                 if (p.is_vararg == 0)
                 {  /* no varargs? */
                     base_ = L.stack[func + 1];
-                    if (L._top > base_ + p.numparams)
-                        L._top = base_ + p.numparams;
+                    if (L.top > base_ + p.numparams)
+                        L.top = base_ + p.numparams;
                 }
                 else
                 {  /* vararg function */
-                    int nargs = L._top - func - 1;
+                    int nargs = L.top - func - 1;
                     base_ = adjust_varargs(L, p, nargs);
                     func = restorestack(L, funcr);  /* previous call may change the stack */
                 }
@@ -402,9 +402,9 @@ namespace SharpLua
                 L.savedpc = new InstructionPtr(p.code, 0);  /* starting point */
                 ci.tailcalls = 0;
                 ci.nresults = nresults;
-                for (st = L._top; st < ci.top; StkId.inc(ref st))
+                for (st = L.top; st < ci.top; StkId.inc(ref st))
                     setnilvalue(st);
-                L._top = ci.top;
+                L.top = ci.top;
                 if ((L.hookmask & LUA_MASKCALL) != 0)
                 {
                     InstructionPtr.inc(ref L._savedpc);  /* hooks assume 'pc' is already incremented */
@@ -421,7 +421,7 @@ namespace SharpLua
                 ci = inc_ci(L);  /* now `enter' new function */
                 ci.func = restorestack(L, funcr);
                 L.base_ = ci.base_ = ci.func + 1;
-                ci.top = L._top + LUA_MINSTACK;
+                ci.top = L.top + LUA_MINSTACK;
                 lua_assert(ci.top <= L.stack_last);
                 ci.nresults = nresults;
                 if ((L.hookmask & LUA_MASKCALL) != 0)
@@ -433,7 +433,7 @@ namespace SharpLua
                     return PCRYIELD;
                 else
                 {
-                    luaD_poscall(L, L._top - n);
+                    luaD_poscall(L, L.top - n);
                     return PCRC;
                 }
             }
@@ -466,7 +466,7 @@ namespace SharpLua
             L.base_ = (ci - 1).base_;  /* restore base */
             L.savedpc = InstructionPtr.Assign((ci - 1).savedpc);  /* restore savedpc */
             /* move results to correct place */
-            for (i = wanted; i != 0 && firstResult < L._top; i--)
+            for (i = wanted; i != 0 && firstResult < L.top; i--)
             {
                 setobjs2s(L, res, firstResult);
                 res = res + 1;
@@ -474,7 +474,7 @@ namespace SharpLua
             }
             while (i-- > 0)
                 setnilvalue(StkId.inc(ref res));
-            L._top = res;
+            L.top = res;
             return (wanted - LUA_MULTRET);  /* 0 iff wanted == LUA_MULTRET */
         }
 
@@ -521,7 +521,7 @@ namespace SharpLua
                     lua_assert(GET_OPCODE((ci - 1).savedpc[-1]) == OpCode.OP_CALL ||
                                GET_OPCODE((ci - 1).savedpc[-1]) == OpCode.OP_TAILCALL);
                     if (luaD_poscall(L, firstArg) != 0)  /* complete it... */
-                        L._top = L.ci.top;  /* and correct top if not multiple results */
+                        L.top = L.ci.top;  /* and correct top if not multiple results */
                 }
                 else  /* yielded inside a hook: just continue its execution */
                     L.base_ = L.ci.base_;
@@ -532,8 +532,8 @@ namespace SharpLua
 
         private static int resume_error(LuaState L, CharPtr msg)
         {
-            L._top = L.ci.base_;
-            setsvalue2s(L, L._top, luaS_new(L, msg));
+            L.top = L.ci.base_;
+            setsvalue2s(L, L.top, luaS_new(L, msg));
             incr_top(L);
             lua_unlock(L);
             return LUA_ERRRUN;
@@ -551,12 +551,12 @@ namespace SharpLua
             luai_userstateresume(L, nargs);
             lua_assert(L.errfunc == 0);
             L.baseCcalls = ++L.nCcalls;
-            status = luaD_rawrunprotected(L, resume, L._top - nargs);
+            status = luaD_rawrunprotected(L, resume, L.top - nargs);
             if (status != 0)
             {  /* error? */
                 L.status = cast_byte(status);  /* mark thread as `dead' */
-                luaD_seterrorobj(L, status, L._top);
-                L.ci.top = L._top;
+                luaD_seterrorobj(L, status, L.top);
+                L.ci.top = L.top;
             }
             else
             {
@@ -575,7 +575,7 @@ namespace SharpLua
             lua_lock(L);
             if (L.nCcalls > L.baseCcalls)
                 luaG_runerror(L, "attempt to yield across metamethod/C-call boundary");
-            L.base_ = L._top - nresults;  /* protect stack slots below */
+            L.base_ = L.top - nresults;  /* protect stack slots below */
             L.status = LUA_YIELD;
             lua_unlock(L);
             return -1;
@@ -607,7 +607,7 @@ namespace SharpLua
             L.errfunc = old_errfunc;
             return status;
         }
-
+        /*
         static Proto NewParser(LuaState L, ZIO z, Mbuffer buff, CharPtr name)
         {
             string s = "";
@@ -619,6 +619,7 @@ namespace SharpLua
             Ast.Chunk c = p.Parse();
             return new Compiler.Compiler().Compile(c, name.ToString());
         }
+        */
 
         /*
          ** Execute a protected parser.
@@ -646,7 +647,7 @@ namespace SharpLua
             cl.l.p = tf;
             for (i = 0; i < tf.nups; i++)  /* initialize eventual upvalues */
                 cl.l.upvals[i] = luaF_newupval(L);
-            setclvalue(L, L._top, cl);
+            setclvalue(L, L.top, cl);
             incr_top(L);
         }
 
@@ -658,7 +659,7 @@ namespace SharpLua
             p.z = z;
             p.name = new CharPtr(name);
             luaZ_initbuffer(L, p.buff);
-            status = luaD_pcall(L, f_parser, p, savestack(L, L._top), L.errfunc);
+            status = luaD_pcall(L, f_parser, p, savestack(L, L.top), L.errfunc);
             luaZ_freebuffer(L, p.buff);
             return status;
         }

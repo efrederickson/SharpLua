@@ -89,11 +89,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SharpLua.LASM\SharpLua.LASM.csproj">
-      <Project>{150ced9a-888b-4783-8aca-57599a3a43ef}</Project>
-      <Name>SharpLua.LASM</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\SharpLua\SharpLua.csproj">
       <Project>{90a9c907-11ad-4754-8b70-51ccb3a6c98a}</Project>
       <Name>SharpLua</Name>

@@ -29,7 +29,7 @@ namespace SharpLua
 
         public static void api_checknelems(LuaState L, int n)
         {
-            api_check(L, n <= L._top - L.base_);
+            api_check(L, n <= L.top - L.base_);
         }
 
         public static void api_checkvalidindex(LuaState L, StkId i)
@@ -39,11 +39,9 @@ namespace SharpLua
 
         public static void api_incr_top(LuaState L)
         {
-            api_check(L, L._top < L.ci.top);
-            StkId.inc(ref L._top);
+            api_check(L, L.top < L.ci.top);
+            StkId.inc(ref L.top);
         }
-
-
 
         public static TValue index2adr(LuaState L, int idx)
         {
@@ -51,15 +49,16 @@ namespace SharpLua
             {
                 TValue o = L.base_ + (idx - 1);
                 api_check(L, idx <= L.ci.top - L.base_);
-                if (o >= L._top) return luaO_nilobject;
+                if (o >= L.top) return luaO_nilobject;
                 else return o;
             }
             else if (idx > LUA_REGISTRYINDEX)
             {
-                api_check(L, idx != 0 && -idx <= L._top - L.base_);
-                return L._top + idx;
+                api_check(L, idx != 0 && -idx <= L.top - L.base_);
+                return L.top + idx;
             }
-            else switch (idx)
+            else
+                switch (idx)
                 {  /* pseudo-indices */
                     case LUA_REGISTRYINDEX: return registry(L);
                     case LUA_ENVIRONINDEX:
@@ -95,7 +94,7 @@ namespace SharpLua
 
         public static void luaA_pushobject(LuaState L, TValue o)
         {
-            setobj2s(L, L._top, o);
+            setobj2s(L, L.top, o);
             api_incr_top(L);
         }
 
@@ -104,13 +103,13 @@ namespace SharpLua
         {
             int res = 1;
             lua_lock(L);
-            if (size > LUAI_MAXCSTACK || (L._top - L.base_ + size) > LUAI_MAXCSTACK)
+            if (size > LUAI_MAXCSTACK || (L.top - L.base_ + size) > LUAI_MAXCSTACK)
                 res = 0;  /* stack overflow */
             else if (size > 0)
             {
                 luaD_checkstack(L, size);
-                if (L.ci.top < L._top + size)
-                    L.ci.top = L._top + size;
+                if (L.ci.top < L.top + size)
+                    L.ci.top = L.top + size;
             }
             lua_unlock(L);
             return res;
@@ -124,11 +123,11 @@ namespace SharpLua
             lua_lock(to);
             api_checknelems(from, n);
             api_check(from, G(from) == G(to));
-            api_check(from, to.ci.top - to._top >= n);
-            from._top -= n;
+            api_check(from, to.ci.top - to.top >= n);
+            from.top -= n;
             for (i = 0; i < n; i++)
             {
-                setobj2s(to, StkId.inc(ref to._top), from._top + i);
+                setobj2s(to, StkId.inc(ref to.top), from.top + i);
             }
             lua_unlock(to);
         }
@@ -157,7 +156,7 @@ namespace SharpLua
             lua_lock(L);
             luaC_checkGC(L);
             L1 = luaE_newthread(L);
-            setthvalue(L, L._top, L1);
+            setthvalue(L, L.top, L1);
             api_incr_top(L);
             lua_unlock(L);
             luai_userstatethread(L, L1);
@@ -173,7 +172,7 @@ namespace SharpLua
 
         public static int lua_gettop(LuaState L)
         {
-            return cast_int(L._top - L.base_);
+            return cast_int(L.top - L.base_);
         }
 
 
@@ -183,14 +182,14 @@ namespace SharpLua
             if (idx >= 0)
             {
                 api_check(L, idx <= L.stack_last - L.base_);
-                while (L._top < L.base_ + idx)
-                    setnilvalue(StkId.inc(ref L._top));
-                L._top = L.base_ + idx;
+                while (L.top < L.base_ + idx)
+                    setnilvalue(StkId.inc(ref L.top));
+                L.top = L.base_ + idx;
             }
             else
             {
-                api_check(L, -(idx + 1) <= (L._top - L.base_));
-                L._top += idx + 1;  /* `subtract' index (index is negative) */
+                api_check(L, -(idx + 1) <= (L.top - L.base_));
+                L.top += idx + 1;  /* `subtract' index (index is negative) */
             }
             lua_unlock(L);
         }
@@ -202,8 +201,8 @@ namespace SharpLua
             lua_lock(L);
             p = index2adr(L, idx);
             api_checkvalidindex(L, p);
-            while ((p = p[1]) < L._top) setobjs2s(L, p - 1, p);
-            StkId.dec(ref L._top);
+            while ((p = p[1]) < L.top) setobjs2s(L, p - 1, p);
+            StkId.dec(ref L.top);
             lua_unlock(L);
         }
 
@@ -215,8 +214,8 @@ namespace SharpLua
             lua_lock(L);
             p = index2adr(L, idx);
             api_checkvalidindex(L, p);
-            for (q = L._top; q > p; StkId.dec(ref q)) setobjs2s(L, q, q - 1);
-            setobjs2s(L, p, L._top);
+            for (q = L.top; q > p; StkId.dec(ref q)) setobjs2s(L, q, q - 1);
+            setobjs2s(L, p, L.top);
             lua_unlock(L);
         }
 
@@ -234,17 +233,17 @@ namespace SharpLua
             if (idx == LUA_ENVIRONINDEX)
             {
                 Closure func = curr_func(L);
-                api_check(L, ttistable(L._top - 1));
-                func.c.env = hvalue(L._top - 1);
-                luaC_barrier(L, func, L._top - 1);
+                api_check(L, ttistable(L.top - 1));
+                func.c.env = hvalue(L.top - 1);
+                luaC_barrier(L, func, L.top - 1);
             }
             else
             {
-                setobj(L, o, L._top - 1);
+                setobj(L, o, L.top - 1);
                 if (idx < LUA_GLOBALSINDEX)  /* function upvalue? */
-                    luaC_barrier(L, curr_func(L), L._top - 1);
+                    luaC_barrier(L, curr_func(L), L.top - 1);
             }
-            StkId.dec(ref L._top);
+            StkId.dec(ref L.top);
             lua_unlock(L);
         }
 
@@ -252,7 +251,7 @@ namespace SharpLua
         public static void lua_pushvalue(LuaState L, int idx)
         {
             lua_lock(L);
-            setobj2s(L, L._top, index2adr(L, idx));
+            setobj2s(L, L.top, index2adr(L, idx));
             api_incr_top(L);
             lua_unlock(L);
         }
@@ -478,7 +477,7 @@ namespace SharpLua
         public static void lua_pushnil(LuaState L)
         {
             lua_lock(L);
-            setnilvalue(L._top);
+            setnilvalue(L.top);
             api_incr_top(L);
             lua_unlock(L);
         }
@@ -487,7 +486,7 @@ namespace SharpLua
         public static void lua_pushnumber(LuaState L, lua_Number n)
         {
             lua_lock(L);
-            setnvalue(L._top, n);
+            setnvalue(L.top, n);
             api_incr_top(L);
             lua_unlock(L);
         }
@@ -496,7 +495,7 @@ namespace SharpLua
         public static void lua_pushinteger(LuaState L, lua_Integer n)
         {
             lua_lock(L);
-            setnvalue(L._top, cast_num(n));
+            setnvalue(L.top, cast_num(n));
             api_incr_top(L);
             lua_unlock(L);
         }
@@ -506,7 +505,7 @@ namespace SharpLua
         {
             lua_lock(L);
             luaC_checkGC(L);
-            setsvalue2s(L, L._top, luaS_newlstr(L, s, len));
+            setsvalue2s(L, L.top, luaS_newlstr(L, s, len));
             api_incr_top(L);
             lua_unlock(L);
         }
@@ -561,10 +560,10 @@ namespace SharpLua
             api_checknelems(L, n);
             cl = luaF_newCclosure(L, n, getcurrenv(L));
             cl.c.f = fn;
-            L._top -= n;
+            L.top -= n;
             while (n-- != 0)
-                setobj2n(L, cl.c.upvalue[n], L._top + n);
-            setclvalue(L, L._top, cl);
+                setobj2n(L, cl.c.upvalue[n], L.top + n);
+            setclvalue(L, L.top, cl);
             lua_assert(iswhite(obj2gco(cl)));
             api_incr_top(L);
             lua_unlock(L);
@@ -574,7 +573,7 @@ namespace SharpLua
         public static void lua_pushboolean(LuaState L, int b)
         {
             lua_lock(L);
-            setbvalue(L._top, (b != 0) ? 1 : 0);  /* ensure that true is 1 */
+            setbvalue(L.top, (b != 0) ? 1 : 0);  /* ensure that true is 1 */
             api_incr_top(L);
             lua_unlock(L);
         }
@@ -583,7 +582,7 @@ namespace SharpLua
         public static void lua_pushlightuserdata(LuaState L, object p)
         {
             lua_lock(L);
-            setpvalue(L._top, p);
+            setpvalue(L.top, p);
             api_incr_top(L);
             lua_unlock(L);
         }
@@ -592,7 +591,7 @@ namespace SharpLua
         public static int lua_pushthread(LuaState L)
         {
             lua_lock(L);
-            setthvalue(L, L._top, L);
+            setthvalue(L, L.top, L);
             api_incr_top(L);
             lua_unlock(L);
             return (G(L).mainthread == L) ? 1 : 0;
@@ -611,7 +610,7 @@ namespace SharpLua
             lua_lock(L);
             t = index2adr(L, idx);
             api_checkvalidindex(L, t);
-            luaV_gettable(L, t, L._top - 1, L._top - 1);
+            luaV_gettable(L, t, L.top - 1, L.top - 1);
             lua_unlock(L);
         }
 
@@ -623,7 +622,7 @@ namespace SharpLua
             t = index2adr(L, idx);
             api_checkvalidindex(L, t);
             setsvalue(L, key, luaS_new(L, k));
-            luaV_gettable(L, t, key, L._top);
+            luaV_gettable(L, t, key, L.top);
             api_incr_top(L);
             lua_unlock(L);
         }
@@ -635,7 +634,7 @@ namespace SharpLua
             lua_lock(L);
             t = index2adr(L, idx);
             api_check(L, ttistable(t));
-            setobj2s(L, L._top - 1, luaH_get(hvalue(t), L._top - 1));
+            setobj2s(L, L.top - 1, luaH_get(hvalue(t), L.top - 1));
             lua_unlock(L);
         }
 
@@ -646,7 +645,7 @@ namespace SharpLua
             lua_lock(L);
             o = index2adr(L, idx);
             api_check(L, ttistable(o));
-            setobj2s(L, L._top, luaH_getnum(hvalue(o), n));
+            setobj2s(L, L.top, luaH_getnum(hvalue(o), n));
             api_incr_top(L);
             lua_unlock(L);
         }
@@ -656,7 +655,7 @@ namespace SharpLua
         {
             lua_lock(L);
             luaC_checkGC(L);
-            sethvalue(L, L._top, luaH_new(L, narray, nrec));
+            sethvalue(L, L.top, luaH_new(L, narray, nrec));
             api_incr_top(L);
             lua_unlock(L);
         }
@@ -685,7 +684,7 @@ namespace SharpLua
                 res = 0;
             else
             {
-                sethvalue(L, L._top, mt);
+                sethvalue(L, L.top, mt);
                 api_incr_top(L);
                 res = 1;
             }
@@ -703,16 +702,16 @@ namespace SharpLua
             switch (ttype(o))
             {
                 case LUA_TFUNCTION:
-                    sethvalue(L, L._top, clvalue(o).c.env);
+                    sethvalue(L, L.top, clvalue(o).c.env);
                     break;
                 case LUA_TUSERDATA:
-                    sethvalue(L, L._top, uvalue(o).env);
+                    sethvalue(L, L.top, uvalue(o).env);
                     break;
                 case LUA_TTHREAD:
-                    setobj2s(L, L._top, gt(thvalue(o)));
+                    setobj2s(L, L.top, gt(thvalue(o)));
                     break;
                 default:
-                    setnilvalue(L._top);
+                    setnilvalue(L.top);
                     break;
             }
             api_incr_top(L);
@@ -732,8 +731,8 @@ namespace SharpLua
             api_checknelems(L, 2);
             t = index2adr(L, idx);
             api_checkvalidindex(L, t);
-            luaV_settable(L, t, L._top - 2, L._top - 1);
-            L._top -= 2;  /* pop index and value */
+            luaV_settable(L, t, L.top - 2, L.top - 1);
+            L.top -= 2;  /* pop index and value */
             lua_unlock(L);
         }
 
@@ -747,8 +746,8 @@ namespace SharpLua
             t = index2adr(L, idx);
             api_checkvalidindex(L, t);
             setsvalue(L, key, luaS_new(L, k));
-            luaV_settable(L, t, key, L._top - 1);
-            StkId.dec(ref L._top);  /* pop value */
+            luaV_settable(L, t, key, L.top - 1);
+            StkId.dec(ref L.top);  /* pop value */
             lua_unlock(L);
         }
 
@@ -760,9 +759,9 @@ namespace SharpLua
             api_checknelems(L, 2);
             t = index2adr(L, idx);
             api_check(L, ttistable(t));
-            setobj2t(L, luaH_set(L, hvalue(t), L._top - 2), L._top - 1);
-            luaC_barriert(L, hvalue(t), L._top - 1);
-            L._top -= 2;
+            setobj2t(L, luaH_set(L, hvalue(t), L.top - 2), L.top - 1);
+            luaC_barriert(L, hvalue(t), L.top - 1);
+            L.top -= 2;
             lua_unlock(L);
         }
 
@@ -774,9 +773,9 @@ namespace SharpLua
             api_checknelems(L, 1);
             o = index2adr(L, idx);
             api_check(L, ttistable(o));
-            setobj2t(L, luaH_setnum(L, hvalue(o), n), L._top - 1);
-            luaC_barriert(L, hvalue(o), L._top - 1);
-            StkId.dec(ref L._top);
+            setobj2t(L, luaH_setnum(L, hvalue(o), n), L.top - 1);
+            luaC_barriert(L, hvalue(o), L.top - 1);
+            StkId.dec(ref L.top);
             lua_unlock(L);
         }
 
@@ -789,12 +788,12 @@ namespace SharpLua
             api_checknelems(L, 1);
             obj = index2adr(L, objindex);
             api_checkvalidindex(L, obj);
-            if (ttisnil(L._top - 1))
+            if (ttisnil(L.top - 1))
                 mt = null;
             else
             {
-                api_check(L, ttistable(L._top - 1));
-                mt = hvalue(L._top - 1);
+                api_check(L, ttistable(L.top - 1));
+                mt = hvalue(L.top - 1);
             }
             switch (ttype(obj))
             {
@@ -818,7 +817,7 @@ namespace SharpLua
                         break;
                     }
             }
-            StkId.dec(ref L._top);
+            StkId.dec(ref L.top);
             lua_unlock(L);
             return 1;
         }
@@ -832,24 +831,24 @@ namespace SharpLua
             api_checknelems(L, 1);
             o = index2adr(L, idx);
             api_checkvalidindex(L, o);
-            api_check(L, ttistable(L._top - 1));
+            api_check(L, ttistable(L.top - 1));
             switch (ttype(o))
             {
                 case LUA_TFUNCTION:
-                    clvalue(o).c.env = hvalue(L._top - 1);
+                    clvalue(o).c.env = hvalue(L.top - 1);
                     break;
                 case LUA_TUSERDATA:
-                    uvalue(o).env = hvalue(L._top - 1);
+                    uvalue(o).env = hvalue(L.top - 1);
                     break;
                 case LUA_TTHREAD:
-                    sethvalue(L, gt(thvalue(o)), hvalue(L._top - 1));
+                    sethvalue(L, gt(thvalue(o)), hvalue(L.top - 1));
                     break;
                 default:
                     res = 0;
                     break;
             }
-            if (res != 0) luaC_objbarrier(L, gcvalue(o), hvalue(L._top - 1));
-            StkId.dec(ref L._top);
+            if (res != 0) luaC_objbarrier(L, gcvalue(o), hvalue(L.top - 1));
+            StkId.dec(ref L.top);
             lua_unlock(L);
             return res;
         }
@@ -862,14 +861,14 @@ namespace SharpLua
 
         public static void adjustresults(LuaState L, int nres)
         {
-            if (nres == LUA_MULTRET && L._top >= L.ci.top)
-                L.ci.top = L._top;
+            if (nres == LUA_MULTRET && L.top >= L.ci.top)
+                L.ci.top = L.top;
         }
 
 
         public static void checkresults(LuaState L, int na, int nr)
         {
-            api_check(L, (nr) == LUA_MULTRET || (L.ci.top - L._top >= (nr) - (na)));
+            api_check(L, (nr) == LUA_MULTRET || (L.ci.top - L.top >= (nr) - (na)));
         }
 
 
@@ -879,7 +878,7 @@ namespace SharpLua
             lua_lock(L);
             api_checknelems(L, nargs + 1);
             checkresults(L, nargs, nresults);
-            func = L._top - (nargs + 1);
+            func = L.top - (nargs + 1);
             luaD_call(L, func, nresults);
             adjustresults(L, nresults);
             lua_unlock(L);
@@ -921,7 +920,7 @@ namespace SharpLua
                 api_checkvalidindex(L, o);
                 func = savestack(L, o);
             }
-            c.func = L._top - (nargs + 1);  /* function to be called */
+            c.func = L.top - (nargs + 1);  /* function to be called */
             c.nresults = nresults;
             status = luaD_pcall(L, f_call, c, savestack(L, c.func), func);
             adjustresults(L, nresults);
@@ -946,11 +945,11 @@ namespace SharpLua
             Closure cl;
             cl = luaF_newCclosure(L, 0, getcurrenv(L));
             cl.c.f = c.func;
-            setclvalue(L, L._top, cl);  /* push function */
+            setclvalue(L, L.top, cl);  /* push function */
             api_incr_top(L);
-            setpvalue(L._top, c.ud);  /* push only argument */
+            setpvalue(L.top, c.ud);  /* push only argument */
             api_incr_top(L);
-            luaD_call(L, L._top - 2, 0);
+            luaD_call(L, L.top - 2, 0);
         }
 
 
@@ -961,7 +960,7 @@ namespace SharpLua
             lua_lock(L);
             c.func = func;
             c.ud = ud;
-            status = luaD_pcall(L, f_Ccall, c, savestack(L, L._top), 0);
+            status = luaD_pcall(L, f_Ccall, c, savestack(L, L.top), 0);
             lua_unlock(L);
             return status;
         }
@@ -1070,7 +1069,7 @@ namespace SharpLua
             TValue o;
             lua_lock(L);
             api_checknelems(L, 1);
-            o = L._top - 1;
+            o = L.top - 1;
             if (isLfunction(o))
                 status = luaU_dump(L, clvalue(o).l.p, writer, data, 0);
             else
@@ -1186,13 +1185,13 @@ namespace SharpLua
             lua_lock(L);
             t = index2adr(L, idx);
             api_check(L, ttistable(t));
-            more = luaH_next(L, hvalue(t), L._top - 1);
+            more = luaH_next(L, hvalue(t), L.top - 1);
             if (more != 0)
             {
                 api_incr_top(L);
             }
             else  /* no more elements */
-                StkId.dec(ref L._top);  /* remove key */
+                StkId.dec(ref L.top);  /* remove key */
             lua_unlock(L);
             return more;
         }
@@ -1205,12 +1204,12 @@ namespace SharpLua
             if (n >= 2)
             {
                 luaC_checkGC(L);
-                luaV_concat(L, n, cast_int(L._top - L.base_) - 1);
-                L._top -= (n - 1);
+                luaV_concat(L, n, cast_int(L.top - L.base_) - 1);
+                L.top -= (n - 1);
             }
             else if (n == 0)
             {  /* push empty string */
-                setsvalue2s(L, L._top, luaS_newlstr(L, "", 0));
+                setsvalue2s(L, L.top, luaS_newlstr(L, "", 0));
                 api_incr_top(L);
             }
             /* else n == 1; nothing to do */
@@ -1244,7 +1243,7 @@ namespace SharpLua
             lua_lock(L);
             luaC_checkGC(L);
             u = luaS_newudata(L, size, getcurrenv(L));
-            setuvalue(L, L._top, u);
+            setuvalue(L, L.top, u);
             api_incr_top(L);
             lua_unlock(L);
             return u.user_data;
@@ -1257,7 +1256,7 @@ namespace SharpLua
             lua_lock(L);
             luaC_checkGC(L);
             u = luaS_newudata(L, t, getcurrenv(L));
-            setuvalue(L, L._top, u);
+            setuvalue(L, L.top, u);
             api_incr_top(L);
             lua_unlock(L);
             return u.user_data;
@@ -1292,7 +1291,7 @@ namespace SharpLua
             name = aux_upvalue(index2adr(L, funcindex), n, ref val);
             if (name != null)
             {
-                setobj2s(L, L._top, val);
+                setobj2s(L, L.top, val);
                 api_incr_top(L);
             }
             lua_unlock(L);
@@ -1311,9 +1310,9 @@ namespace SharpLua
             name = aux_upvalue(fi, n, ref val);
             if (name != null)
             {
-                StkId.dec(ref L._top);
-                setobj(L, val, L._top);
-                luaC_barrier(L, clvalue(fi), L._top);
+                StkId.dec(ref L.top);
+                setobj(L, val, L.top);
+                luaC_barrier(L, clvalue(fi), L.top);
             }
             lua_unlock(L);
             return name;

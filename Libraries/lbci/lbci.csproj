@@ -4,22 +4,20 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{150CED9A-888B-4783-8ACA-57599A3A43EF}</ProjectGuid>
+    <ProjectGuid>{71ACA15C-FDDE-460D-B9D6-40FB6DF675D6}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SharpLua.LASM</RootNamespace>
-    <AssemblyName>SharpLua.LASM</AssemblyName>
+    <RootNamespace>lbci</RootNamespace>
+    <AssemblyName>lbci</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
-    <NoStdLib>False</NoStdLib>
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
-    <DebugType>Full</DebugType>
+    <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\bin\</OutputPath>
+    <OutputPath>..\..\bin\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -32,15 +30,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
-    <RegisterForComInterop>False</RegisterForComInterop>
-    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
-    <BaseAddress>4194304</BaseAddress>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -51,31 +40,25 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="LBCI.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Enums.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="LASM.txt" />
-    <Content Include="Readme.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="bit.cs" />
-    <Compile Include="Chunk.cs" />
-    <Compile Include="LASMDecompiler.cs" />
-    <Compile Include="Disassembler.cs" />
-    <None Include="Dumper.cs_" />
-    <Compile Include="Instruction.cs" />
-    <Compile Include="LasmParser.cs" />
-    <Compile Include="LuaFile.cs" />
-    <Compile Include="PlatformConfig.cs" />
-    <Compile Include="Verifier.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\SharpLua\SharpLua.csproj">
+    <ProjectReference Include="..\..\SharpLua\SharpLua.csproj">
       <Project>{90a9c907-11ad-4754-8b70-51ccb3a6c98a}</Project>
       <Name>SharpLua</Name>
-      <Private>False</Private>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="lbci.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="lbci_print.lua">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="lbci_test.lua">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

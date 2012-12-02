@@ -76,9 +76,20 @@
     <Compile Include="Interfacing\LuaFunctionAttribute.cs" />
     <Compile Include="Interfacing\ObjectTranslator.cs" />
     <Compile Include="Interfacing\ProxyType.cs" />
+    <None Include="LASM\Dumper.cs_" />
     <None Include="lua.cs" />
     <None Include="luac.cs" />
     <Compile Include="Interfacing\ScriptStrings.cs" />
+    <Compile Include="LASM\bit.cs" />
+    <Compile Include="LASM\Chunk.cs" />
+    <Compile Include="LASM\Disassembler.cs" />
+    <Compile Include="LASM\Enums.cs" />
+    <Compile Include="LASM\Instruction.cs" />
+    <Compile Include="LASM\LASMDecompiler.cs" />
+    <Compile Include="LASM\LasmParser.cs" />
+    <Compile Include="LASM\LuaFile.cs" />
+    <Compile Include="LASM\PlatformConfig.cs" />
+    <Compile Include="LASM\Verifier.cs" />
     <Compile Include="LuaCore\Libraries\lbitlib.cs" />
     <Compile Include="LuaCore\VM\lapi.cs" />
     <Compile Include="LuaCore\VM\lauxlib.cs" />
@@ -115,6 +126,7 @@
     <Compile Include="LuaCore\lzio.cs" />
     <Compile Include="LuaCore\print.cs" />
     <Compile Include="LuaRuntime.cs" />
+    <Compile Include="NewParser\Ast\BinaryOperator.cs" />
     <Compile Include="NewParser\Ast\Chunk.cs" />
     <Compile Include="NewParser\Ast\Expression\AnonymousFunctionExpr.cs" />
     <Compile Include="NewParser\Ast\Expression\BinOpExpr.cs" />
@@ -155,10 +167,13 @@
     <Compile Include="NewParser\Ast\Statement\UsingStatement.cs" />
     <Compile Include="NewParser\Ast\Statement\WhileStatement.cs" />
     <Compile Include="NewParser\Ast\Variable.cs" />
+    <Compile Include="NewParser\Compiler\Block.cs" />
     <Compile Include="NewParser\Compiler\Compiler.cs" />
     <Compile Include="NewParser\Compiler\Compiler2.cs" />
     <Compile Include="NewParser\Compiler\Compiler3.cs" />
+    <Compile Include="NewParser\Compiler\K2Reg.cs" />
     <Compile Include="NewParser\Compiler\Unescaper.cs" />
+    <Compile Include="NewParser\Compiler\Var2Reg.cs" />
     <Compile Include="NewParser\Refactoring\FindReferencesBeforeDefinition.cs" />
     <Compile Include="NewParser\Visitors\NonModifiedAstBeautifier.cs" />
     <Compile Include="NewParser\XmlDocumentation\DocumentationComment.cs" />
@@ -194,6 +209,8 @@
     <EmbeddedResource Include="Resources\luanet.sluac" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="LASM\LASM.txt" />
+    <Content Include="LASM\Readme.txt" />
     <Content Include="NewParser\Compiler\AstToCodeMap.txt" />
     <Content Include="NewParser\Todo.txt" />
     <Content Include="NewParser\XmlDocumentation\Format.txt" />

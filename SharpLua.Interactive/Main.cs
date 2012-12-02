@@ -33,9 +33,9 @@ namespace SharpLua.Interactive
 
             //Stopwatch sw = new Stopwatch();
             //sw.Start();
-
-            LuaRuntime.PrintBanner();
-
+            
+            if (args.Length == 0)
+                LuaRuntime.PrintBanner();
             //sw.Stop();
             //Console.WriteLine(sw.ElapsedMilliseconds);
 

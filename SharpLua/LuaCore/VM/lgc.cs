@@ -356,12 +356,12 @@ namespace SharpLua
 		  StkId o, lim;
 		  CallInfo ci;
 		  markvalue(g, gt(l));
-		  lim = l._top;
+		  lim = l.top;
 		  for (ci = l.base_ci[0]; ci <= l.ci; CallInfo.inc(ref ci)) {
 			lua_assert(ci.top <= l.stack_last);
 			if (lim < ci.top) lim = ci.top;
 		  }
-		  for (o = l.stack[0]; o < l._top; StkId.inc(ref o))
+		  for (o = l.stack[0]; o < l.top; StkId.inc(ref o))
 			markvalue(g, o);
 		  for (; o <= lim; StkId.inc(ref o))
 			setnilvalue(o);
@@ -565,10 +565,10 @@ namespace SharpLua
 			lu_mem oldt = (lu_mem)g.GCthreshold;
 			L.allowhook = 0;  /* stop debug hooks during GC tag method */
 			g.GCthreshold = 2*g.totalbytes;  /* avoid GC steps */
-			setobj2s(L, L._top, tm);
-			setuvalue(L, L._top+1, udata);
-			L._top += 2;
-			luaD_call(L, L._top - 2, 0);
+			setobj2s(L, L.top, tm);
+			setuvalue(L, L.top+1, udata);
+			L.top += 2;
+			luaD_call(L, L.top - 2, 0);
 			L.allowhook = oldah;  /* restore hooks */
 			g.GCthreshold = (uint)oldt;  /* restore threshold */
 		  }

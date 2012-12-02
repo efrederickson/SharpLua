@@ -166,7 +166,7 @@ namespace SharpLua
                                 break;
                             }
                         }
-                        if (peek(numEquals + 2) == '[' && embedded)
+                        if (peek(numEquals == 0 ? 1 : numEquals + 2) == '[' && embedded)
                         {
 #if !VANILLA_LUA
                             // oh look, there was

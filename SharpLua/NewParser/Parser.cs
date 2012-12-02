@@ -324,7 +324,11 @@ namespace SharpLua
                 else if (!onlyDotColon && reader.IsSymbol('{'))
                 {
                     // table call
-                    Expression ex = ParseExpr(scope);
+
+                    // Fix for the issue with whole expr being parsed, not just table.
+                    // See LuaMinify issue #2 (https://github.com/stravant/LuaMinify/issues/2)
+                    //Expression ex = ParseExpr(scope);
+                    Expression ex = ParseSimpleExpr(scope);
 
                     TableCallExpr t = new TableCallExpr();
                     t.Base = prim;
@@ -640,6 +644,7 @@ namespace SharpLua
         Statement ParseStatement(Scope scope)
         {
             int startP = reader.p;
+            int startLine = reader.Peek().Line;
             Statement stat = null;
             // print(tok.Peek().Print())
             if (reader.ConsumeKeyword("if"))
@@ -1058,6 +1063,7 @@ namespace SharpLua
             }
             if (stat.Scope == null)
                 stat.Scope = scope;
+            stat.LineNumber = startLine;
             return stat;
         }
 

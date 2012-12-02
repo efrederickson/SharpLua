@@ -1,14 +1,9 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
-# SharpDevelop 4.3
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Old", "Old", "{937488AD-919D-484A-B175-76AA86F0CC82}"
-	ProjectSection(SolutionItems) = postProject
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sample Projects", "Sample Projects", "{2EE1AFC5-E8E6-4B07-ADB3-EF71A204BE18}"
-	ProjectSection(SolutionItems) = postProject
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpExampleProject", "OLD.SharpLua\Example Projects\CSharpExampleProject\CSharpExampleProject.csproj", "{42F70066-1EBA-48AD-BD36-EBB844DC1753}"
 EndProject
@@ -35,8 +30,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpLua.Web.TestPages", "OLD.SharpLua\SharpLua.Web.TestPages\SharpLua.Web.TestPages.csproj", "{3DFABD0B-14C1-4B70-8CDE-5EFB245804C6}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "experimental", "experimental", "{95C726C6-AD83-436D-B731-7940F73615A6}"
-	ProjectSection(SolutionItems) = postProject
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "experimental-newparser", "experimental-newparser\experimental-newparser.csproj", "{BD25C8CB-A6C2-4041-AE32-CD0E91696759}"
 EndProject
@@ -48,16 +41,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{BAB5
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Example Projects", "Example Projects", "{15615C88-32DB-4C67-8D72-C97C66886710}"
-	ProjectSection(SolutionItems) = postProject
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpExampleProject", "Example Projects\CSharpExampleProject\CSharpExampleProject.csproj", "{960FBA54-AFA9-41CA-99E1-C315CED963BF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestModule", "Example Projects\TestModule\TestModule.csproj", "{B5976A83-EA56-4F4E-9C81-47DC47BC923F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{A6186E6B-4091-467D-A278-377D58F3CDD2}"
-	ProjectSection(SolutionItems) = postProject
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpLua", "SharpLua\SharpLua.csproj", "{90A9C907-11AD-4754-8B70-51CCB3A6C98A}"
 EndProject
@@ -66,8 +55,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpLua.InterfacingTests", "SharpLua.InterfacingTests\SharpLua.InterfacingTests.csproj", "{BCD0E027-6DDC-4784-9E36-20835B85E4A3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpLua.Compiler", "SharpLua.Compiler\SharpLua.Compiler.csproj", "{7C1D0B1F-8C51-4D0D-95D4-780596506291}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpLua.LASM", "SharpLua.LASM\SharpLua.LASM.csproj", "{150CED9A-888B-4783-8ACA-57599A3A43EF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpLua.LASMTests", "SharpLua.LASMTests\SharpLua.LASMTests.csproj", "{E1302877-0CF2-41A3-B866-F3B9EA73A3E5}"
 EndProject
@@ -78,6 +65,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpLua.AlmostADebugger", "SharpLua.AlmostADebugger\SharpLua.AlmostADebugger.csproj", "{C15F3365-6E23-42B0-A21D-3630D9562622}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpLua.NewCompilerTests", "SharpLua.NewCompilerTests\SharpLua.NewCompilerTests.csproj", "{273F06C9-9BF0-455D-BDB6-318B5D8B9DF7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "lbci", "Libraries\lbci\lbci.csproj", "{71ACA15C-FDDE-460D-B9D6-40FB6DF675D6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -367,18 +356,6 @@ Global
 		{7C1D0B1F-8C51-4D0D-95D4-780596506291}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{7C1D0B1F-8C51-4D0D-95D4-780596506291}.Release|Win32.ActiveCfg = Release|Any CPU
 		{7C1D0B1F-8C51-4D0D-95D4-780596506291}.Release|x86.ActiveCfg = Release|Any CPU
-		{150CED9A-888B-4783-8ACA-57599A3A43EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{150CED9A-888B-4783-8ACA-57599A3A43EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{150CED9A-888B-4783-8ACA-57599A3A43EF}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{150CED9A-888B-4783-8ACA-57599A3A43EF}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{150CED9A-888B-4783-8ACA-57599A3A43EF}.Debug|Win32.ActiveCfg = Debug|Any CPU
-		{150CED9A-888B-4783-8ACA-57599A3A43EF}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{150CED9A-888B-4783-8ACA-57599A3A43EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{150CED9A-888B-4783-8ACA-57599A3A43EF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{150CED9A-888B-4783-8ACA-57599A3A43EF}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{150CED9A-888B-4783-8ACA-57599A3A43EF}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{150CED9A-888B-4783-8ACA-57599A3A43EF}.Release|Win32.ActiveCfg = Release|Any CPU
-		{150CED9A-888B-4783-8ACA-57599A3A43EF}.Release|x86.ActiveCfg = Release|Any CPU
 		{E1302877-0CF2-41A3-B866-F3B9EA73A3E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E1302877-0CF2-41A3-B866-F3B9EA73A3E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E1302877-0CF2-41A3-B866-F3B9EA73A3E5}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
@@ -445,6 +422,18 @@ Global
 		{273F06C9-9BF0-455D-BDB6-318B5D8B9DF7}.Release|Win32.Build.0 = Release|x86
 		{273F06C9-9BF0-455D-BDB6-318B5D8B9DF7}.Release|x86.ActiveCfg = Release|x86
 		{273F06C9-9BF0-455D-BDB6-318B5D8B9DF7}.Release|x86.Build.0 = Release|x86
+		{71ACA15C-FDDE-460D-B9D6-40FB6DF675D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71ACA15C-FDDE-460D-B9D6-40FB6DF675D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71ACA15C-FDDE-460D-B9D6-40FB6DF675D6}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{71ACA15C-FDDE-460D-B9D6-40FB6DF675D6}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{71ACA15C-FDDE-460D-B9D6-40FB6DF675D6}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{71ACA15C-FDDE-460D-B9D6-40FB6DF675D6}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{71ACA15C-FDDE-460D-B9D6-40FB6DF675D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71ACA15C-FDDE-460D-B9D6-40FB6DF675D6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{71ACA15C-FDDE-460D-B9D6-40FB6DF675D6}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{71ACA15C-FDDE-460D-B9D6-40FB6DF675D6}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{71ACA15C-FDDE-460D-B9D6-40FB6DF675D6}.Release|Win32.ActiveCfg = Release|Any CPU
+		{71ACA15C-FDDE-460D-B9D6-40FB6DF675D6}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -466,5 +455,6 @@ Global
 		{BD25C8CB-A6C2-4041-AE32-CD0E91696759} = {95C726C6-AD83-436D-B731-7940F73615A6}
 		{960FBA54-AFA9-41CA-99E1-C315CED963BF} = {15615C88-32DB-4C67-8D72-C97C66886710}
 		{B5976A83-EA56-4F4E-9C81-47DC47BC923F} = {15615C88-32DB-4C67-8D72-C97C66886710}
+		{71ACA15C-FDDE-460D-B9D6-40FB6DF675D6} = {A6186E6B-4091-467D-A278-377D58F3CDD2}
 	EndGlobalSection
 EndGlobal

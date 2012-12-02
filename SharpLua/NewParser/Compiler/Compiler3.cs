@@ -198,7 +198,7 @@ namespace SharpLua.Compiler
             {
                 Instruction i = new Instruction("LOADNIL");
                 i.A = block.getreg();
-                i.B = setVarLhsCount == -1 ? i.A : setVarLhsCount;
+                i.B = setVarLhsCount == -1 ? i.A : setVarLhsCount - 1;
                 i.C = 0;
                 emit(i);
                 return;

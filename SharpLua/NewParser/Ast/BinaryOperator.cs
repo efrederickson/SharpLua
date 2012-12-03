@@ -32,4 +32,15 @@ namespace SharpLua.Ast
 
         NONE = -1,
     }
+
+    public enum UnaryOperator
+    {
+        Not, // !, not
+        Length, // #
+        BitNot, // ~
+        Negate, // -
+        UnNegate, // +
+
+        NONE = -1,
+    }
 }

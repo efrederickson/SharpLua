@@ -23,15 +23,18 @@ namespace SharpLua.Compiler
         }
 
         public Block(Block parent)
-            : this()
         {
-            parent.PreviousBlock = this;
+            K = new K2Reg(this);
+            //parent.PreviousBlock = this;
+            this.PreviousBlock = parent;
             V = new Var2Reg(parent.V);
+            Chunk = parent.Chunk;
         }
 
         public int regnum = 0;
         public int getreg()
         {
+            //Console.WriteLine(regnum);
             return
                 /*++*/
                 regnum

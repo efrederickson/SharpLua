@@ -8,6 +8,7 @@
  */
 using System;
 using System.IO;
+using System.Text;
 using SharpLua.Ast;
 using SharpLua.LASM;
 
@@ -30,7 +31,10 @@ namespace SharpLua.NewCompilerTests
                     Console.WriteLine("compiled!");
                     FileStream fs = File.Open("out.sluac", FileMode.Create);
                     foreach (char ch in proto.Compile())
+                    {
+                        //Console.WriteLine(ch + " " + (int)ch);
                         fs.WriteByte((byte)ch);
+                    }
                     fs.Close();
                     Console.WriteLine("written to out.sluac!");
                 }

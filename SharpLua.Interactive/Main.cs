@@ -34,8 +34,6 @@ namespace SharpLua.Interactive
             //Stopwatch sw = new Stopwatch();
             //sw.Start();
             
-            if (args.Length == 0)
-                LuaRuntime.PrintBanner();
             //sw.Stop();
             //Console.WriteLine(sw.ElapsedMilliseconds);
 
@@ -59,13 +57,64 @@ namespace SharpLua.Interactive
 #endif
 
             Prompt = "> ";
-
-            LuaTable t = LuaRuntime.GetLua().NewTable("arg");
+            
+            bool wasSetInteract = false;
+            bool wasFileRun = false;
             for (int i = 0; i < args.Length; i++)
-                t[i] = args[i];
-            t[-1] = System.Windows.Forms.Application.ExecutablePath;
-            t["n"] = args.Length - 1;
+            {
+                string arg = args[i];
+                if (arg.ToUpper() == "-I")
+                {
+                    GoInteractive = true;
+                    wasSetInteract = true;
+                }
+                else if (arg.ToUpper() == "-NOI")
+                    GoInteractive = false;
+                else if (arg.Substring(0, 2) == "-l")
+                {
+                    string lib = arg.Substring(2);
+                    LuaRuntime.Require(lib);
+                }
+                else if (arg == "-e")
+                {
+                    if (wasSetInteract == false)
+                        GoInteractive = true;
+                    
+                    LuaRuntime.Run(args[++i]);
+                    
+                    if (wasSetInteract == false)
+                        GoInteractive = false;
+                    wasFileRun = true;
+                }
+                else if (arg == "--")
+                    break;
+                else
+                {
+                    LuaTable t = LuaRuntime.GetLua().NewTable("arg");
+                    int i3 = 1;
+                    if (args.Length > i + 1)
+                        for (int i2 = i + 1; i2 < args.Length; i2++)
+                            t[i3++] = args[i2];
+                    
+                    t[-1] = System.Windows.Forms.Application.ExecutablePath;
+                    t["n"] = t.Keys.Count;
+                    
+                    if (File.Exists(args[i]))
+                        LuaRuntime.SetVariable("_WORKDIR", Path.GetDirectoryName(args[i]));
+                    else
+                        LuaRuntime.SetVariable("_WORKDIR", Path.GetDirectoryName(System.Windows.Forms.Application.ExecutablePath));
+                    LuaRuntime.RunFile(args[i]);
+                    
+                    if (wasSetInteract == false)
+                        GoInteractive = false;
+                    
+                    wasFileRun = true;
+                    break;
+                }
+            }
 
+            
+            /*
             // check command line args
             if (args.Length > 0)
             {
@@ -93,19 +142,15 @@ namespace SharpLua.Interactive
                     Console.WriteLine(file + " not found.");
                 }
             }
-
-            // check for interactive mode
-            foreach (string arg in args)
-                if (arg.ToUpper() == "-I")
-                    GoInteractive = true;
-                else if (arg.ToUpper() == "-NOI")
-                    GoInteractive = false;
-
+            */
+           
             if (args.Length == 0)
                 GoInteractive = true;
-
+            
             if (GoInteractive)
             {
+                if (args.Length == 0 || wasFileRun == false)
+                    LuaRuntime.PrintBanner();
                 LuaRuntime.SetVariable("_WORKDIR", Path.GetDirectoryName(typeof(Program).Assembly.Location));
                 while (true)
                 {

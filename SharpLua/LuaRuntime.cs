@@ -107,5 +107,14 @@ namespace SharpLua
         {
             _interface = lua.Interface;
         }
+        
+        public static void Require(string lib)
+        {
+            Run("require('" + lib + "')");
+            
+            //Lua.lua_getglobal(_interface.LuaState, "require");
+            //Lua.lua_pushstring(_interface.LuaState, lib);
+            //return report(L, docall(L, 1, 1));
+        }
     }
 }

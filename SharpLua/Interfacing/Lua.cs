@@ -335,7 +335,14 @@ namespace SharpLua
                 finally { executing = false; }
             }
             else
+            {
+                //string s = Lua.lua_tostring(luaState, -1);
+                //if (s.EndsWith("error #-1"))
+                //{
+                //    Lua.lua_pushstring(luaState, "unable to open " + fileName + ": file not found");
+                //}
                 ThrowExceptionFromError(oldTop);
+            }
 
             return null;            // Never reached - keeps compiler happy
         }

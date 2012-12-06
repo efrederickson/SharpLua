@@ -14,6 +14,8 @@ X table.removeitem - removes an item from a table
 - Implicit 'self' arg
 - ++, --
 
+- Change LASM library to be a wrapper for the LuaAssemblyTools library
+
 Parser/Lexer
      X option to continue parsing after a parse error (add to error list)
      - allow embedded LASM (?)

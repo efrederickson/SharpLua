@@ -1032,6 +1032,7 @@ namespace SharpLua
             // todo: fix this - mjf
             //if (envname == "LUA_PATH)
             //return "MyPath";
+            return System.Environment.GetEnvironmentVariable(envname.ToString());
             return null;
         }
 

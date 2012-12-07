@@ -1,3 +1,4 @@
+using System.Text;
 namespace SharpLua
 {
     using System;
@@ -7,6 +8,7 @@ namespace SharpLua
     using System.Collections.Specialized;
     using System.Reflection;
     using System.Threading;
+    using System.Linq;
 
     /*
      * Main class of LuaInterface
@@ -302,6 +304,45 @@ namespace SharpLua
                 ThrowExceptionFromError(oldTop);
 
             return null; // Never reached - keeps compiler happy
+        }
+        
+        public object[] DoString(byte[] chunk)
+        {
+            return DoString(chunk, "chunk");
+        }
+        
+        public object[] DoString(byte[] chunk, string chunkName)
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (byte b in chunk)
+                sb.Append((char)b);
+            return DoString(sb.ToString(), chunkName);
+        }
+        
+        public object[] DoString(char[] chunk)
+        {
+            return DoString(chunk, "chunk");
+        }
+        
+        public object[] DoString(char[] chunk, string chunkName)
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (char c in chunk)
+                sb.Append(c);
+            return DoString(sb.ToString(), chunkName);
+        }
+        
+        public object[] DoString(int[] chunk)
+        {
+            return DoString(chunk, "chunk");
+        }
+        
+        public object[] DoString(int[] chunk, string chunkName)
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (int i in chunk)
+                sb.Append((char)i);
+            return DoString(sb.ToString(), chunkName);
         }
 
         private int traceback(SharpLua.Lua.LuaState luaState)

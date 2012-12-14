@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
@@ -107,14 +108,13 @@ namespace SharpLua.Visitors
             return sb.ToString();
         }
 
-        List<Token> tok = null;
-        int index = 0;
+        public List<Token> tok = null;
+        public int index = 0;
 
         internal string DoExpr(Expression e, Scope s)
         {
             int startP = index;
-            for (int i = 0; i < e.ParenCount; i++)
-                index++;
+            index += e.ParenCount;
 
             string ret = null;
             if (e is AnonymousFunctionExpr) // function() ... end
@@ -122,7 +122,7 @@ namespace SharpLua.Visitors
                 AnonymousFunctionExpr f = e as AnonymousFunctionExpr;
                 StringBuilder sb = new StringBuilder();
 
-                sb.Append(fromToken(tok[index++], s)); // 'function' 
+                sb.Append(fromToken(tok[index++], s)); // 'function'
                 sb.Append(fromToken(tok[index++], s)); // '('
                 for (int i2 = 0; i2 < f.Arguments.Count; i2++)
                 {
@@ -151,8 +151,6 @@ namespace SharpLua.Visitors
                     sb.Append(" ");
                 }
 
-                //sb.Append(DoChunk(f.Body));
-                // Ugh.
                 sb.Append(fromToken(tok[index++], s)); // <end>
 
                 ret = sb.ToString();
@@ -174,7 +172,7 @@ namespace SharpLua.Visitors
                 CallExpr c = e as CallExpr;
                 StringBuilder sb = new StringBuilder();
                 sb.Append(DoExpr(c.Base, s) // <base>
-                    + fromToken(tok[index++], s)); // '('
+                          + fromToken(tok[index++], s)); // '('
                 for (int i = 0; i < c.Arguments.Count; i++)
                 {
                     sb.Append(DoExpr(c.Arguments[i], s));
@@ -274,9 +272,16 @@ namespace SharpLua.Visitors
                 StringBuilder sb = new StringBuilder();
                 sb.Append(fromToken(tok[index++], s)); // '{'
                 sb.Append(" ");
+                bool needNewLines = false;
+                if (t.EntryList.Count > 4)
+                    needNewLines = true;
                 for (int i = 0; i < t.EntryList.Count; i++)
                 {
-                    sb.Append(DoExpr(t.EntryList[i], s));
+                    string tmp = DoExpr(t.EntryList[i], s);
+                    if (tmp.Length > 10)
+                        needNewLines = true;
+                    sb.Append(tmp);
+                    
                     if (i != t.EntryList.Count - 1)
                     {
                         sb.Append(fromToken(tok[index++], s)); // ','
@@ -327,7 +332,7 @@ namespace SharpLua.Visitors
 
         internal string DoStatement(Statement s)
         {
-            // If the statement contains a body, we cant just fromTokens it, as it's body might not be 
+            // If the statement contains a body, we cant just fromTokens it, as it's body might not be
             // fully tokenized input. Therefore, we run DoChunk on Body's
 
             if (s is AssignmentStatement && !(s is AugmentedAssignmentStatement))
@@ -484,8 +489,14 @@ namespace SharpLua.Visitors
             {
                 FunctionStatement f = s as FunctionStatement;
                 StringBuilder sb = new StringBuilder();
+                
+                if (f.IsLocal)
+                {
+                    Debug.Assert(tok[index].Data == "local");
+                    sb.Append(fromToken(tok[index++], s.Scope)); // 'local'
+                }
 
-                sb.Append(fromToken(tok[index++], s.Scope)); // 'function' 
+                sb.Append(fromToken(tok[index++], s.Scope)); // 'function'
                 sb.Append(" ");
                 sb.Append(DoExpr(f.Name, s.Scope));
                 sb.Append(fromToken(tok[index++], s.Scope)); // '('
@@ -546,7 +557,7 @@ namespace SharpLua.Visitors
                     }
                     else if (clause is ElseStmt)
                     {
-                        sb.Append(fromToken(tok[index++], s.Scope)); // if/elseif
+                        sb.Append(fromToken(tok[index++], s.Scope)); // else
                         sb.Append(options.EOL);
                         indent++;
                         sb.Append(DoChunk(clause.Body));

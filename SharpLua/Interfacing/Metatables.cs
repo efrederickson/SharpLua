@@ -665,7 +665,8 @@ namespace SharpLua
                     LuaDLL.lua_pushnil(luaState);
                     return 1;
                 } //CP: Ignore case
-                else return getMember(luaState, klass, null, methodName, BindingFlags.FlattenHierarchy | BindingFlags.Static | BindingFlags.IgnoreCase);
+                else 
+                    return getMember(luaState, klass, null, methodName, BindingFlags.FlattenHierarchy | BindingFlags.Static | BindingFlags.IgnoreCase);
             }
         }
         /*

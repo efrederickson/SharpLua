@@ -8,6 +8,7 @@ using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using SharpLua;
 using ICSharpCode.Core;
+using System.Windows.Forms;
 
 namespace SharpLuaAddIn
 {
@@ -72,12 +73,13 @@ namespace SharpLuaAddIn
             //CSharpIndentationStrategy indentStrategy = new CSharpIndentationStrategy();
             //indentStrategy.IndentationString = editor.Options.IndentationString;
             //indentStrategy.Indent(acc, true);
+            SharpLua.Visitors.NonModifiedAstBeautifier b = null;
             try
             {
                 Lexer l = new Lexer();
                 Parser p = new Parser(l.Lex(editor.Document.Text));
                 SharpLua.Ast.Chunk c = p.Parse();
-                SharpLua.Visitors.NonModifiedAstBeautifier b = new SharpLua.Visitors.NonModifiedAstBeautifier();
+                b = new SharpLua.Visitors.NonModifiedAstBeautifier();
                 //SharpLua.Visitors.ExactReconstruction b = new SharpLua.Visitors.ExactReconstruction();
                 b.options.Tab = editor.Options.IndentationString;
                 b.options.TabsToSpaces = editor.Options.ConvertTabsToSpaces;
@@ -93,8 +95,8 @@ namespace SharpLuaAddIn
             catch (System.Exception ex)
             {
                 LoggingService.Error("Error formatting document:", ex);
-                System.Windows.Forms.MessageBox.Show("Error formatting Lua script: " + ex.ToString() + "\r\n\r\nPlease report this to the SharpLua GitHub page so it can get fixed");
-                // probably parse exception
+                MessageBox.Show(b.index.ToString() + " "+ b.tok.Count);
+                MessageBox.Show("Error formatting Lua script: " + ex.ToString() + "\r\n\r\nPlease report this to the SharpLua GitHub page so it can get fixed");
             }
         }
         #endregion

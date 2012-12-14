@@ -38,7 +38,7 @@ namespace SharpLua.Interactive
             //Console.WriteLine(sw.ElapsedMilliseconds);
 
 #if DEBUG
-#if false
+#if true
             LuaRuntime.RegisterModule(typeof(TestModule));
             LuaRuntime.RegisterModule(typeof(TestModule2));
 #endif
@@ -70,12 +70,20 @@ namespace SharpLua.Interactive
                 }
                 else if (arg.ToUpper() == "-NOI")
                     GoInteractive = false;
-                else if (arg.Substring(0, 2) == "-l")
+                else if (arg.Substring(0, 2).ToLower() == "-l")
                 {
-                    string lib = arg.Substring(2);
-                    LuaRuntime.Require(lib);
+                    if (arg.Length == 2)
+                    {
+                        string lib = args[++i];
+                        LuaRuntime.Require(lib);
+                    }
+                    else
+                    {
+                        string lib = arg.Substring(2);
+                        LuaRuntime.Require(lib);
+                    }
                 }
-                else if (arg == "-e")
+                else if (arg.ToLower() == "-e")
                 {
                     if (wasSetInteract == false)
                         GoInteractive = true;
@@ -214,7 +222,7 @@ namespace SharpLua.Interactive
         }
     }
 
-#if false
+#if true
     // Lua Test Modules
     // Used primarily for testing the LuaModule and LuaFunction attributes.
     // Feel free to expand or delete them.
@@ -226,6 +234,22 @@ namespace SharpLua.Interactive
         public static void PrintHi()
         {
             Console.WriteLine("hi");
+        }
+        
+        public object b(object self)
+        {
+            return self;
+        }
+        
+        public void a(int t, string s, double x, LuaTable tbl, object o, bool b)
+        {
+            //Console.WriteLine(self);
+            Console.WriteLine(t==null);
+            Console.WriteLine(s==null);
+            Console.WriteLine(x==null);
+            Console.WriteLine(tbl==null);
+            Console.WriteLine(o==null);
+            Console.WriteLine(b==null);
         }
 
     }

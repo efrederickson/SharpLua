@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reflection;
 
 namespace SharpLua
@@ -15,6 +16,7 @@ namespace SharpLua
         private ObjectTranslator translator;
 
         ExtractValue extractNetObject;
+        ExtractValue extractNull;
         Dictionary<long, ExtractValue> extractValues = new Dictionary<long, ExtractValue>();
 
         public CheckType(ObjectTranslator translator)
@@ -39,7 +41,8 @@ namespace SharpLua
             extractValues.Add(typeof(LuaFunction).TypeHandle.Value.ToInt64(), new ExtractValue(getAsFunction));
             extractValues.Add(typeof(LuaTable).TypeHandle.Value.ToInt64(), new ExtractValue(getAsTable));
             extractValues.Add(typeof(LuaUserData).TypeHandle.Value.ToInt64(), new ExtractValue(getAsUserdata));
-
+            
+            extractNull = new ExtractValue(getNull);
             extractNetObject = new ExtractValue(getAsNetObject);
         }
 
@@ -97,6 +100,11 @@ namespace SharpLua
                     return extractValues[typeof(double).TypeHandle.Value.ToInt64()];
                 //else // suppress CS0642
                 ;//an unsupported type was encountered
+            }
+            
+            if (LuaDLL.lua_isnil(luaState, stackPos))
+            {
+                return extractNull;
             }
 
             if (LuaDLL.lua_isnumber(luaState, stackPos))
@@ -328,6 +336,17 @@ namespace SharpLua
                 }
             }
             return obj;
+        }
+        
+        public object getNull(Lua.LuaState luaState, int stackPos)
+        {
+            if (LuaDLL.lua_isnil(luaState, stackPos))
+                return null;
+            else
+            {
+                Debug.WriteLine("Value isn't nil!");
+                return null;
+            }
         }
     }
 }

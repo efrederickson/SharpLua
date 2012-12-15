@@ -57,7 +57,6 @@ namespace SharpLua
             LuaDLL.lua_replace(luaState, (int)LuaIndexes.LUA_GLOBALSINDEX);
             translator = new ObjectTranslator(this, luaState);
             LuaDLL.lua_replace(luaState, (int)LuaIndexes.LUA_GLOBALSINDEX);
-            LuaDLL.luaL_dostring(luaState, ScriptStrings.InitLuaNet);	// steffenj: lua_dostring renamed to luaL_dostring
 
             tracebackFunction = new SharpLua.Lua.lua_CFunction(traceback);
 
@@ -67,8 +66,9 @@ namespace SharpLua
                 //LuaDLL.lua_atpanic(luaState, tracebackFunction);
                 LuaDLL.lua_atpanic(luaState, panicCallback);
 
-            LuaDLL.luaL_dostring(luaState, ScriptStrings.InitClrLib);
-            LuaDLL.luaL_dostring(luaState, ScriptStrings.InitExtLib);
+            DoString(ScriptStrings.InitLuaNet, "LuaNet");
+            DoString(ScriptStrings.InitClrLib, "ClrLib");
+            DoString(ScriptStrings.InitExtLib, "ExtLib");
             luaState.initializing = false;
             luaState.SetInterface(this);
         }
@@ -105,10 +105,9 @@ namespace SharpLua
                 LuaDLL.lua_replace(lState, (int)LuaIndexes.LUA_GLOBALSINDEX);
                 translator = new ObjectTranslator(this, this.luaState);
                 LuaDLL.lua_replace(lState, (int)LuaIndexes.LUA_GLOBALSINDEX);
-                LuaDLL.luaL_dostring(lState, ScriptStrings.InitLuaNet);	// steffenj: lua_dostring renamed to luaL_dostring
-
-                LuaDLL.luaL_dostring(luaState, ScriptStrings.InitClrLib);
-                LuaDLL.luaL_dostring(luaState, ScriptStrings.InitExtLib);
+                DoString(ScriptStrings.InitLuaNet, "LuaNet");
+                DoString(ScriptStrings.InitClrLib, "ClrLib");
+                DoString(ScriptStrings.InitExtLib, "ExtLib");
             }
             _StatePassed = true;
             lState.initializing = false;

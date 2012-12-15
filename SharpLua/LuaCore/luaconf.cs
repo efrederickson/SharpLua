@@ -675,7 +675,10 @@ namespace SharpLua
         */
         //#if defined(__cplusplus)
         ///* C++ exceptions */
-        public static void LUAI_THROW(LuaState L, lua_longjmp c) { throw new LuaException(L, c); }
+        public static void LUAI_THROW(LuaState L, lua_longjmp c) 
+        {
+            throw new LuaException(L, c); 
+        }
         //#define LUAI_TRY(L,c,a)	try { a } catch(...) \
         //    { if ((c).status == 0) (c).status = -1; }
         public static void LUAI_TRY(LuaState L, lua_longjmp c, object a)

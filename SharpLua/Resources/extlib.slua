@@ -22,6 +22,7 @@ function table.tolookup(t)
 end
 
 -- override base type
+--[[
 rawtype = type
 function type(o)
     local a, b = pcall(function()
@@ -35,6 +36,7 @@ function type(o)
     end)
     return a and b or rawtype(o)
 end
+]]
 
 -- table.invert
 function table.invert(t)
@@ -132,8 +134,8 @@ strMt.__index = function(t, k)
 end
 debug.setmetatable('', strMt)
 
-function dostring(s)
-    return loadstring(s)()
+function dostring(s, ...)
+    return loadstring(s)(...)
 end
 
 function table.copy(new, old)

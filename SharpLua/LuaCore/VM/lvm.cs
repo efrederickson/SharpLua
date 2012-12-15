@@ -147,15 +147,6 @@ namespace SharpLua
                         setobj2s(L, val, res);
                         return;
                     }
-
-                    /*
-                    if (!ttisnil(res) ||  // result is not nil?
-                        (tm = fasttm(L, h.metatable, TMS.TM_INDEX)) == null)
-                    { // or no TM?
-                        setobj2s(L, val, res);
-                        return;
-                    }
-                     */
                     /* else will try the tag method */
                 }
                 else if (ttisnil(tm = luaT_gettmbyobj(L, t, TMS.TM_INDEX)))
@@ -168,7 +159,7 @@ namespace SharpLua
                     callTMres(L, val, tm, t, key);
                     return;
                 }
-                t = tm;  /* else repeat with `tm' */
+                t = tm;  /* else repeat with 'tm' */
             }
             luaG_runerror(L, "loop in gettable");
         }

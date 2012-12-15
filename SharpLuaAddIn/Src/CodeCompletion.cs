@@ -505,7 +505,7 @@ new CompletionItem("loadfile"),
                     //    ++i; // skip escaped character
                     //}
                 }
-                else if (c == '/' && i + 1 < cursorOffset && textArea.Document.GetCharAt(i + 1) == '/')
+                else if (c == '-' && i + 1 < cursorOffset && textArea.Document.GetCharAt(i + 1) == '-')
                 {
                     return true;
                 }

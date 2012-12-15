@@ -11,14 +11,14 @@ X set "..." to command line args in _G
 X set              - set (table, key, value)
 X table.removeitem - removes an item from a table
 
-- Implicit 'self' arg
+? Implicit 'self' arg
 - ++, --
 
 - Change LASM library to be a wrapper for the LuaAssemblyTools library
 
 Parser/Lexer
      X option to continue parsing after a parse error (add to error list)
-     - allow embedded LASM (?)
+     - allow embedded LASM (would require the new compiler)
      - Link tokens together? (Next/Previous)
 
 Modify Parser to handle [,] differently, so it can be ExactReconstructed

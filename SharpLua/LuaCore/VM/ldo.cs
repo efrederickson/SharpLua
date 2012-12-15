@@ -188,7 +188,8 @@ namespace SharpLua
             catch (LuaException ex)
             {
                 Debug.WriteLine("Caught exception: " + ex.ToString());
-
+                Debug.WriteLine("Status: " + ex.c.status);
+                
                 if (lj.status == 0)
                     lj.status = -1;
             }
@@ -490,7 +491,10 @@ namespace SharpLua
             if (++L.nCcalls >= LUAI_MAXCCALLS)
             {
                 if (L.nCcalls == LUAI_MAXCCALLS)
+                {
+                    Debug.WriteLine("C stack overflow");
                     luaG_runerror(L, "C stack overflow");
+                }
                 else if (L.nCcalls >= (LUAI_MAXCCALLS + (LUAI_MAXCCALLS >> 3)))
                     luaD_throw(L, LUA_ERRERR);  /* error while handing stack error */
             }

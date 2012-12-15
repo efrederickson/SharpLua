@@ -21,14 +21,14 @@ namespace SharpLua
     {
 
         //public const string LUA_VERSION = "Lua 5.1";
-        public const string LUA_VERSION = "SharpLua 2.0";
+        public const string LUA_VERSION = "SharpLua 2.0 Emulating Lua 5.1";
         //public const string LUA_RELEASE = "Lua 5.1.5";
         public const string LUA_RELEASE = "SharpLua 2.0.0";
         public const int LUA_VERSION_NUM = 501;
         //public const string LUA_COPYRIGHT = "Copyright (C) 1994-2012 Lua.org, PUC-Rio";
         //public const string LUA_AUTHORS = "R. Ierusalimschy, L. H. de Figueiredo & W. Celes";
         public const string LUA_COPYRIGHT = "Copyright (C) 2012 LoDC";
-        public const string LUA_AUTHORS = "Elijah Frederickson";
+        public const string LUA_AUTHORS = "Elijah Frederickson and others";
 
 
         /* mark for precompiled code (`<esc>Lua') */

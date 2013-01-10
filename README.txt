@@ -9,6 +9,8 @@ supports all standard lua functions. It does not support C Libraries.
 To use in your projects, just add a reference to the SharpLua.dll file and use the 
 SharpLua.LuaInterface class or the SharpLua.LuaRuntime, SharpLua.Lua is the raw Lua API.
 
+NOTE: If you simplify the AST, you CAN NOT use a reconstructor that operates on the tokens unless you patch the tokens, as the Simplification process does not do that
+
 Features Lua 5.1.5 doesn't have:
 - table.unpack (similar to _G.unpack)
 - a large extension library

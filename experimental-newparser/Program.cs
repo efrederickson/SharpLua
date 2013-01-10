@@ -35,6 +35,9 @@ namespace SharpLua
                     //Console.WriteLine("- PARSER OUTPUT -");
                     Parser p = new Parser(r);
                     Chunk c = p.Parse();
+                    Console.WriteLine("- Simplifying -");
+                    c = (Chunk)c.Simplify();
+                    Console.WriteLine("- Success! -");
                     //dump(c.Body);
                     Console.WriteLine("- Basic Beautifier (No Token Stream) -");
                     Visitors.BasicBeautifier b = new Visitors.BasicBeautifier();

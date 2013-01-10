@@ -8,5 +8,8 @@ namespace SharpLua.Ast.Expression
     public class BoolExpr : Expression
     {
         public bool Value = false;
+
+        public BoolExpr() { }
+        public BoolExpr(bool value) { Value = value; }
     }
 }

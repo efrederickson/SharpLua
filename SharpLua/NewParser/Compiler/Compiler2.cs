@@ -1,4 +1,4 @@
-﻿namespace SharpLua.NewParser.Compiler
+﻿namespace SharpLua.Compiler
 {
     using BinOpr = Lua.BinOpr;
     using BlockCnt = Lua.BlockCnt;

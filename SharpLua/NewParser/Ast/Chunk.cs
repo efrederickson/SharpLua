@@ -18,5 +18,13 @@ namespace SharpLua.Ast
         {
             Scope = s;
         }
+
+        public override Statement.Statement Simplify()
+        {
+            for (int i = 0; i < Body.Count; i++)
+                Body[i] = Body[i].Simplify();
+
+            return this;
+        }
     }
 }

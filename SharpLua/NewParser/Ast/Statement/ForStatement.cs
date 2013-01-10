@@ -17,6 +17,14 @@ namespace SharpLua.Ast.Statement
         {
 
         }
+
+        public override Statement Simplify()
+        {
+            Start = Start.Simplify();
+            End = End.Simplify();
+            Step = Step.Simplify();
+            return base.Simplify();
+        }
     }
 
     public class GenericForStatement : Chunk
@@ -28,6 +36,13 @@ namespace SharpLua.Ast.Statement
             : base(new Scope(s))
         {
 
+        }
+
+        public override Statement Simplify()
+        {
+            for (int i = 0; i < Generators.Count; i++)
+                Generators[i] = Generators[i].Simplify();
+            return base.Simplify();
         }
     }
 }

@@ -25,5 +25,29 @@ namespace SharpLua.Ast.Expression
             else
                 return UnaryOperator.NONE;
         }
+
+        public override Expression Simplify()
+        {
+            Rhs = Rhs.Simplify();
+            UnaryOperator unop = GetOperator();
+            if (Rhs is NumberExpr)
+            {
+                if (unop == UnaryOperator.Negate)
+                    return new NumberExpr("-" + ((NumberExpr)Rhs).Value);
+                else if (unop == UnaryOperator.UnNegate)
+                {
+                    double res;
+                    if (Lua.luaO_str2d(((NumberExpr)Rhs).Value, out res) == 1)
+                    {
+                        return new NumberExpr(Math.Abs(res));
+                    }
+                }
+            }
+            else if (Rhs is BoolExpr)
+                if (unop == UnaryOperator.Not)
+                    return new BoolExpr(!((BoolExpr)Rhs).Value);
+
+            return this;
+        }
     }
 }

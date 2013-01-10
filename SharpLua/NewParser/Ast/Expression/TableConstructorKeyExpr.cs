@@ -9,5 +9,12 @@ namespace SharpLua.Ast.Expression
     {
         public Expression Key = null;
         public Expression Value = null;
+
+        public override Expression Simplify()
+        {
+            Key = Key.Simplify();
+            Value = Value.Simplify();
+            return this;
+        }
     }
 }

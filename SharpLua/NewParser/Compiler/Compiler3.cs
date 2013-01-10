@@ -14,7 +14,6 @@ namespace SharpLua.Compiler
     /*
      * TODO/Known bugs:
     
-     * [B] Strings of length 0 are Constanted as nil...
      * [T] Presimplify binary operators
      * [T] Use constant fields in binary operators when possible (currently uses LOADK)
      * [T] BoolExpr 'C' arg

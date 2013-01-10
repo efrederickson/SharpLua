@@ -124,13 +124,13 @@ namespace SharpLua.LASM
             Func<string, string> DumpString = new Func<string, string>(delegate(string s)
                                                                        {
                                                                            int len = file.SizeT;
-                                                                           if (s == null || s.Length == 0)
-                                                                               return "\0".Repeat(len);
-                                                                           else
-                                                                           {
+                                                                           //if (s == null || s.Length == 0)
+                                                                           //    return "\0".Repeat(len);
+                                                                           //else
+                                                                           //{
                                                                                string l = DumpInt(s.Length + 1);
                                                                                return l + s + "\0";
-                                                                           }
+                                                                           //}
                                                                        });
 
             string c = "";

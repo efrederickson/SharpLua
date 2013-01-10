@@ -9,5 +9,11 @@ namespace SharpLua.Ast.Statement
     {
         // Is a CallExpr
         public Expression.Expression Expression = null;
+
+        public override Statement Simplify()
+        {
+            Expression = Expression.Simplify();
+            return base.Simplify();
+        }
     }
 }

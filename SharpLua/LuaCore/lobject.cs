@@ -266,7 +266,7 @@ namespace SharpLua
         public static Closure clvalue(TValue o) { return o.value.gc.cl; }
         public static Table hvalue(TValue o) { return o.value.gc.h; }
         public static int bvalue(TValue o) { return o.value.b; }
-        public static lua_State thvalue(TValue o) { return (lua_State)check_exp(ttisthread(o), o.value.gc.th); }
+        public static LuaState thvalue(TValue o) { return (LuaState)check_exp(ttisthread(o), o.value.gc.th); }
 #endif
 
         public static int l_isfalse(TValue o) { return ((ttisnil(o) || (ttisboolean(o) && bvalue(o) == 0))) ? 1 : 0; }

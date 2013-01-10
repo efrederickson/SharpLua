@@ -13,6 +13,11 @@ namespace SharpLua.Ast.Statement
 
         public List<Token> ScannedTokens = new List<Token>();
         public Token SemicolonToken;
+
+        public virtual Statement Simplify()
+        {
+            return this;
+        }
     }
 
 }

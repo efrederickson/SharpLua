@@ -22,6 +22,7 @@ namespace SharpLua.Ast
         GreaterThan, // >
         GreaterThanOrEqualTo, // >=
         NotEqual, // ~=
+        Equals, // ==
 
         ShiftRight, // >>
         ShiftLeft, // <<

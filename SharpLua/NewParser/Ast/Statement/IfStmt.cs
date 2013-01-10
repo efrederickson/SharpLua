@@ -8,6 +8,13 @@ namespace SharpLua.Ast.Statement
     public class IfStmt : Chunk
     {
         public List<SubIfStmt> Clauses = new List<SubIfStmt>();
+
+        public override Statement Simplify()
+        {
+            for (int i = 0; i < Clauses.Count; i++)
+                Clauses[i].Simplify();
+            return base.Simplify();
+        }
     }
 
     public abstract class SubIfStmt : Chunk
@@ -27,6 +34,12 @@ namespace SharpLua.Ast.Statement
             : base(new Scope(s))
         {
 
+        }
+
+        public override Statement Simplify()
+        {
+            Condition = Condition.Simplify();
+            return base.Simplify();
         }
     }
 

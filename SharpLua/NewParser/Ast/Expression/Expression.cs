@@ -9,5 +9,10 @@ namespace SharpLua.Ast.Expression
     {
         public int ParenCount = 0;
         public Scope Scope = null;
+
+        public virtual Expression Simplify()
+        {
+            return this;
+        }
     }
 }

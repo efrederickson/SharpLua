@@ -548,7 +548,8 @@ namespace SharpLua
         /// <returns></returns>
         static int luaB_wait(LuaState L)
         {
-            int wait = luaL_checkint(L, 1);
+            int wait = -1;
+            wait = luaL_optint(L, 1, 25);
             if (lua_isboolean(L, 2))
             {
                 if (lua_toboolean(L, 2) == 1)

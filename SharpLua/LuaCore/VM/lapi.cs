@@ -1,8 +1,8 @@
 /*
-** $Id: lapi.c,v 2.55.1.5 2008/07/04 18:41:18 roberto Exp $
-** Lua API
-** See Copyright Notice in lua.h
-*/
+ ** $Id: lapi.c,v 2.55.1.5 2008/07/04 18:41:18 roberto Exp $
+ ** Lua API
+ ** See Copyright Notice in lua.h
+ */
 
 using System;
 using System.Collections.Generic;
@@ -23,9 +23,9 @@ namespace SharpLua
     public partial class Lua
     {
         public const string lua_ident =
-          "$Lua: " + LUA_RELEASE + " " + LUA_COPYRIGHT + " $\n" +
-          "$Authors: " + LUA_AUTHORS + " $\n" +
-          "$URL: www.lua.org $\n";
+            "$Lua: " + LUA_RELEASE + " " + LUA_COPYRIGHT + " $\n" +
+            "$Authors: " + LUA_AUTHORS + " $\n" +
+            "$URL: www.lua.org $\n";
 
         public static void api_checknelems(LuaState L, int n)
         {
@@ -59,31 +59,31 @@ namespace SharpLua
             }
             else
                 switch (idx)
-                {  /* pseudo-indices */
+            {  /* pseudo-indices */
                     case LUA_REGISTRYINDEX: return registry(L);
-                    case LUA_ENVIRONINDEX:
-                        {
-                            Closure func = curr_func(L);
-                            sethvalue(L, L.env, func.c.env);
-                            return L.env;
-                        }
+                case LUA_ENVIRONINDEX:
+                    {
+                        Closure func = curr_func(L);
+                        sethvalue(L, L.env, func.c.env);
+                        return L.env;
+                    }
                     case LUA_GLOBALSINDEX: return gt(L);
-                    default:
-                        {
-                            Closure func = curr_func(L);
-                            idx = LUA_GLOBALSINDEX - idx;
-                            return (idx <= func.c.nupvalues)
-                                      ? func.c.upvalue[idx - 1]
-                                      : (TValue)luaO_nilobject;
-                        }
-                }
+                default:
+                    {
+                        Closure func = curr_func(L);
+                        idx = LUA_GLOBALSINDEX - idx;
+                        return (idx <= func.c.nupvalues)
+                            ? func.c.upvalue[idx - 1]
+                            : (TValue)luaO_nilobject;
+                    }
+            }
         }
 
 
         internal static Table getcurrenv(LuaState L)
         {
             if (L.ci == L.base_ci[0])  /* no enclosing function? */
-                return hvalue(gt(L));  /* use global table as environment */
+            return hvalue(gt(L));  /* use global table as environment */
             else
             {
                 Closure func = curr_func(L);
@@ -166,8 +166,8 @@ namespace SharpLua
 
 
         /*
-        ** basic stack manipulation
-        */
+         ** basic stack manipulation
+         */
 
 
         public static int lua_gettop(LuaState L)
@@ -241,7 +241,7 @@ namespace SharpLua
             {
                 setobj(L, o, L.top - 1);
                 if (idx < LUA_GLOBALSINDEX)  /* function upvalue? */
-                    luaC_barrier(L, curr_func(L), L.top - 1);
+                luaC_barrier(L, curr_func(L), L.top - 1);
             }
             StkId.dec(ref L.top);
             lua_unlock(L);
@@ -259,8 +259,8 @@ namespace SharpLua
 
 
         /*
-        ** access functions (stack . C)
-        */
+         ** access functions (stack . C)
+         */
 
 
         public static int lua_type(LuaState L, int idx)
@@ -311,7 +311,7 @@ namespace SharpLua
             StkId o1 = index2adr(L, index1);
             StkId o2 = index2adr(L, index2);
             return (o1 == luaO_nilobject || o2 == luaO_nilobject) ? 0
-                   : luaO_rawequalObj(o1, o2);
+                : luaO_rawequalObj(o1, o2);
         }
 
 
@@ -336,7 +336,7 @@ namespace SharpLua
             o1 = index2adr(L, index1);
             o2 = index2adr(L, index2);
             i = (o1 == luaO_nilobject || o2 == luaO_nilobject) ? 0
-                 : luaV_lessthan(L, o1, o2);
+                : luaV_lessthan(L, o1, o2);
             lua_unlock(L);
             return i;
         }
@@ -402,8 +402,8 @@ namespace SharpLua
             StkId o = index2adr(L, idx);
             switch (ttype(o))
             {
-                case LUA_TSTRING: return tsvalue(o).len;
-                case LUA_TUSERDATA: return uvalue(o).len;
+                    case LUA_TSTRING: return tsvalue(o).len;
+                    case LUA_TUSERDATA: return uvalue(o).len;
                 case LUA_TTABLE:
                     // Table now respects __len metamethod
                     Table h = hvalue(o);
@@ -421,7 +421,7 @@ namespace SharpLua
                         lua_unlock(L);
                         return l;
                     }
-                default: return 0;
+                    default: return 0;
             }
         }
 
@@ -438,9 +438,9 @@ namespace SharpLua
             StkId o = index2adr(L, idx);
             switch (ttype(o))
             {
-                case LUA_TUSERDATA: return (rawuvalue(o).user_data);
-                case LUA_TLIGHTUSERDATA: return pvalue(o);
-                default: return null;
+                    case LUA_TUSERDATA: return (rawuvalue(o).user_data);
+                    case LUA_TLIGHTUSERDATA: return pvalue(o);
+                    default: return null;
             }
         }
 
@@ -457,21 +457,21 @@ namespace SharpLua
             StkId o = index2adr(L, idx);
             switch (ttype(o))
             {
-                case LUA_TTABLE: return hvalue(o);
-                case LUA_TFUNCTION: return clvalue(o);
-                case LUA_TTHREAD: return thvalue(o);
+                    case LUA_TTABLE: return hvalue(o);
+                    case LUA_TFUNCTION: return clvalue(o);
+                    case LUA_TTHREAD: return thvalue(o);
                 case LUA_TUSERDATA:
                 case LUA_TLIGHTUSERDATA:
                     return lua_touserdata(L, idx);
-                default: return null;
+                    default: return null;
             }
         }
 
 
 
         /*
-        ** push functions (C . stack)
-        */
+         ** push functions (C . stack)
+         */
 
 
         public static void lua_pushnil(LuaState L)
@@ -521,7 +521,7 @@ namespace SharpLua
 
 
         public static CharPtr lua_pushvfstring(LuaState L, CharPtr fmt,
-                                              object[] argp)
+                                               object[] argp)
         {
             CharPtr ret;
             lua_lock(L);
@@ -600,8 +600,8 @@ namespace SharpLua
 
 
         /*
-        ** get functions (Lua . stack)
-        */
+         ** get functions (Lua . stack)
+         */
 
 
         public static void lua_gettable(LuaState L, int idx)
@@ -720,8 +720,8 @@ namespace SharpLua
 
 
         /*
-        ** set functions (stack . Lua)
-        */
+         ** set functions (stack . Lua)
+         */
 
 
         public static void lua_settable(LuaState L, int idx)
@@ -855,8 +855,8 @@ namespace SharpLua
 
 
         /*
-        ** `load' and `call' functions (run Lua code)
-        */
+         ** `load' and `call' functions (run Lua code)
+         */
 
 
         public static void adjustresults(LuaState L, int nres)
@@ -887,8 +887,8 @@ namespace SharpLua
 
 
         /*
-        ** Execute a protected call.
-        */
+         ** Execute a protected call.
+         */
         public class CallS
         {  /* data to `f_call' */
             public StkId func;
@@ -930,8 +930,8 @@ namespace SharpLua
 
 
         /*
-        ** Execute a protected C call.
-        */
+         ** Execute a protected C call.
+         */
         public class CCallS
         {  /* data to `f_Ccall' */
             public lua_CFunction func;
@@ -967,14 +967,14 @@ namespace SharpLua
 
 
         public static int lua_load(LuaState L, lua_Reader reader, object data,
-                              CharPtr chunkname)
+                                   CharPtr chunkname)
         {
             ZIO z = new ZIO();
             int status;
             lua_lock(L);
             if (chunkname == null) chunkname = "?";
 
-#if OVERRIDE_LOAD || true
+            #if OVERRIDE_LOAD || true
             //#if false
             if (data is LoadS)
             {
@@ -1003,7 +1003,7 @@ namespace SharpLua
                 {
                     d.s.index = 0;
 
-                    // Why isn't the size equal to the chars.Length? 
+                    // Why isn't the size equal to the chars.Length?
                     Debug.WriteLine("Binary data: d.size=" + d.size + " d.s.chars.Length=" + d.s.chars.Length);
                     Debug.WriteLine("Equal: " + (d.size == d.s.chars.Length));
                     //Debug.Assert(d.size == d.s.chars.Length);
@@ -1022,7 +1022,7 @@ namespace SharpLua
                         ms.WriteByte((byte)lf.f.ReadByte());
                     ms.Position = 0;
 
-                    // not binary file 
+                    // not binary file
                     ms.Position = 0;
                     StringBuilder sb = new StringBuilder();
                     while (ms.Position < ms.Length)
@@ -1055,10 +1055,19 @@ namespace SharpLua
                     lf.f.Position = 0; // reset the read character
                 }
             }
-#endif
+            #endif
             luaZ_init(L, z, reader, data);
             status = luaD_protectedparser(L, z, chunkname);
             lua_unlock(L);
+            if (data is LoadF)
+            {
+                LoadF f = data as LoadF;
+                if (f.f != null)
+                {
+                    f.f.Close();
+                    f.f.Dispose();
+                }
+            }
             return status;
         }
 
@@ -1086,8 +1095,8 @@ namespace SharpLua
 
 
         /*
-        ** Garbage-collection function
-        */
+         ** Garbage-collection function
+         */
 
         public static int lua_gc(LuaState L, int what, int data)
         {
@@ -1164,8 +1173,8 @@ namespace SharpLua
 
 
         /*
-        ** miscellaneous functions
-        */
+         ** miscellaneous functions
+         */
 
 
         public static int lua_error(LuaState L)

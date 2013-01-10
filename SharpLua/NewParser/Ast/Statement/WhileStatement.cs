@@ -14,5 +14,11 @@ namespace SharpLua.Ast.Statement
         {
 
         }
+
+        public override Statement Simplify()
+        {
+            Condition = Condition.Simplify();
+            return base.Simplify();
+        }
     }
 }

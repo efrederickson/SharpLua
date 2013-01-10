@@ -43,9 +43,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
@@ -168,7 +166,7 @@
     <Compile Include="NewParser\Ast\Statement\WhileStatement.cs" />
     <Compile Include="NewParser\Ast\Variable.cs" />
     <Compile Include="NewParser\Compiler\Block.cs" />
-    <Compile Include="NewParser\Compiler\Compiler.cs" />
+    <None Include="NewParser\Compiler\Compiler.cs" />
     <Compile Include="NewParser\Compiler\Compiler2.cs" />
     <Compile Include="NewParser\Compiler\Compiler3.cs" />
     <Compile Include="NewParser\Compiler\K2Reg.cs" />
